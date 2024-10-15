@@ -13,8 +13,13 @@ RUN echo 'PasswordAuthentication yes' > /etc/ssh/ssh_config.d/config_file.conf
 
 
 # Ajouter un utilisateur avec un mot de passe (remplacez 'password' par un mot de passe sécurisé)
-RUN useradd -m -s /bin/bash remote && \
-    echo 'remote:password' | chpasswd
+RUN useradd -m -s /bin/bash controler && \
+    echo 'controler:password' | chpasswd
+
+# Installing ansible
+RUN apt update
+RUN apt install -y python3
+RUN apt install -y ansible
 
 # Exposer le port 22 pour SSH
 EXPOSE 22
