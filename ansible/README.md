@@ -24,7 +24,7 @@ ansible --version
 
 - Tout projet ansible a pour structure : 
 
-/~/my-ansible-project/
+`/~/my-ansible-project/`
 ├── ansible.cfg        # Configuration locale du projet
 ├── inventory          # Inventaire des hôtes du projet
 ├── playbook.yml       # Playbook à exécuter
@@ -33,11 +33,11 @@ ansible --version
 
 - Le repertoire de travail par defaut de ansible est `/etc/ansible/` avec pour structure: 
 
-/etc/ansible/
-├── ansible.cfg
-├── inventory
-├── playbook.yml
-└── roles/
+`/etc/ansible/`<br>
+├── ansible.cfg<br>
+├── inventory<br>
+├── playbook.yml<br>
+└── roles/<br>
 
 - ansible va t'il chercher toutes les configurations dans le fichier local en priorité sinon dans le dossier de travail par defaut qui est `/etc/ansible/` .
 
