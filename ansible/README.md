@@ -25,10 +25,10 @@ ansible --version
 - Tout projet ansible a pour structure : 
 
 `/~/my-ansible-project/`
-├── ansible.cfg        # Configuration locale du projet
-├── inventory          # Inventaire des hôtes du projet
-├── playbook.yml       # Playbook à exécuter
-└── roles/             # Dossier contenant des rôles (si nécessaire)
+├── ansible.cfg        # Configuration locale du projet<br>
+├── inventory          # Inventaire des hôtes du projet<br>
+├── playbook.yml       # Playbook à exécuter<br>
+└── roles/             # Dossier contenant des rôles (si nécessaire)<br>
 
 
 - Le repertoire de travail par defaut de ansible est `/etc/ansible/` avec pour structure: 
