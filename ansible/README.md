@@ -127,8 +127,107 @@ Ces commandes sont essentielles pour travailler avec Ansible. Elles couvrent l'e
 Pour plus de détails sur l'utilisation de ces commandes, consultez la [documentation officielle d'Ansible](https://docs.ansible.com/).
 
 
-## Notions avancées Ansible
+## Playbook ansible
 
-### Module personnalisé
+les différentes parties d'un playbook :
+1. Hosts
 
-### Role
+Définit sur quels hôtes ou groupes d’hôtes les tâches seront exécutées. Vous pouvez utiliser un groupe d'hôtes défini dans le fichier d'inventaire, des noms spécifiques d'hôtes, ou encore all pour tous les hôtes.
+2. Tasks
+
+Une liste de tâches qui doivent être exécutées sur les hôtes spécifiés. Chaque tâche est une action spécifique (comme installer un package, copier un fichier, etc.). Chaque tâche doit utiliser un module Ansible.
+3. Roles
+
+Un moyen d'organiser les tâches dans des sous-répertoires (plus structuré et réutilisable). Les rôles contiennent des tâches, des handlers, des fichiers, etc., pour faciliter l'automatisation complexe.
+4. Vars
+
+Définit des variables qui peuvent être utilisées dans les tâches. Ces variables peuvent être définies directement dans le playbook ou récupérées d’un fichier externe.
+5. Handlers
+
+Similaire aux tâches, mais les handlers ne sont exécutés que lorsqu'ils sont déclenchés par une autre tâche via le mot-clé notify. Utilisé, par exemple, pour redémarrer un service après une modification de configuration.
+6. Become
+
+Permet d'exécuter des tâches avec des privilèges élevés (comme sudo). Cela est nécessaire pour certaines actions comme l'installation de paquets ou la modification de configurations système.
+7. Environment
+
+Définit les variables d'environnement spécifiques pour les tâches.
+
+
+#### Exemple :
+
+````yml
+---
+- name: Installation et configuration d'un serveur web
+  hosts: webservers              # Spécification des hôtes sur lesquels exécuter le playbook
+  become: yes                    # Prendre les privilèges root pour certaines tâches
+  vars:                          # Variables définies dans le playbook
+    apache_pkg: apache2
+    document_root: /var/www/html
+
+  roles:
+    - common                     # Appel d'un rôle commun à tous les serveurs
+    - webserver                  # Appel du rôle "webserver"
+
+  tasks:                         # Liste des tâches pour les hôtes spécifiés
+    - name: Installer Apache
+      ansible.builtin.apt:        # Module apt pour gérer les packages
+        name: "{{ apache_pkg }}"
+        state: present
+      notify:                     # Appel de la notification pour les handlers
+        - Restart Apache
+
+    - name: Créer le répertoire du document root
+      ansible.builtin.file:       # Module file pour créer un répertoire
+        path: "{{ document_root }}"
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Déployer la page d'accueil
+      ansible.builtin.copy:       # Module copy pour copier un fichier sur les hôtes distants
+        src: index.html
+        dest: "{{ document_root }}/index.html"
+        mode: '0644'
+
+    - name: Vérifier si Apache fonctionne
+      ansible.builtin.service_facts: # Collecter des informations sur les services
+    - name: Assurer qu'Apache est actif
+      ansible.builtin.systemd:
+        name: "{{ apache_pkg }}"
+        state: started
+        enabled: yes
+
+  handlers:                      # Handlers pour exécuter des actions conditionnelles
+    - name: Restart Apache
+      ansible.builtin.systemd:
+        name: "{{ apache_pkg }}"
+        state: restarted
+
+  environment:                   # Variables d'environnement
+    PATH: /usr/local/bin:/usr/bin:/bin
+
+  pre_tasks:                     # Tâches à exécuter avant le bloc "tasks"
+    - name: Mettre à jour le cache des paquets
+      ansible.builtin.apt:
+        update_cache: yes
+      when: ansible_facts['os_family'] == "Debian"
+
+  post_tasks:                    # Tâches à exécuter après le bloc "tasks"
+    - name: Afficher un message de réussite
+      ansible.builtin.debug:
+        msg: "L'installation et la configuration d'Apache sont terminées."
+
+  tags:                          # Tags pour filtrer les tâches à exécuter
+    - webserver_setup
+    - apache
+
+  ignore_errors: yes             # Ignorer les erreurs lors de l'exécution de ce playbook
+
+````
+
+## Module personnalisé
+
+## Role
+
+## Variable
