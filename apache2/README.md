@@ -144,18 +144,18 @@ Activer le cache pour les ressources statiques :
 
 ## Configuration Structure
 
-
-/etc/apache2/ <br>
-|-- apache2.conf <br>
-|	`--  ports.conf <br>
-|-- mods-enabled <br>
-|	|-- *.load <br>
-|	`-- *.conf <br>
-|-- conf-enabled <br>
-|	`-- *.conf <br>
-`-- sites-enabled <br>
-    `-- *.conf <br>
-
+```bash
+/etc/apache2/
+|-- apache2.conf     # main config file
+|	`--  ports.conf 
+|-- mods-enabled     # symbolic link pointing to the activated mods in `mods-available`
+|	|-- *.load 
+|	`-- *.conf 
+|-- conf-enabled     # symbolic link pointing to the activated conf in `conf-available`
+|	`-- *.conf 
+`-- sites-enabled    # symbolic link pointing to the activated site in `site-available`
+    `-- *.conf
+```
 
 1. apache2.conf (ou httpd.conf) :
 
@@ -222,6 +222,207 @@ Activer le cache pour les ressources statiques :
 └── ssl.load -> ../mods-available/ssl.load
 ```
 
+## Important Commands apache2
+
+### Gestion du processus apache2 (ubuntu)
+- Start apache2
+```bash
+sudo systemctl start apache2.service
+```
+- Restart apache2
+```bash
+sudo systemctl restart apache2.service
+```
+- Show status of apache2
+```bash
+sudo systemctl status apache2.service
+```
+- Show the log of apache2
+```bash
+journalctl -xeu apache2.service
+# ou
+sudo tail -f /var/log/apache2/error.log
+```
+- Reload apache2
+```bash
+sudo systemctl reload apache2
+```
+### Gestion des config apache2
+- Activate/desactivate a site
+```bash
+sudo a2ensite my_site.conf
+#
+sudo a2disite my_site.conf
+```
+- Activate/desactivate a mods
+```bash
+sudo a2enmod my_mods
+#
+sudo a2dimod my_mods
+```
+- Verifier que les config apache2 sont correcte
+```bash
+sudo apache2ctl configtest
+```
+- Activate a config in conf-availble
+```bash
+sudo a2enconf proxy-arrow
+```
+
+## Structure of a Virtual host (for http)
+
+```apache
+<VirtualHost *:80>
+    ServerName mon-site.com
+    ServerAdmin webmaster@mon-site.com
+    DocumentRoot /var/www/mon-site
+
+    # Redirection temporaire (302) de /ancien vers /nouveau
+    Redirect 302 /ancien /nouveau
+
+    # Redirection permanente (301) de /old-page vers /new-page
+    Redirect 301 /old-page /new-page
+
+    # Reverse Proxy sans <Location>
+    # Redirige les requêtes vers /service1 vers un service interne
+    ProxyPass /service1 http://localhost:8080/
+    ProxyPassReverse /service1 http://localhost:8080/
+
+    # Reverse Proxy avec <Location>
+    # Redirige les requêtes vers /api vers une API externe
+    <Location /api>
+        ProxyPass "https://api.externe.com/"
+        ProxyPassReverse "https://api.externe.com/"
+    </Location>
+
+    # Load balancing entre plusieurs serveurs
+    # Permet d'équilibrer la charge entre plusieurs backends
+    <Proxy balancer://mycluster>
+        BalancerMember http://backend1:8080
+        BalancerMember http://backend2:8080
+        ProxySet lbmethod=byrequests
+    </Proxy>
+
+    # Reverse proxy vers le cluster de backends
+    ProxyPass /loadbalancer balancer://mycluster/
+    ProxyPassReverse /loadbalancer balancer://mycluster/
+
+    # Autres configurations possibles
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+
+```
+Détails des cas d'utilisation
+1. Redirection permanente (301)
+
+    Usage : Utilisé pour rediriger de manière permanente une URL vers une nouvelle URL. Les moteurs de recherche savent que la page a été déplacée et mettront à jour leurs index.
+
+2. Redirection temporaire (302)
+
+    Usage : Utilisé pour rediriger temporairement une URL vers une nouvelle URL. Les moteurs de recherche ne mettront pas à jour leurs index.
+
+3. Reverse Proxy sans <Location>
+
+    Usage : Redirige les requêtes d'un chemin spécifique vers un service interne. Dans cet exemple, les requêtes vers /service1 sont redirigées vers un service s'exécutant sur localhost sur le port 8080.
+
+4. Reverse Proxy avec <Location>
+
+    Usage : Utilisé pour configurer des paramètres spécifiques pour un chemin donné. Dans cet exemple, les requêtes vers /api sont redirigées vers une API externe.
+
+5. Load Balancing
+
+    Usage : Permet de répartir la charge entre plusieurs serveurs backend. Cela améliore la disponibilité et la répartition de la charge.
+
+Autres configurations
+
+    Logging : Les lignes ErrorLog et CustomLog configurent la journalisation des erreurs et l'accès. Cela permet de suivre les requêtes et d'identifier les problèmes.
+
+Voir les documentation officiel [ici](https://httpd.apache.org/docs/current/mod/mod_proxy.html#proxypass)
 
 ## Virtual host configuration
 
+### Sitting up  a simple Virtual host
+
+- Creating a config file `/etc/apache2/site-availabe/my_site.conf` for the virtual host
+
+```apache
+<VirtualHost *:80>
+    ServerName localhost
+    ServerAdmin admin@localhost
+    DocumentRoot /var/www/html
+
+    # activation de config pour le reverse proxy
+    ProxyRequests On
+    SSLProxyEngine On
+
+    # Configuration d'un chemin
+    <Location /api>
+        ProxyPass "https://google.com/"
+        ProxyPassReverse "https://google.com/"
+    </Location>
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+```
+
+- Activate the site
+```bash
+sudo a2ensite my_site.conf
+```
+- Activate necessary module if not done
+```bash
+sudo a2enmod proxy
+sudo a2enmod proxy_http
+```
+- Restart or relaod apache2
+```bash
+sudo systemctl restart apache2
+```
+###  Externalisation of the proxy configuration in conf-evailable
+
+- Remplacing the content `/etc/apache2/site-availabe/my_site.conf` of by :
+
+```apache
+<VirtualHost *:80>
+    ServerName localhost
+    ServerAdmin admin@localhost
+    DocumentRoot /var/www/html
+
+    # activation de config pour le reverse proxy
+    ProxyRequests On
+    SSLProxyEngine On
+
+    # Inclusion du fichier de configuration externalisé
+    Include /etc/apache2/conf-available/proxy-arrow.conf
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+</VirtualHost>
+```
+
+- Creating the config file `/etc/apache2/conf-available/proxy-arrow.conf` and defining in it all the proxy configuration
+
+```apache
+<Location /go>
+    ProxyPass "https://google.com/"
+    ProxyPassReverse "https://google.com/"
+</Location>
+
+<Location /yo>
+    ProxyPass "https://youtube.com/"
+    ProxyPassReverse "https://youtube.com/"
+</Location>
+```
+
+- Activate the configuration
+
+```bash
+sudo a2enconf proxy-arrow
+```
+
+- Relaod apache2
+```bash
+sudo systemctl reload apache2
+```
