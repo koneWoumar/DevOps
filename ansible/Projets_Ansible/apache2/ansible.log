@@ -272,3 +272,12 @@ albarry@localhost: Permission denied (publickey,password).
 2024-10-17 15:27:37,852 p=159926 u=root n=ansible | ok: [localhost] => (item=/var/log/apache2)
 2024-10-17 15:27:37,871 p=159926 u=root n=ansible | PLAY RECAP **********************************************************************************************************************************************************************************
 2024-10-17 15:27:37,872 p=159926 u=root n=ansible | localhost                  : ok=5    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2024-10-19 02:12:35,222 p=221567 u=root n=ansible | PLAY [Installer et démarrer Apache] *********************************************************************************************************************************
+2024-10-19 02:12:35,256 p=221567 u=root n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] *****************************************************************************************************
+2024-10-19 02:12:36,746 p=221567 u=root n=ansible | ok: [localhost]
+2024-10-19 02:12:36,762 p=221567 u=root n=ansible | TASK [Installer Apache name=apache2, state=present] *****************************************************************************************************************
+2024-10-19 02:13:06,161 p=221567 u=root n=ansible | changed: [localhost]
+2024-10-19 02:13:06,200 p=221567 u=root n=ansible | TASK [Démarrer le service Apache name=apache2, state=started] *******************************************************************************************************
+2024-10-19 02:13:06,942 p=221567 u=root n=ansible | ok: [localhost]
+2024-10-19 02:13:06,977 p=221567 u=root n=ansible | PLAY RECAP **********************************************************************************************************************************************************
+2024-10-19 02:13:06,977 p=221567 u=root n=ansible | localhost                  : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

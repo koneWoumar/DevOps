@@ -340,49 +340,10 @@ Autres configurations
 
 Voir les documentation officiel [ici](https://httpd.apache.org/docs/current/mod/mod_proxy.html#proxypass)
 
-## Virtual host configuration
+## Virtual host configuration in http
 
-### Sitting up  a simple Virtual host
 
-- Creating a config file `/etc/apache2/site-availabe/my_site.conf` for the virtual host
-
-```apache
-<VirtualHost *:80>
-    ServerName localhost
-    ServerAdmin admin@localhost
-    DocumentRoot /var/www/html
-
-    # activation de config pour le reverse proxy
-    ProxyRequests On
-    SSLProxyEngine On
-
-    # Configuration d'un chemin
-    <Location /api>
-        ProxyPass "https://google.com/"
-        ProxyPassReverse "https://google.com/"
-    </Location>
-
-    ErrorLog ${APACHE_LOG_DIR}/error.log
-    CustomLog ${APACHE_LOG_DIR}/access.log combined
-</VirtualHost>
-```
-
-- Activate the site
-```bash
-sudo a2ensite my_site.conf
-```
-- Activate necessary module if not done
-```bash
-sudo a2enmod proxy
-sudo a2enmod proxy_http
-```
-- Restart or relaod apache2
-```bash
-sudo systemctl restart apache2
-```
-###  Externalisation of the proxy configuration in conf-evailable
-
-- Remplacing the content `/etc/apache2/site-availabe/my_site.conf` of by :
+- Creating a config file `/etc/apache2/site-availabe/my-site.conf` for the virtual host
 
 ```apache
 <VirtualHost *:80>
@@ -395,14 +356,14 @@ sudo systemctl restart apache2
     SSLProxyEngine On
 
     # Inclusion du fichier de configuration externalisé
-    Include /etc/apache2/conf-available/proxy-arrow.conf
+    Include /etc/apache2/conf-available/proxy-my-site.conf
 
     ErrorLog ${APACHE_LOG_DIR}/error.log
     CustomLog ${APACHE_LOG_DIR}/access.log combined
 </VirtualHost>
 ```
 
-- Creating the config file `/etc/apache2/conf-available/proxy-arrow.conf` and defining in it all the proxy configuration
+- Creating the config file `/etc/apache2/conf-available/proxy-my-site.conf` and defining in it all the proxy configuration
 
 ```apache
 <Location /go>
@@ -416,13 +377,117 @@ sudo systemctl restart apache2
 </Location>
 ```
 
-- Activate the configuration
+- Activate necessary module if not done
+```bash
+sudo a2enmod proxy
+sudo a2enmod proxy_http
+```
 
+- Activate the site
+```bash
+sudo a2ensite my_site.conf
+```
+
+- Activate the proxy configuration
 ```bash
 sudo a2enconf proxy-arrow
 ```
 
-- Relaod apache2
+
+- Restart or relaod apache2
 ```bash
-sudo systemctl reload apache2
+sudo systemctl restart apache2
+```
+
+
+## Virtual host configuration in https
+
+### Creation d'un certificat ssl pour un domaine local
+Il faut generer une clé privé puis l'utiliser pour avoir un certificat signé par un organisme agrée un certificat autosigné.
+
+
+### Mise en place de la configuration du virtual host
+
+- Creating a config file `/etc/apache2/site-availabe/my-site.conf` for the virtual host
+
+
+```apache
+<IfModule mod_ssl.c>
+    <VirtualHost *:443>
+        ServerAdmin admin@my-site.localhost.com
+        ServerName my-site.localhost.com
+
+        DocumentRoot /var/www/my-site
+
+
+        # activation du module ssl
+        SSLEngine on
+
+
+        # activation de config pour le reverse proxy
+        ProxyRequests On
+        SSLProxyEngine On
+
+
+        # specifié le ceritificat et sa clé privé
+        SSLCertificateFile /etc/ssl/certs/my-autosigne-cert/server.crt
+        SSLCertificateKeyFile /etc/ssl/certs/my-autosigne-cert/server.key
+
+
+        <FilesMatch "\.(cgi|shtml|phtml|php)$">
+            SSLOptions +StdEnvVars
+        </FilesMatch>
+
+        <Directory /usr/lib/cgi-bin>
+            SSLOptions +StdEnvVars
+        </Directory>
+
+
+        # Inclusion du fichier de configuration externalisé
+        Include /etc/apache2/conf-available/proxy-my-site.conf
+
+
+        ErrorLog ${APACHE_LOG_DIR}/error.log
+        CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    </VirtualHost>
+</IfModule>
+
+```
+
+- Creating the config file `/etc/apache2/conf-available/proxy-my-site.conf` and defining in it all the proxy configuration
+
+```apache
+<Location /go>
+    ProxyPass "https://google.com/"
+    ProxyPassReverse "https://google.com/"
+</Location>
+
+<Location /yo>
+    ProxyPass "https://youtube.com/"
+    ProxyPassReverse "https://youtube.com/"
+</Location>
+```
+
+- Activate necessary module if not done
+```bash
+sudo a2enmod proxy
+sudo a2enmod proxy_http
+sudo a2enmod ssl
+```
+
+- Activate the site
+```bash
+sudo a2ensite my-site.conf
+```
+
+- Activate the proxy configuration
+```bash
+sudo a2enconf proxy-arrow
+```
+
+
+- Restart or relaod apache2
+```bash
+sudo systemctl restart apache2
 ```
