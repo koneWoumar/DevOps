@@ -401,9 +401,135 @@ sudo systemctl restart apache2
 
 
 ## Virtual host configuration in https
+Pour la configuration d'un virtual host en https, il faudra un certificat SSL valide, d'où la section suivante pour en savoir plus : 
 
-### Creation d'un certificat ssl pour un domaine local
-Il faut generer une clé privé puis l'utiliser pour avoir un certificat signé par un organisme agrée un certificat autosigné.
+### Obtention d'un certificat SSL/TLS
+
+#### Comprendre la certification SSL/TLS et la sécurisation des communications
+
+
+A. Qu'est-ce qu'une Autorité de Certification (CA) ?
+
+Une Autorité de Certification (CA) est une organisation qui émet des certificats numériques utilisés pour vérifier l'identité d'un site web et sécuriser les communications. Les CA agissent comme un tiers de confiance entre les utilisateurs et les serveurs web, en garantissant que le certificat d’un site web est valide et qu’il correspond à son propriétaire.
+B. Fonctionnement du chiffrement SSL/TLS
+
+Le SSL (Secure Sockets Layer) et son successeur TLS (Transport Layer Security) sont des protocoles de sécurité utilisés pour chiffrer les communications entre un client (navigateur) et un serveur (site web). Voici comment cela fonctionne :
+
+    Établissement de la connexion sécurisée (Handshake) :
+        Lorsqu'un client se connecte à un site web via HTTPS, le serveur envoie son certificat SSL au client pour prouver son identité. Ce certificat contient la clé publique du serveur.
+        Le client vérifie la validité du certificat via une Autorité de Certification (CA), comme Let's Encrypt, pour s'assurer que le serveur est bien celui qu'il prétend être.
+
+    Échange de clés :
+        Une fois le certificat validé, le client et le serveur utilisent la cryptographie asymétrique pour échanger une clé symétrique (clé de session) qui servira pour chiffrer et déchiffrer les données pendant la session.
+        Le serveur utilise sa clé privée pour déchiffrer les messages chiffrés avec sa clé publique par le client.
+
+    Chiffrement et déchiffrement des données :
+        Après l'échange de la clé de session, le client et le serveur passent au chiffrement symétrique, plus rapide. La clé symétrique est utilisée pour chiffrer toutes les communications entre eux pendant la session.
+        Les données sont donc sécurisées, empêchant les interceptions de tiers pendant le transfert.
+
+C. Clés publiques et privées
+
+    Clé publique : Utilisée pour chiffrer les données envoyées au serveur. Elle est contenue dans le certificat SSL et partagée avec tout le monde.
+    Clé privée : Utilisée par le serveur pour déchiffrer les données chiffrées avec la clé publique. Elle doit rester secrète et n'est jamais partagée.
+
+Grâce à ce mécanisme, toutes les communications entre le navigateur et le serveur sont chiffrées et sécurisées.
+
+#### Obtenir un certificat ssl/tls pour un domaine name valide qui n'est pas local
+
+A. Ce qu'il faut pour obtenir un certificat
+
+Pour obtenir un certificat SSL/TLS auprès d'une CA comme Let's Encrypt, il faut :
+
+    Un nom de domaine (FQDN) valide (ex. : www.mon-site.com).
+    Accès root au serveur où le site est hébergé.
+    Certbot, un outil gratuit et automatique qui aide à obtenir et installer des certificats SSL/TLS.
+
+B. Installation de Certbot
+
+Certbot est un client ACME (Automated Certificate Management Environment) recommandé par Let's Encrypt pour l'obtention de certificats SSL gratuits.
+
+    Installer Certbot :
+        Sur Ubuntu/Debian :
+```bash
+sudo apt update
+sudo apt install certbot python3-certbot-apache
+```
+Sur CentOS/RHEL :
+
+```bash
+sudo yum install certbot python-certbot-apache
+```
+    
+
+Obtenir un certificat avec Certbot : Une fois Certbot installé, exécute cette commande pour obtenir un certificat SSL pour ton site :
+
+```bash
+sudo certbot --apache -d example.com -d www.example.com
+```
+
+
+    Remplace example.com par ton nom de domaine.
+    Si tu utilises Nginx, utilise --nginx au lieu de --apache.
+
+Validation et installation :
+
+    Certbot communique avec Let's Encrypt pour valider que tu es bien le propriétaire du domaine.
+    Une fois validé, Certbot télécharge et installe automatiquement le certificat SSL pour ton site dans la configuration d'Apache ou Nginx.
+
+Renouvellement automatique : Les certificats Let's Encrypt sont valables pendant 90 jours, mais Certbot gère automatiquement leur renouvellement. Tu peux forcer un renouvellement avec la commande suivante :
+
+```bash
+sudo certbot renew
+```
+
+
+
+#### Mise en place d'un certificat ssl/tls pour un domaine local cas d'environnement de developpement
+Dans le cas d'un environnemnt de developpement en local ou le client est le `navigateur` et le serveur est le couple `le navigateur-reverse-proxy` le reverse proxy pouvant etre apache ou ngnix .
+
+Pour mettre en place, un certificat ssl/tls valide en local, il faut : 
+- Créer une Autorité de certification local (CA) qui n'est rien d'autre qu'une clé privé et une clé publique
+- Generé une une clé de certification signé avec ce CA local (pouvant utilisé openssl)
+- Utilisé ce certificat dans les config du reverse proxy(c'est la configuration du serveur)
+- Ajouté ce CA ou CA reconnu prise en charge par le navigateur qui par defaut ne prend en compte que les CA publique (c'est la config coté client)
+
+Il existe cependant un outil qui automatise création de CA privé et la génération de certificat local ainsi que son installation dans les CA prise en compte par les navigateur : c'est `mkcert`
+
+mkcert est un utilitaire simple et automatisé pour générer et installer des certificats SSL locaux. Il est idéal pour générer rapidement un certificat de CA racine et des certificats signés automatiquement sans nécessiter de configuration complexe d'OpenSSL.
+
+Pour y arriver : 
+
+- Installer mkcert:
+
+```bash
+sudo apt install libnss3-tools
+sudo wget https://dl.filippo.io/mkcert/latest?for=linux/amd64 -O /usr/local/bin/mkcert
+sudo chmod +x /usr/local/bin/mkcert
+```
+
+- Installer la CA locale
+
+```bash
+mkcert -install
+```
+
+- Générer un certificat SSL
+
+```bash
+mkcert example.com "*.example.com" localhost 127.0.0.1 ::1
+```
+
+-  Utiliser les certificats (par exemple dans ngnix)
+
+```ngnix
+server {
+    listen 443 ssl;
+    server_name localhost;
+
+    ssl_certificate /chemin/vers/certificat/localhost.pem;
+    ssl_certificate_key /chemin/vers/certificat/localhost-key.pem;
+}
+```
 
 
 ### Mise en place de la configuration du virtual host
