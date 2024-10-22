@@ -1,0 +1,14 @@
+- name: Installer et démarrer Apache
+  hosts: local
+  become: yes
+
+  tasks:
+    - name: Installer Apache
+      apt:
+        name: apache2
+        state: present
+
+    - name: Démarrer le service Apache
+      service:
+        name: apache2
+        state: started

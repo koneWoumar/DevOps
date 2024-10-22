@@ -483,8 +483,8 @@ sudo certbot renew
 ```
 
 
-
 #### Mise en place d'un certificat ssl/tls pour un domaine local cas d'environnement de developpement
+
 Dans le cas d'un environnemnt de developpement en local ou le client est le `navigateur` et le serveur est le couple `le navigateur-reverse-proxy` le reverse proxy pouvant etre apache ou ngnix .
 
 Pour mettre en place, un certificat ssl/tls valide en local, il faut : 
@@ -518,6 +518,16 @@ mkcert -install
 ```bash
 mkcert example.com "*.example.com" localhost 127.0.0.1 ::1
 ```
+ou 
+
+```bash
+mkcert nginx.localhost.com "*.localhost.com" apache.localhost.com localhost 127.0.0.1 ::1
+```
+
+- Plus d'info sur la documentation officiel de mkcert at :
+[mcert github projet](https://github.com/FiloSottile/mkcert)
+
+
 
 -  Utiliser les certificats (par exemple dans ngnix)
 

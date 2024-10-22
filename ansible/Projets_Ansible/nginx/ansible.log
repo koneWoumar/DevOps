@@ -1,0 +1,283 @@
+2024-10-16 02:41:51,635 p=111532 u=albarry n=ansible | [WARNING]: Unhandled error in Python interpreter discovery for host localhost:
+Failed to connect to the host via ssh: ssh: connect to host localhost port 22:
+Connection refused
+
+2024-10-16 02:41:55,734 p=111529 u=albarry n=ansible | localhost | UNREACHABLE! => {
+    "changed": false,
+    "msg": "Data could not be sent to remote host \"localhost\". Make sure this host can be reached over ssh: ssh: connect to host localhost port 22: Connection refused\r\n",
+    "unreachable": true
+}
+2024-10-16 02:55:42,744 p=112962 u=albarry n=ansible | localhost | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+2024-10-16 02:55:51,265 p=113026 u=albarry n=ansible | localhost | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+2024-10-16 16:53:09,341 p=133023 u=albarry n=ansible | [WARNING]: Could not match supplied host pattern, ignoring: webservers
+
+2024-10-16 16:53:09,350 p=133023 u=albarry n=ansible | PLAY [Installer et démarrer Apache] ********************************************
+2024-10-16 16:53:09,350 p=133023 u=albarry n=ansible | skipping: no hosts matched
+2024-10-16 16:53:09,350 p=133023 u=albarry n=ansible | PLAY RECAP *********************************************************************
+2024-10-16 16:54:29,946 p=133061 u=albarry n=ansible | [WARNING]: Could not match supplied host pattern, ignoring: webservers
+
+2024-10-16 16:54:29,947 p=133061 u=albarry n=ansible | PLAY [Installer et démarrer Apache] ********************************************
+2024-10-16 16:54:29,947 p=133061 u=albarry n=ansible | skipping: no hosts matched
+2024-10-16 16:54:29,947 p=133061 u=albarry n=ansible | PLAY RECAP *********************************************************************
+2024-10-16 16:58:28,741 p=133176 u=albarry n=ansible | localhost | SUCCESS => {
+    "ansible_facts": {
+        "discovered_interpreter_python": "/usr/bin/python3"
+    },
+    "changed": false,
+    "ping": "pong"
+}
+2024-10-16 17:01:34,290 p=133345 u=albarry n=ansible | [WARNING]: Could not match supplied host pattern, ignoring: webservers
+
+2024-10-16 17:01:34,291 p=133345 u=albarry n=ansible | PLAY [Installer et démarrer Apache] ********************************************
+2024-10-16 17:01:34,291 p=133345 u=albarry n=ansible | skipping: no hosts matched
+2024-10-16 17:01:34,292 p=133345 u=albarry n=ansible | PLAY RECAP *********************************************************************
+2024-10-16 17:04:19,415 p=133655 u=albarry n=ansible | [WARNING]: Could not match supplied host pattern, ignoring: webservers
+
+2024-10-16 17:04:19,416 p=133655 u=albarry n=ansible | PLAY [Installer et démarrer Apache] ********************************************
+2024-10-16 17:04:19,416 p=133655 u=albarry n=ansible | skipping: no hosts matched
+2024-10-16 17:04:19,416 p=133655 u=albarry n=ansible | PLAY RECAP *********************************************************************
+2024-10-16 17:19:34,809 p=134097 u=albarry n=ansible | PLAY [Installateur d'apache] ***************************************************
+2024-10-16 17:19:34,841 p=134097 u=albarry n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] ****************
+2024-10-16 17:19:36,733 p=134097 u=albarry n=ansible | ok: [localhost]
+2024-10-16 17:19:36,758 p=134097 u=albarry n=ansible | [WARNING]: Could not match supplied host pattern, ignoring: webservers
+
+2024-10-16 17:19:36,759 p=134097 u=albarry n=ansible | PLAY [Installer et démarrer Apache] ********************************************
+2024-10-16 17:19:36,759 p=134097 u=albarry n=ansible | skipping: no hosts matched
+2024-10-16 17:19:36,759 p=134097 u=albarry n=ansible | PLAY RECAP *********************************************************************
+2024-10-16 17:19:36,759 p=134097 u=albarry n=ansible | localhost                  : ok=1    changed=0    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2024-10-16 17:24:22,648 p=134884 u=albarry n=ansible | PLAY [Installer et démarrer Apache] ***************************************************************************************************
+2024-10-16 17:24:22,658 p=134884 u=albarry n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] ***********************************************************************
+2024-10-16 17:24:23,522 p=134884 u=albarry n=ansible | fatal: [localhost]: FAILED! => changed=false 
+  ansible_facts: {}
+  failed_modules:
+    ansible.legacy.setup:
+      ansible_facts:
+        discovered_interpreter_python: /usr/bin/python3
+      failed: true
+      module_stderr: |-
+        sudo: il est nécessaire de saisir un mot de passe
+      module_stdout: ''
+      msg: |-
+        MODULE FAILURE
+        See stdout/stderr for the exact error
+      rc: 1
+  msg: |-
+    The following modules failed to execute: ansible.legacy.setup
+2024-10-16 17:24:23,524 p=134884 u=albarry n=ansible | 	to retry, use: --limit @/home/albarry/Bureau/DevOps/ansible/Projets_Ansible/apache2/retries/playbook.retry
+
+2024-10-16 17:24:23,524 p=134884 u=albarry n=ansible | PLAY RECAP ****************************************************************************************************************************
+2024-10-16 17:24:23,524 p=134884 u=albarry n=ansible | localhost                  : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2024-10-16 17:24:56,230 p=134948 u=root n=ansible | PLAY [Installer et démarrer Apache] ***************************************************************************************************
+2024-10-16 17:24:56,239 p=134948 u=root n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] ***********************************************************************
+2024-10-16 17:25:06,697 p=134951 u=root n=ansible | [WARNING]: Unhandled error in Python interpreter discovery for host localhost: Failed to connect to the host via ssh:
+albarry@localhost: Permission denied (publickey,password).
+
+2024-10-16 17:25:11,128 p=134948 u=root n=ansible | fatal: [localhost]: UNREACHABLE! => changed=false 
+  msg: |-
+    Data could not be sent to remote host "localhost". Make sure this host can be reached over ssh: albarry@localhost: Permission denied (publickey,password).
+  unreachable: true
+2024-10-16 17:25:11,129 p=134948 u=root n=ansible | 	to retry, use: --limit @/home/albarry/Bureau/DevOps/ansible/Projets_Ansible/apache2/retries/playbook.retry
+
+2024-10-16 17:25:11,129 p=134948 u=root n=ansible | PLAY RECAP ****************************************************************************************************************************
+2024-10-16 17:25:11,129 p=134948 u=root n=ansible | localhost                  : ok=0    changed=0    unreachable=1    failed=0    skipped=0    rescued=0    ignored=0   
+2024-10-16 17:29:54,182 p=135168 u=root n=ansible | PLAY [Installer et démarrer Apache] ***************************************************************************************************
+2024-10-16 17:29:54,192 p=135168 u=root n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] ***********************************************************************
+2024-10-16 17:29:55,155 p=135168 u=root n=ansible | ok: [localhost]
+2024-10-16 17:29:55,172 p=135168 u=root n=ansible | TASK [Installer Apache name=apache2, state=present] ***********************************************************************************
+2024-10-16 17:30:29,586 p=135168 u=root n=ansible | changed: [localhost]
+2024-10-16 17:30:29,621 p=135168 u=root n=ansible | TASK [Démarrer le service Apache name=apache2, state=started] *************************************************************************
+2024-10-16 17:30:30,349 p=135168 u=root n=ansible | ok: [localhost]
+2024-10-16 17:30:30,366 p=135168 u=root n=ansible | PLAY RECAP ****************************************************************************************************************************
+2024-10-16 17:30:30,367 p=135168 u=root n=ansible | localhost                  : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2024-10-16 17:40:34,585 p=136523 u=root n=ansible | PLAY [Playbook pour désinstaller complètement Apache 2] *******************************************************************************
+2024-10-16 17:40:34,596 p=136523 u=root n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] ***********************************************************************
+2024-10-16 17:40:36,208 p=136523 u=root n=ansible | ok: [localhost]
+2024-10-16 17:40:36,227 p=136523 u=root n=ansible | TASK [Stop Apache2 service name=apache2, state=stopped] *******************************************************************************
+2024-10-16 17:40:37,037 p=136523 u=root n=ansible | changed: [localhost]
+2024-10-16 17:40:37,046 p=136523 u=root n=ansible | TASK [Désinstaller Apache2 name=apache2, state=absent, purge=True] ********************************************************************
+2024-10-16 17:40:50,140 p=136523 u=root n=ansible | changed: [localhost]
+2024-10-16 17:40:50,149 p=136523 u=root n=ansible | TASK [Supprimer les fichiers de configuration d'Apache2 path=/etc/apache2, state=absent, recurse=True] ********************************
+2024-10-16 17:40:50,491 p=136523 u=root n=ansible | fatal: [localhost]: FAILED! => changed=false 
+  msg: recurse option requires state to be 'directory'
+  path: /etc/apache2
+2024-10-16 17:40:50,493 p=136523 u=root n=ansible | 	to retry, use: --limit @/home/albarry/Bureau/DevOps/ansible/Projets_Ansible/apache2/retries/unplaybook.retry
+
+2024-10-16 17:40:50,493 p=136523 u=root n=ansible | PLAY RECAP ****************************************************************************************************************************
+2024-10-16 17:40:50,493 p=136523 u=root n=ansible | localhost                  : ok=3    changed=2    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2024-10-16 17:42:16,639 p=137007 u=root n=ansible | PLAY [Playbook pour désinstaller complètement Apache 2] *******************************************************************************
+2024-10-16 17:42:16,650 p=137007 u=root n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] ***********************************************************************
+2024-10-16 17:42:17,631 p=137007 u=root n=ansible | ok: [localhost]
+2024-10-16 17:42:17,648 p=137007 u=root n=ansible | TASK [Stop Apache2 service name=apache2, state=stopped] *******************************************************************************
+2024-10-16 17:42:18,288 p=137007 u=root n=ansible | fatal: [localhost]: FAILED! => changed=false 
+  msg: 'Could not find the requested service apache2: host'
+2024-10-16 17:42:18,289 p=137007 u=root n=ansible | 	to retry, use: --limit @/home/albarry/Bureau/DevOps/ansible/Projets_Ansible/apache2/retries/unplaybook.retry
+
+2024-10-16 17:42:18,289 p=137007 u=root n=ansible | PLAY RECAP ****************************************************************************************************************************
+2024-10-16 17:42:18,289 p=137007 u=root n=ansible | localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2024-10-16 17:43:33,258 p=137118 u=root n=ansible | PLAY [Playbook pour désinstaller complètement Apache 2] *******************************************************************************
+2024-10-16 17:43:33,268 p=137118 u=root n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] ***********************************************************************
+2024-10-16 17:43:34,208 p=137118 u=root n=ansible | ok: [localhost]
+2024-10-16 17:43:34,225 p=137118 u=root n=ansible | TASK [Supprimer les fichiers de configuration d'Apache2 path=/etc/apache2, state=directory, recurse=True] *****************************
+2024-10-16 17:43:34,547 p=137118 u=root n=ansible | changed: [localhost]
+2024-10-16 17:43:34,555 p=137118 u=root n=ansible | TASK [Supprimer le répertoire web par défaut (/var/www) path=/var/www, state=directory, recurse=True] *********************************
+2024-10-16 17:43:34,753 p=137118 u=root n=ansible | changed: [localhost]
+2024-10-16 17:43:34,761 p=137118 u=root n=ansible | TASK [Supprimer les fichiers de journalisation d'Apache2 path=/var/log/apache2, state=directory, recurse=True] ************************
+2024-10-16 17:43:34,983 p=137118 u=root n=ansible | changed: [localhost]
+2024-10-16 17:43:35,000 p=137118 u=root n=ansible | PLAY RECAP ****************************************************************************************************************************
+2024-10-16 17:43:35,000 p=137118 u=root n=ansible | localhost                  : ok=4    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2024-10-16 17:45:48,715 p=137284 u=root n=ansible | PLAY [Playbook pour désinstaller complètement Apache 2] *******************************************************************************
+2024-10-16 17:45:48,726 p=137284 u=root n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] ***********************************************************************
+2024-10-16 17:45:49,675 p=137284 u=root n=ansible | ok: [localhost]
+2024-10-16 17:45:49,692 p=137284 u=root n=ansible | TASK [Supprimer les fichiers de configuration d'Apache2 path=/etc/apache2, state=absent, recurse=True] ********************************
+2024-10-16 17:45:50,016 p=137284 u=root n=ansible | fatal: [localhost]: FAILED! => changed=false 
+  gid: 0
+  group: root
+  mode: '0755'
+  msg: recurse option requires state to be 'directory'
+  owner: root
+  path: /etc/apache2
+  size: 4096
+  state: directory
+  uid: 0
+2024-10-16 17:45:50,018 p=137284 u=root n=ansible | 	to retry, use: --limit @/home/albarry/Bureau/DevOps/ansible/Projets_Ansible/apache2/retries/unplaybook.retry
+
+2024-10-16 17:45:50,018 p=137284 u=root n=ansible | PLAY RECAP ****************************************************************************************************************************
+2024-10-16 17:45:50,019 p=137284 u=root n=ansible | localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2024-10-16 18:05:04,015 p=137724 u=root n=ansible | PLAY [Playbook pour désinstaller complètement Apache 2] *******************************************************************************
+2024-10-16 18:05:04,026 p=137724 u=root n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] ***********************************************************************
+2024-10-16 18:05:05,041 p=137724 u=root n=ansible | ok: [localhost]
+2024-10-16 18:05:05,058 p=137724 u=root n=ansible | TASK [Supprimer les fichiers de configuration d'Apache2 path=/etc/apache2, state=absent] **********************************************
+2024-10-16 18:05:05,398 p=137724 u=root n=ansible | changed: [localhost]
+2024-10-16 18:05:05,406 p=137724 u=root n=ansible | TASK [Supprimer les fichiers de journalisation d'Apache2 path=/var/log/apache2, state=absent] *****************************************
+2024-10-16 18:05:05,609 p=137724 u=root n=ansible | changed: [localhost]
+2024-10-16 18:05:05,626 p=137724 u=root n=ansible | PLAY RECAP ****************************************************************************************************************************
+2024-10-16 18:05:05,626 p=137724 u=root n=ansible | localhost                  : ok=3    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2024-10-16 18:08:17,794 p=137979 u=root n=ansible | PLAY [Playbook pour désinstaller complètement Apache 2] *******************************************************************************
+2024-10-16 18:08:17,805 p=137979 u=root n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] ***********************************************************************
+2024-10-16 18:08:18,777 p=137979 u=root n=ansible | ok: [localhost]
+2024-10-16 18:08:18,795 p=137979 u=root n=ansible | TASK [Stop Apache2 service name=apache2, state=stopped] *******************************************************************************
+2024-10-16 18:08:19,425 p=137979 u=root n=ansible | fatal: [localhost]: FAILED! => changed=false 
+  msg: 'Could not find the requested service apache2: host'
+2024-10-16 18:08:19,427 p=137979 u=root n=ansible | 	to retry, use: --limit @/home/albarry/Bureau/DevOps/ansible/Projets_Ansible/apache2/retries/unplaybook.retry
+
+2024-10-16 18:08:19,427 p=137979 u=root n=ansible | PLAY RECAP ****************************************************************************************************************************
+2024-10-16 18:08:19,427 p=137979 u=root n=ansible | localhost                  : ok=1    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2024-10-16 18:15:59,040 p=138213 u=root n=ansible | PLAY [Désinstallation complete d'apache] **********************************************************************************************
+2024-10-16 18:15:59,051 p=138213 u=root n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] ***********************************************************************
+2024-10-16 18:15:59,989 p=138213 u=root n=ansible | ok: [localhost]
+2024-10-16 18:16:00,008 p=138213 u=root n=ansible | TASK [Vérifier si Apache 2 est installé name=apache2, state=absent] *******************************************************************
+2024-10-16 18:16:00,906 p=138213 u=root n=ansible | ok: [localhost]
+2024-10-16 18:16:00,914 p=138213 u=root n=ansible | TASK [Vérifier si le répertoire de configuration d'Apache2 existe path=/etc/apache2] **************************************************
+2024-10-16 18:16:01,228 p=138213 u=root n=ansible | ok: [localhost]
+2024-10-16 18:16:01,237 p=138213 u=root n=ansible | TASK [Supprimer le répertoire de configuration d'Apache2 s'il existe path=/etc/apache2, state=absent] *********************************
+2024-10-16 18:16:01,267 p=138213 u=root n=ansible | skipping: [localhost]
+2024-10-16 18:16:01,276 p=138213 u=root n=ansible | TASK [Supprimer d'autres fichiers de configuration ou dossiers liés à Apache2 path={{ item }}, state=absent] **************************
+2024-10-16 18:16:01,314 p=138213 u=root n=ansible | skipping: [localhost] => (item=/var/www/html) 
+2024-10-16 18:16:01,319 p=138213 u=root n=ansible | skipping: [localhost] => (item=/var/log/apache2) 
+2024-10-16 18:16:01,338 p=138213 u=root n=ansible | PLAY RECAP ****************************************************************************************************************************
+2024-10-16 18:16:01,338 p=138213 u=root n=ansible | localhost                  : ok=3    changed=0    unreachable=0    failed=0    skipped=2    rescued=0    ignored=0   
+2024-10-16 18:24:42,779 p=138614 u=root n=ansible | PLAY [Installer et démarrer Apache] ***************************************************************************************************
+2024-10-16 18:24:42,789 p=138614 u=root n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] ***********************************************************************
+2024-10-16 18:24:43,779 p=138614 u=root n=ansible | ok: [localhost]
+2024-10-16 18:24:43,795 p=138614 u=root n=ansible | TASK [Installer Apache name=apache2, state=present] ***********************************************************************************
+2024-10-16 18:25:07,267 p=138614 u=root n=ansible | changed: [localhost]
+2024-10-16 18:25:07,276 p=138614 u=root n=ansible | TASK [Démarrer le service Apache name=apache2, state=started] *************************************************************************
+2024-10-16 18:25:07,985 p=138614 u=root n=ansible | ok: [localhost]
+2024-10-16 18:25:08,014 p=138614 u=root n=ansible | PLAY RECAP ****************************************************************************************************************************
+2024-10-16 18:25:08,014 p=138614 u=root n=ansible | localhost                  : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2024-10-17 14:54:01,073 p=151940 u=root n=ansible | PLAY [Désinstallation complete d'apache] **********************************************************************************************
+2024-10-17 14:54:01,112 p=151940 u=root n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] ***********************************************************************
+2024-10-17 14:54:02,185 p=151940 u=root n=ansible | ok: [localhost]
+2024-10-17 14:54:02,202 p=151940 u=root n=ansible | TASK [Vérifier si Apache 2 est installé name=apache2, state=absent] *******************************************************************
+2024-10-17 14:54:13,968 p=151940 u=root n=ansible | changed: [localhost]
+2024-10-17 14:54:13,977 p=151940 u=root n=ansible | TASK [Vérifier si le répertoire de configuration d'Apache2 existe path=/etc/apache2] **************************************************
+2024-10-17 14:54:14,370 p=151940 u=root n=ansible | ok: [localhost]
+2024-10-17 14:54:14,380 p=151940 u=root n=ansible | TASK [Supprimer le répertoire de configuration d'Apache2 s'il existe path=/etc/apache2, state=absent] *********************************
+2024-10-17 14:54:14,755 p=151940 u=root n=ansible | changed: [localhost]
+2024-10-17 14:54:14,764 p=151940 u=root n=ansible | TASK [Supprimer d'autres fichiers de configuration ou dossiers liés à Apache2 path={{ item }}, state=absent] **************************
+2024-10-17 14:54:14,977 p=151940 u=root n=ansible | changed: [localhost] => (item=/var/www/html)
+2024-10-17 14:54:15,224 p=151940 u=root n=ansible | changed: [localhost] => (item=/var/log/apache2)
+2024-10-17 14:54:15,242 p=151940 u=root n=ansible | PLAY RECAP ****************************************************************************************************************************
+2024-10-17 14:54:15,242 p=151940 u=root n=ansible | localhost                  : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2024-10-17 14:54:50,145 p=152380 u=root n=ansible | PLAY [Installer et démarrer Apache] ***************************************************************************************************
+2024-10-17 14:54:50,158 p=152380 u=root n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] ***********************************************************************
+2024-10-17 14:54:51,255 p=152380 u=root n=ansible | ok: [localhost]
+2024-10-17 14:54:51,272 p=152380 u=root n=ansible | TASK [Installer Apache name=apache2, state=present] ***********************************************************************************
+2024-10-17 14:55:12,427 p=152380 u=root n=ansible | changed: [localhost]
+2024-10-17 14:55:12,461 p=152380 u=root n=ansible | TASK [Démarrer le service Apache name=apache2, state=started] *************************************************************************
+2024-10-17 14:55:13,326 p=152380 u=root n=ansible | fatal: [localhost]: FAILED! => changed=false 
+  msg: |-
+    Unable to start service apache2: Job for apache2.service failed because the control process exited with error code.
+    See "systemctl status apache2.service" and "journalctl -xeu apache2.service" for details.
+2024-10-17 14:55:13,328 p=152380 u=root n=ansible | 	to retry, use: --limit @/home/albarry/Bureau/DevOps/ansible/Projets_Ansible/apache2/retries/playbook.retry
+
+2024-10-17 14:55:13,328 p=152380 u=root n=ansible | PLAY RECAP ****************************************************************************************************************************
+2024-10-17 14:55:13,329 p=152380 u=root n=ansible | localhost                  : ok=2    changed=1    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2024-10-17 15:26:07,884 p=159739 u=albarry n=ansible | [WARNING]: Could not match supplied host pattern, ignoring: unplaybook.yml
+
+2024-10-17 15:26:07,897 p=159739 u=albarry n=ansible | [WARNING]: No hosts matched, nothing to do
+
+2024-10-17 15:26:07,901 p=159739 u=albarry n=ansible | ERROR! No argument passed to command module (did you mean to run ansible-playbook?)
+2024-10-17 15:26:21,288 p=159745 u=albarry n=ansible | [WARNING]: Could not match supplied host pattern, ignoring: unplaybook.yml
+
+2024-10-17 15:26:21,289 p=159745 u=albarry n=ansible | [WARNING]: No hosts matched, nothing to do
+
+2024-10-17 15:26:21,292 p=159745 u=albarry n=ansible | ERROR! No argument passed to command module (did you mean to run ansible-playbook?)
+2024-10-17 15:26:42,756 p=159800 u=albarry n=ansible | PLAY [Désinstallation complete d'apache] ****************************************************************************************************************************************************
+2024-10-17 15:26:42,767 p=159800 u=albarry n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] *****************************************************************************************************************************
+2024-10-17 15:26:43,205 p=159800 u=albarry n=ansible | fatal: [localhost]: FAILED! => changed=false 
+  ansible_facts: {}
+  failed_modules:
+    ansible.legacy.setup:
+      ansible_facts:
+        discovered_interpreter_python: /usr/bin/python3
+      failed: true
+      module_stderr: |-
+        sudo: il est nécessaire de saisir un mot de passe
+      module_stdout: ''
+      msg: |-
+        MODULE FAILURE
+        See stdout/stderr for the exact error
+      rc: 1
+  msg: |-
+    The following modules failed to execute: ansible.legacy.setup
+2024-10-17 15:26:43,206 p=159800 u=albarry n=ansible | [WARNING]: Could not create retry file '/home/albarry/Bureau/DevOps/ansible/Projets_Ansible/apache2/retries/unplaybook.retry'.         [Errno 13] Permission denied:
+'/home/albarry/Bureau/DevOps/ansible/Projets_Ansible/apache2/retries/unplaybook.retry'
+
+2024-10-17 15:26:43,207 p=159800 u=albarry n=ansible | PLAY RECAP **********************************************************************************************************************************************************************************
+2024-10-17 15:26:43,207 p=159800 u=albarry n=ansible | localhost                  : ok=0    changed=0    unreachable=0    failed=1    skipped=0    rescued=0    ignored=0   
+2024-10-17 15:27:24,015 p=159926 u=root n=ansible | PLAY [Désinstallation complete d'apache] ****************************************************************************************************************************************************
+2024-10-17 15:27:24,026 p=159926 u=root n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] *****************************************************************************************************************************
+2024-10-17 15:27:25,546 p=159926 u=root n=ansible | ok: [localhost]
+2024-10-17 15:27:25,567 p=159926 u=root n=ansible | TASK [Vérifier si Apache 2 est installé name=apache2, state=absent] *************************************************************************************************************************
+2024-10-17 15:27:36,426 p=159926 u=root n=ansible | changed: [localhost]
+2024-10-17 15:27:36,448 p=159926 u=root n=ansible | TASK [Vérifier si le répertoire de configuration d'Apache2 existe path=/etc/apache2] ********************************************************************************************************
+2024-10-17 15:27:36,891 p=159926 u=root n=ansible | ok: [localhost]
+2024-10-17 15:27:36,906 p=159926 u=root n=ansible | TASK [Supprimer le répertoire de configuration d'Apache2 s'il existe path=/etc/apache2, state=absent] ***************************************************************************************
+2024-10-17 15:27:37,377 p=159926 u=root n=ansible | changed: [localhost]
+2024-10-17 15:27:37,385 p=159926 u=root n=ansible | TASK [Supprimer d'autres fichiers de configuration ou dossiers liés à Apache2 path={{ item }}, state=absent] ********************************************************************************
+2024-10-17 15:27:37,617 p=159926 u=root n=ansible | ok: [localhost] => (item=/var/www/html)
+2024-10-17 15:27:37,852 p=159926 u=root n=ansible | ok: [localhost] => (item=/var/log/apache2)
+2024-10-17 15:27:37,871 p=159926 u=root n=ansible | PLAY RECAP **********************************************************************************************************************************************************************************
+2024-10-17 15:27:37,872 p=159926 u=root n=ansible | localhost                  : ok=5    changed=2    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2024-10-19 02:12:35,222 p=221567 u=root n=ansible | PLAY [Installer et démarrer Apache] *********************************************************************************************************************************
+2024-10-19 02:12:35,256 p=221567 u=root n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] *****************************************************************************************************
+2024-10-19 02:12:36,746 p=221567 u=root n=ansible | ok: [localhost]
+2024-10-19 02:12:36,762 p=221567 u=root n=ansible | TASK [Installer Apache name=apache2, state=present] *****************************************************************************************************************
+2024-10-19 02:13:06,161 p=221567 u=root n=ansible | changed: [localhost]
+2024-10-19 02:13:06,200 p=221567 u=root n=ansible | TASK [Démarrer le service Apache name=apache2, state=started] *******************************************************************************************************
+2024-10-19 02:13:06,942 p=221567 u=root n=ansible | ok: [localhost]
+2024-10-19 02:13:06,977 p=221567 u=root n=ansible | PLAY RECAP **********************************************************************************************************************************************************
+2024-10-19 02:13:06,977 p=221567 u=root n=ansible | localhost                  : ok=3    changed=1    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   

@@ -1,0 +1,4 @@
+[local]
+#localhost ansible_connection=ssh ansible_user=albarry
+localhost ansible_connection=local
+

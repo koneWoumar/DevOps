@@ -226,8 +226,157 @@ Définit les variables d'environnement spécifiques pour les tâches.
 
 ````
 
-## Module personnalisé
-
 ## Role
+Un rôle dans Ansible est une manière de structurer vos playbooks de manière modulaire et réutilisable. Les rôles permettent de diviser vos tâches en plusieurs fichiers, en organisant la configuration par composant ou service. Cela facilite la gestion, la maintenance et le partage de configurations complexes.
 
-## Variable
+### Structure d'un Rôle Ansible
+
+Lorsqu'un rôle est créé dans Ansible, une structure de répertoires est utilisée pour organiser les différents éléments. Voici la structure typique d'un rôle Ansible :
+
+```python
+my_role/
+├── defaults/
+│   └── main.yml            # Variables par défaut
+├── files/
+│   └── ...                 # Fichiers à copier sur l'hôte
+├── handlers/
+│   └── main.yml            # Handlers (notamment pour redémarrer les services)
+├── meta/
+│   └── main.yml            # Métadonnées du rôle (dépendances, etc.)
+├── tasks/
+│   └── main.yml            # Liste des tâches principales
+├── templates/
+│   └── ...                 # Templates Jinja2 à déployer
+├── tests/
+│   └── ...                 # Playbooks de tests pour le rôle
+├── vars/
+│   └── main.yml            # Variables spécifiques au rôle
+└── README.md               # Documentation du rôle
+```
+
+### Description des éléments d'un rôle
+
+- defaults/main.yml : Contient les variables par défaut du rôle. Ces variables peuvent être redéfinies à différents niveaux (inventaire, ligne de commande, etc.).
+
+- files/ : Contient des fichiers statiques que vous souhaitez copier vers les hôtes. Par exemple, des fichiers de configuration ou des binaires.
+
+- handlers/main.yml : Contient des handlers, qui sont des actions déclenchées par d'autres tâches (comme redémarrer un service après avoir modifié un fichier de configuration).
+
+- meta/main.yml : Contient des informations sur le rôle, comme les dépendances (autres rôles dont celui-ci pourrait dépendre).
+
+- tasks/main.yml : Le fichier le plus important, il contient la liste des tâches que le rôle exécutera.
+
+- templates/ : Contient des templates Jinja2 qui peuvent être utilisés pour générer des fichiers de configuration ou autres fichiers dynamiques.
+
+- vars/main.yml : Fichier où vous pouvez définir des variables spécifiques au rôle (variables qui ne changent pas souvent, contrairement à celles dans defaults).
+
+- tests/ : Permet de définir des tests pour vérifier que le rôle fonctionne comme prévu.
+
+### Exemple de rôle : Installation d'Apache 2
+
+Créons un exemple de rôle pour installer Apache 2 sur un serveur Linux.
+- Étape 1 : Créer la structure du rôle
+
+Commencez par créer un rôle avec la commande suivante :
+
+```bash
+ansible-galaxy init apache_install
+```
+
+- Étape 2 : Configurer les tâches d'installation d'Apache
+
+Dans le fichier tasks/main.yml, nous allons définir les tâches pour installer Apache 2.
+
+```yml
+# apache_install/tasks/main.yml
+---
+# Installer le paquet Apache 2
+- name: Installer Apache 2
+  apt:
+    name: apache2
+    state: present
+    update_cache: yes
+
+# Démarrer et activer le service Apache
+- name: Démarrer Apache et activer au démarrage
+  systemd:
+    name: apache2
+    state: started
+    enabled: yes
+
+# Copier un fichier index.html personnalisé (si nécessaire)
+- name: Copier la page d'accueil
+  template:
+    src: index.html.j2
+    dest: /var/www/html/index.html
+  notify:
+    - Redémarrer Apache
+```
+
+- Étape 3 : Configurer les handlers
+
+Le handler est utilisé pour redémarrer Apache si nécessaire (par exemple, après la modification de fichiers).
+
+```yml
+# apache_install/handlers/main.yml
+---
+# Handler pour redémarrer Apache
+- name: Redémarrer Apache
+  systemd:
+    name: apache2
+    state: restarted
+```
+
+- Étape 4 : Définir une page d'accueil personnalisée avec un template (definition des fichiers statiques du role)
+
+Dans le dossier templates/, nous allons créer un fichier index.html.j2 qui servira de page d'accueil personnalisée.
+
+```html
+<!-- apache_install/templates/index.html.j2 -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Bienvenue sur Apache 2</title>
+</head>
+<body>
+    <h1>{{ ansible_hostname }} est opérationnel !</h1>
+    <p>Apache est installé et fonctionne correctement sur cette machine.</p>
+</body>
+</html>
+```
+- Étape 5 : Variables par défaut
+
+Dans le fichier defaults/main.yml, vous pouvez définir des variables par défaut, comme le port Apache, des chemins ...
+
+```yml
+# apache_install/defaults/main.yml
+---
+apache_port: 80
+
+```
+
+Étape 6 : Lancer le rôle dans un playbook
+
+Enfin, dans votre playbook, vous pouvez appeler ce rôle comme ceci :
+```yml
+# site.yml
+---
+- hosts: webservers
+  become: yes
+  roles:
+    - apache_install
+```
+
+Étape 7 : Exécuter le playbook
+
+Pour exécuter le rôle sur un serveur, lancez simplement :
+
+```bash
+ansible-playbook site.yml -i hosts
+```
+
+## Variable Dans ansible
+
+
+## Module personnalisé
