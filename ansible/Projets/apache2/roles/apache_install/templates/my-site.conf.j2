@@ -1,0 +1,38 @@
+<VirtualHost *:443>
+    ServerAdmin admin@apache.localhost.com
+    ServerName apache.localhost.com
+
+    DocumentRoot {{APACHE_WELCOME_PAGE_DIR}}
+
+
+    # activation du module ssl
+    SSLEngine on
+
+
+    # activation de config pour le reverse proxy
+    ProxyRequests On
+    SSLProxyEngine On
+
+
+    # specifié le ceritificat et sa clé privé
+    SSLCertificateFile "{{SSL_CERTIFICAT}}"
+    SSLCertificateKeyFile "{{SSL_CERTIFICAT_KEY}}"
+
+
+    <FilesMatch "\.(cgi|shtml|phtml|php)$">
+        SSLOptions +StdEnvVars
+    </FilesMatch>
+
+    <Directory /usr/lib/cgi-bin>
+        SSLOptions +StdEnvVars
+    </Directory>
+
+
+    # Inclusion du fichier de configuration externalisé
+    Include "{{PROXY_CONFIG_FILE}}"
+
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+</VirtualHost>

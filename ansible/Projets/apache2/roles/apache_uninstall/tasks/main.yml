@@ -1,0 +1,49 @@
+---
+# tasks file for apache_uninstall
+
+
+# Remove Apache 2 if installed
+- name: Remove Apache 2
+  ansible.builtin.apt:
+    name: apache2
+    state: absent
+  register: apache_removed
+
+# Fully purge Apache 2 (including config files)
+- name: Purge Apache 2
+  ansible.builtin.apt:
+    name: apache2*
+    purge: yes
+    state: absent
+  when: apache_removed is changed
+
+# Clean up unused packages after uninstallation
+- name: Autoclean and autoremove packages
+  ansible.builtin.apt:
+    autoclean: yes
+    autoremove: yes
+  when: apache_removed is changed
+
+# Check if the Apache2 config directory exists
+- name: Check if Apache2 config directory exists
+  ansible.builtin.stat:
+    path: /etc/apache2
+  register: apache2_config
+
+# Remove Apache2 config directory if it exists
+- name: Remove Apache2 config directory
+  ansible.builtin.file:
+    path: /etc/apache2
+    state: absent
+  when: apache2_config.stat.exists
+
+# Remove other Apache-related config files or directories
+- name: Remove other Apache-related files or directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /var/www/my-site-apache   # Default web files directory
+    - /var/log/apache2          # Apache logs
+  when: apache_removed is changed or apache2_config.stat.exists
+

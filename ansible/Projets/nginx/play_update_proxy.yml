@@ -1,0 +1,9 @@
+---
+# Host definition
+- name: Update proxy config
+  hosts: local
+  become: yes
+
+# The role to execute
+  roles:
+    - update_nginx_proxy

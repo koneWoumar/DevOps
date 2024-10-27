@@ -1,0 +1,79 @@
+# tasks file for apache_install
+---
+
+# Install Apache 2 package
+- name: Install Apache 2
+  apt:
+    name: apache2
+    state: present
+    update_cache: yes
+
+# Start and enable Apache service
+- name: Start apache 2
+  systemd:
+    name: apache2
+    state: stopped
+    enabled: yes
+
+# Copy my-site-apache directory to /var/www/
+- name: Copy home page directory
+  copy:
+    src: my-site-apache/      
+    dest: /var/www/my-site-apache/   
+    owner: www-data          
+    group: www-data         
+    mode: '0755'              
+    directory_mode: '0755'   
+
+# Set up proxy config file of the virtual host
+- name: set up proxy config file 
+  ansible.builtin.file:
+    path: "{{PROXY_CONFIG_FILE_PATH}}"
+    state: touch
+    
+# Set up the virtual host config file
+- name: Set up the virtual host config file
+  template:
+    src: my-site.conf.j2
+    dest: "{{VHOST_CONFIG_FILE_PATH}}"
+  vars:
+    SSL_CERTIFICAT: "{{SSL_CERTIFICAT_PATH}}"
+    SSL_CERTIFICAT_KEY:  "{{SSL_CERTIFICAT_KEY_PATH}}"
+    PROXY_CONFIG_FILE: "{{PROXY_CONFIG_FILE_PATH}}"
+    APACHE_WELCOME_PAGE_DIR: "{{APACHE_WELCOME_PAGE_DIR_PATH}}"
+
+# Enable required modules
+- name: Enable proxy module
+  ansible.builtin.command:
+    cmd: a2enmod proxy
+
+- name: Enable proxy_http module
+  ansible.builtin.command:
+    cmd: a2enmod proxy_http
+
+- name: Enable SSL module
+  ansible.builtin.command:
+    cmd: a2enmod ssl
+
+# Enable proxy-config of the virtual host
+- name: Enable proxy config for the vritual host
+  ansible.builtin.command:
+    cmd: a2enconf "{{PROXY_CONFIG_FILE_NAME}}"
+
+# Enable virtual host
+- name: Enable the virtual host
+  ansible.builtin.command:
+    cmd: a2ensite "{{VHOST_CONFIG_FILE_NAME}}"
+  notify: Restart Apache
+
+
+
+# # Copy virtual host config file
+# - name: Set up virtual host config
+#   copy:
+#     src: my-site.conf    
+#     dest: /etc/apache2/sites-available/
+#     owner: www-data          
+#     group: www-data         
+#     mode: '0755'              
+#     directory_mode: '0755'

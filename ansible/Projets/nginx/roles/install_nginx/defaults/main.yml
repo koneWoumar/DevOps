@@ -1,0 +1,11 @@
+---
+# defaults file for apache_install
+PROXY_LOCATION_DIR_NAME: "proxy-conf-availables"
+PROXY_LOCATION_DIR: "/etc/nginx/{{PROXY_LOCATION_DIR_NAME}}"
+PROXY_CONFIG_FILE_NAME: "my-site-proxy"
+PROXY_CONFIG_FILE_PATH: "{{PROXY_LOCATION_DIR}}/{{PROXY_CONFIG_FILE_NAME}}.conf"
+SSL_CERTIFICAT_PATH: "/etc/ssl/certs/my-autosigne-cert/nginx.localhost.com+5.pem"
+SSL_CERTIFICAT_KEY_PATH:  "/etc/ssl/certs/my-autosigne-cert/nginx.localhost.com+5-key.pem"
+VHOST_CONFIG_FILE_NAME: my-site
+VHOST_CONFIG_FILE_PATH: "/etc/nginx/sites-available/{{VHOST_CONFIG_FILE_NAME}}.local"
+NGINX_WELCOME_PAGE_DIR_PATH: /var/www/my-site-nginx

@@ -1,0 +1,5 @@
+# Proxy configuration for the app running on http://localhost:{{ APP_HTTP_PORT }}{{ APP_HTTP_PATH }}
+<Location {{ APP_HTTPS_PATH }}>
+    ProxyPass "http://localhost:{{ APP_HTTP_PORT }}{{ APP_HTTP_PATH }}"
+    ProxyPassReverse "http://localhost:{{ APP_HTTP_PORT }}{{ APP_HTTP_PATH }}"
+</Location>

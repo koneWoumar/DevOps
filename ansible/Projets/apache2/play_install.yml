@@ -1,0 +1,8 @@
+# defition des host sur lequel s'execute le playbook
+- name: Installer et configurer Apache
+  hosts: local
+  become: yes
+
+# le role à executer
+  roles:
+    - apache_install

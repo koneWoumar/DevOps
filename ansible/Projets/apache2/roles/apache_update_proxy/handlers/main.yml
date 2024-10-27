@@ -1,0 +1,12 @@
+---
+# handlers file for apache_update_proxy
+- name: Reload Apache
+  ansible.builtin.systemd:
+    name: apache2
+    state: reloaded
+
+# Handler to restart Apache
+- name: Restart Apache
+  systemd:
+    name: apache2
+    state: restarted

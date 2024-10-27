@@ -1,0 +1,12 @@
+---
+# Host definition
+- name: Uninstall apache 2
+  hosts: local
+  become: yes
+
+# The role to execute
+  roles:
+    - apache_uninstall
+
+
+

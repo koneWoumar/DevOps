@@ -1,0 +1,49 @@
+---
+# tasks file for apache_uninstall
+
+
+# Remove Nginx if installed
+- name: Remove Nginx
+  ansible.builtin.apt:
+    name: nginx
+    state: absent
+  register: nginx_removed
+
+# Fully purge Nginx (including config files)
+- name: Purge Nginx
+  ansible.builtin.apt:
+    name: nginx*
+    purge: yes
+    state: absent
+  when: nginx_removed is changed
+
+# Clean up unused packages after uninstallation
+- name: Autoclean and autoremove packages
+  ansible.builtin.apt:
+    autoclean: yes
+    autoremove: yes
+  when: nginx_removed is changed
+
+# Check if the Nginx config directory exists
+- name: Check if Nginx config directory exists
+  ansible.builtin.stat:
+    path: /etc/nginx
+  register: nginx_config
+
+# Remove Nginx config directory if it exists
+- name: Remove Nginx config directory
+  ansible.builtin.file:
+    path: /etc/nginx
+    state: absent
+  when: nginx_config.stat.exists
+
+# Remove other Nginx-related config files or directories
+- name: Remove other Nginx-related files or directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: absent
+  loop:
+    - /var/www/my-site-nginx  # Default web files directory for Nginx
+    - /var/log/nginx          # Nginx logs
+  when: nginx_removed is changed or nginx_config.stat.exists
+

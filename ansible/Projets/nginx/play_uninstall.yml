@@ -1,0 +1,12 @@
+---
+# Host definition
+- name: Uninstall nginx
+  hosts: local
+  become: yes
+
+# The role to execute
+  roles:
+    - uninstall_nginx
+
+
+

@@ -1,0 +1,8 @@
+---
+# defaults file for apache_update_proxy
+
+CONFIGURATION_DIR_PATH: "/home/albarry/Bureau/Configurations"
+PROXY_LOCATION_DIR_NAME: "proxy-conf-availables"
+PROXY_LOCATION_DIR: "/etc/nginx/{{PROXY_LOCATION_DIR_NAME}}"
+PROXY_CONFIG_FILE_NAME: "my-site-proxy"
+PROXY_CONFIG_FILE_PATH: "{{PROXY_LOCATION_DIR}}/{{PROXY_CONFIG_FILE_NAME}}.conf"

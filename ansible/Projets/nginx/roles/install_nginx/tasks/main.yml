@@ -1,0 +1,64 @@
+# tasks file for apache_install
+---
+
+# Install Nginx package
+- name: Install Nginx
+  apt:
+    name: nginx
+    state: present
+    update_cache: yes
+
+# Start and enable Nginx service
+- name: Start and enable Nginx
+  systemd:
+    name: nginx
+    state: started
+    enabled: yes
+
+# Copy my-site-nginx directory to /var/www/
+- name: Copy home page directory
+  copy:
+    src: my-site-nginx/
+    dest: "{{NGINX_WELCOME_PAGE_DIR_PATH}}/"
+    owner: www-data
+    group: www-data
+    mode: '0755'
+    directory_mode: '0755'
+
+# Set up the virtual host config file
+- name: Set up the virtual host config file for Nginx
+  template:
+    src: my-site.local.j2
+    dest: "{{VHOST_CONFIG_FILE_PATH}}"
+  vars:
+    SSL_CERTIFICAT: "{{SSL_CERTIFICAT_PATH}}"
+    SSL_CERTIFICAT_KEY: "{{SSL_CERTIFICAT_KEY_PATH}}"
+    PROXY_CONFIG_FILE: "{{PROXY_CONFIG_FILE_PATH}}"
+    NGINX_WELCOME_PAGE_DIR: "{{NGINX_WELCOME_PAGE_DIR_PATH}}"
+
+# Ensure the locations directory exists
+- name: Create the locations directory if it doesn't exist
+  ansible.builtin.file:
+    path: "{{PROXY_LOCATION_DIR}}"
+    state: directory
+    mode: '0755'
+
+# Set up proxy config file
+- name: Create an empty proxy config file
+  ansible.builtin.file:
+    path: "{{PROXY_CONFIG_FILE_PATH}}"
+    state: touch
+    mode: '0644'
+
+# Create a symbolic link to enable the site
+- name: Enable the virtual host
+  file:
+    src: "/etc/nginx/sites-available/{{ VHOST_CONFIG_FILE_NAME }}.local"
+    dest: "/etc/nginx/sites-enabled/{{ VHOST_CONFIG_FILE_NAME }}.local"
+    state: link
+
+# Ensure Nginx is reloaded after changes
+- name: Reload Nginx to apply changes
+  systemd:
+    name: nginx
+    state: reloaded

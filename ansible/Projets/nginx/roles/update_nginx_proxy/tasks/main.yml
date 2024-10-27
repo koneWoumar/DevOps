@@ -1,0 +1,27 @@
+# tasks file for apache_update_proxy
+---
+
+- name: Copy script to remote host (overwrite if exists)
+  ansible.builtin.copy:
+    src: ConfigureNginxProxy.sh
+    dest: /usr/local/bin/ConfigureNginxProxy.sh
+    mode: '0755'  # Make the script executable
+    force: yes    # Overwrite the existing script if present
+
+- name: Run script with environment variables
+  ansible.builtin.shell: /usr/local/bin/ConfigureNginxProxy.sh
+  environment:
+    CONFIG_DIR_PATH: "{{ CONFIGURATION_DIR_PATH }}"
+    PROXY_CONFIG_FILE : "{{ PROXY_CONFIG_FILE_PATH }}"
+  register: script_output
+  ignore_errors: yes  # Optional: ignore errors if you want the playbook to continue
+
+- name: Display script output
+  ansible.builtin.debug:
+    var: script_output.stdout_lines
+
+# Ensure Nginx is reloaded after changes
+- name: Reload Nginx to apply changes
+  systemd:
+    name: nginx
+    state: reloaded
