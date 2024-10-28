@@ -1,0 +1,47 @@
+server {
+    # Écouter sur le port 80 (HTTP) et rediriger vers HTTPS
+    listen 80;
+    server_name nginx.localhost.com;
+    
+    # Rediriger tout le trafic HTTP vers HTTPS
+    return 301 https://$host$request_uri;
+}
+
+server {
+    # Écouter sur le port 443 (HTTPS) avec SSL
+    listen 443 ssl;
+    server_name nginx.localhost.com;
+
+    # Chemins vers les certificats SSL
+    ssl_certificate "/etc/ssl/certs/my-autosigne-cert/nginx.localhost.com+5.pem";
+    ssl_certificate_key "/etc/ssl/certs/my-autosigne-cert/nginx.localhost.com+5-key.pem";
+
+    # Inclusion des fichiers location pour une configuration modulaire
+    include "/etc/nginx/proxy-conf-availables/my-site-proxy.conf";
+
+    # Proxy pass vers l'application backend
+    location / {
+        root "/var/www/my-site-nginx";
+        index index.html;
+        try_files $uri $uri/ =404; # Sert le fichier index.html ou renvoie une erreur 404 si le fichier n'existe pas
+    }
+
+    # Fichiers statiques (optionnel, si ton backend sert des fichiers statiques)
+    location /static/ {
+        root /var/www/doc-statics;
+    }
+
+    # Gestion des erreurs (optionnel)
+    error_page 500 502 503 504 /50x.html;
+    location = /50x.html {
+        root /usr/share/nginx/html;
+    }
+
+    # Sécurisation SSL recommandée
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_prefer_server_ciphers on;
+    ssl_ciphers HIGH:!aNULL:!MD5;
+
+    # HTTP Strict Transport Security (HSTS)
+    add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+}
