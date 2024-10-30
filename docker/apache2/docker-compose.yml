@@ -1,20 +1,21 @@
 # version: '3.8'
 
 services:
-  nginx:
+  apache2:
     build:
-      context: .
+      context: ./dockerfile
       dockerfile: Dockerfile
-    container_name: nginx
+    image: apache2-reverse-proxy
+    container_name: apache2-reverse-proxy
     env_file:
       - .env
+    network_mode: host
     # ports:
     #   - "80:${HTTP_PORT}"
     #   - "443:${HTTPS_PORT}"
-    network_mode: host
     volumes:    
-      - ${NGINX_SSL_CERT_DIR}:${SSL_CERT_DIR}
-      - ${NGINX_WELCOME_PAGE_DIR}:${WELCOME_PAGE_DIR}
+      - ${APACHE_SSL_CERT_DIR}:${SSL_CERT_DIR}
+      - ${APACHE_WELCOME_PAGE_DIR}:${WELCOME_PAGE_DIR}
     deploy:
       resources:
         limits:

@@ -1,0 +1,45 @@
+services:
+  postgreSQL:
+    image: postgres:${POSTGRESQL_VERSION}
+    container_name: postgreSQL-db
+    env_file:
+      - .env
+    # network_mode: host
+    ports:
+      - "5432:${POSTGRESQL_PORT}"
+    volumes:    
+      - ${POSTGRESQL_DATA_VOLUME_DIR}:/var/lib/postgresql/data
+      # - ./my.cnf:/etc/mysql/conf.d/my.cnf  # Monte le fichier de configuration
+    deploy:
+      resources:
+        limits:
+          memory: ${MEM_LIMIT}                       
+        reservations:
+          memory: ${MEM_RESERVATION}                
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost || exit 1"]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
+      start_period: ${HEALTHCHECK_START_PERIOD}
+    command: --default-authentication-plugin=mysql_native_password
+
+
+
+
+version: '3'
+
+services:
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: example_db
+      POSTGRES_USER: example_user
+      POSTGRES_PASSWORD: example_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
