@@ -58,7 +58,7 @@ Le fichier de configuration principal de Terraform (main.tf) permet de définir,
 
 #### Structure de base
 
-```css
+```hcl
 # 1. Provider
 provider "PROVIDER_NAME" {
   # Configuration du provider
@@ -101,7 +101,7 @@ Voici un exemple de fichier main.tf configuré pour déployer une instance Debia
 
 ###### Deployment d'une debian sur un OpenStack local
 
-```css
+```hcl
 # 1. Provider - configuration pour OpenStack
 provider "openstack" {
   auth_url    = "http://localhost:5000/v3"
@@ -155,7 +155,6 @@ output "instance_public_ip" {
   description = "Adresse IP de l'instance Debian"
   value       = openstack_compute_instance_v2.debian_instance.access_ip_v4
 }
-
 ```
 
 ###### Explication du fichier de configuration
@@ -182,7 +181,7 @@ Les modules permettent de diviser et d'organiser les configurations en petits bl
 
 ### Strucure d'un module
 
-```css
+```hcl
 modules/
 └── instance/
     ├── main.tf        # Configuration principale du module
@@ -191,7 +190,7 @@ modules/
 ```
 En appelant le module dans le fichier main.tf principal du projet, vous pouvez facilement réutiliser sa configuration :
 
-```css
+```hcl
 module "web_server" {
   source = "./modules/instance"
   instance_type = "t2.micro"
@@ -203,17 +202,17 @@ module "web_server" {
 
 - main.tf
 
-```css
+```hcl
 ```
 
 - variables.tf
 
-```css
+```hcl
 ```
 
 - outputs.tf
 
-```css
+```hcl
 ```
 
 
@@ -239,7 +238,7 @@ Les modules peuvent être placés dans un sous-répertoire appelé modules (ou u
 │       └── outputs.tf
 ```
 - Pour utiliser un module situé dans le répertoire modules/module1, la syntaxe dans le fichier main.tf serait :
-```css
+```hcl
     module "example" {
       source = "./modules/module1"
       # autres arguments
@@ -250,7 +249,7 @@ Les modules peuvent être placés dans un sous-répertoire appelé modules (ou u
 Les modules peuvent être téléchargés depuis un registre public ou privé, comme le Terraform Registry (registry.terraform.io), ou depuis un dépôt Git.
 
 - Pour un module sur le Terraform Registry :
-```css
+```hcl
 module "example" {
   source = "terraform-aws-modules/vpc/aws"
   version = "3.0.0"
@@ -258,7 +257,7 @@ module "example" {
 }
 ```
 - Pour un module hébergé sur GitHub (ou un autre VCS), vous pouvez spécifier l’URL du dépôt et éventuellement une branche ou un tag :
-```css
+```hcl
 module "example" {
     source = "git::https://github.com/username/repo_name.git//module_path?ref=branch_or_tag"
     # autres arguments
@@ -267,7 +266,7 @@ module "example" {
 ##### 3. Modules publiés localement ou via un système de fichiers :
 
 Si vous souhaitez utiliser un module stocké localement ailleurs que dans le projet (par exemple dans un répertoire partagé), spécifiez le chemin du système de fichiers :
-```css
+```hcl
 module "example" {
     source = "/path/to/local/module_directory"
     # autres arguments
