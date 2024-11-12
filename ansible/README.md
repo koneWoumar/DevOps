@@ -130,31 +130,31 @@ Pour plus de détails sur l'utilisation de ces commandes, consultez la [document
 ## Playbook ansible
 
 les différentes parties d'un playbook :
-1. Hosts
+#### 1. Hosts
 
 Définit sur quels hôtes ou groupes d’hôtes les tâches seront exécutées. Vous pouvez utiliser un groupe d'hôtes défini dans le fichier d'inventaire, des noms spécifiques d'hôtes, ou encore all pour tous les hôtes.
 
-2. Tasks
+#### 2. Tasks
 
 Une liste de tâches qui doivent être exécutées sur les hôtes spécifiés. Chaque tâche est une action spécifique (comme installer un package, copier un fichier, etc.). Chaque tâche doit utiliser un module Ansible.
 
-3. Roles
+#### 3. Roles
 
 Un moyen d'organiser les tâches dans des sous-répertoires (plus structuré et réutilisable). Les rôles contiennent des tâches, des handlers, des fichiers, etc., pour faciliter l'automatisation complexe.
 
-4. Vars
+#### 4. Vars
 
 Définit des variables qui peuvent être utilisées dans les tâches. Ces variables peuvent être définies directement dans le playbook ou récupérées d’un fichier externe.
 
-5. Handlers
+#### 5. Handlers
 
 Similaire aux tâches, mais les handlers ne sont exécutés que lorsqu'ils sont déclenchés par une autre tâche via le mot-clé notify. Utilisé, par exemple, pour redémarrer un service après une modification de configuration.
 
-6. Become
+#### 6. Become
 
 Permet d'exécuter des tâches avec des privilèges élevés (comme sudo). Cela est nécessaire pour certaines actions comme l'installation de paquets ou la modification de configurations système.
 
-7. Environment
+#### 7. Environment
 
 Définit les variables d'environnement spécifiques pour les tâches.
 
