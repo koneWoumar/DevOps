@@ -13,7 +13,8 @@ Cependant Ansible a des limites dans le provisionning des infrastructures et la 
 - Ansible n'a pas de base de donnée des états pour gerer de façon intelligente les mise à jour des objets (faire une differentielle entre l'état actuelle et l'état voulue)
 - Il faut un code distincte pour créer, mettre à jour et supprimer les objets
 
-Terraform est excelle dans le provisionning et la gestion du cycle de vie des infrastructure sur les differentes provider de Cloud (AWS, GGP, OpenStack, ...), capable de deployer la meme infrastructure sur differentes provider de cloud tout en gerant la consistance de ces infrastructure.
+Terraform excelle dans le provisionning et la gestion du cycle de vie des infrastructure sur les differentes provider de Cloud (AWS, GGP, OpenStack, ...), capable de deployer la meme infrastructure sur differentes provider de cloud tout en gerant la consistance de ces infrastructure.
+
 ---
 
 ## Installation sur Ubuntu/Debian
@@ -38,7 +39,7 @@ terraform --version
 
 Terraform recommande d'organiser les configurations en séparant les variables (fichier variables.tf), les outputs (fichier outputs.tf), et les configurations de base (fichier main.tf). De plus, pour des infrastructures plus grandes et complexes, il est recommandé d'utiliser des modules pour réutiliser des blocs de code, comme la configuration réseau, la gestion des rôles IAM, ou les bases de données.
 
-## Structure d'un projet Terraform
+### Structure d'un projet Terraform
 
 Un projet Terraform est souvent structuré de manière à organiser les différents fichiers de configuration, les variables, et les outputs :
 
@@ -50,6 +51,130 @@ Un projet Terraform est souvent structuré de manière à organiser les différe
 └── terraform.tfstate     # Fichier d'état généré par Terraform pour suivre les ressources gérées
 ```
 Par défaut, le répertoire de travail est le dossier contenant les fichiers .tf, mais il est possible de configurer Terraform pour utiliser des backends distants comme S3 pour stocker l’état.
+
+### Fichier de configuration principal de Terraform
+
+Le fichier de configuration principal de Terraform (main.tf) permet de définir, gérer et provisionner des infrastructures.
+
+#### Structure de base
+
+```css
+# 1. Provider
+provider "PROVIDER_NAME" {
+  # Configuration du provider
+}
+
+# 2. Variables
+variable "VARIABLE_NAME" {
+  # Définition de la variable
+}
+
+# 3. Data Sources
+data "PROVIDER_NAME_resource" "RESOURCE_NAME" {
+  # Définition de la source de données
+}
+
+# 4. Ressources
+resource "PROVIDER_NAME_resource" "RESOURCE_NAME" {
+  # Définition de la ressource
+}
+
+# 5. Outputs
+output "OUTPUT_NAME" {
+  # Définition des sorties d'informations
+}
+```
+#### Explications des sections
+
+- Provider : Le provider configure l’accès au service cloud sur lequel vous souhaitez déployer l’infrastructure. Ici, pour OpenStack, il peut contenir des informations d'authentification (comme auth_url, username, password, tenant_name).
+
+- Variables : Les variables permettent de rendre la configuration flexible et réutilisable en paramétrant certaines valeurs (comme le type de machine, l’image à utiliser, le nom de l'instance, etc.).
+
+- Data Sources : Les data sources (ou sources de données) permettent de récupérer des informations de l'infrastructure existante ou des données utiles (comme l’ID d’une image Debian sur OpenStack).
+
+- Ressources : Les ressources sont les éléments de l’infrastructure que Terraform gère, comme des instances, des réseaux ou des disques. Dans ce cas, nous utiliserons la ressource openstack_compute_instance_v2 pour créer une instance.
+
+- Outputs : Les outputs permettent d’afficher certaines informations en sortie, utiles pour la gestion ou l'accès à l'infrastructure, comme l'IP publique de l'instance déployée.
+
+#### Exemple
+Voici un exemple de fichier main.tf configuré pour déployer une instance Debian sur une installation OpenStack locale : 
+
+###### Deployment d'une debian sur un OpenStack local
+
+```css
+# 1. Provider - configuration pour OpenStack
+provider "openstack" {
+  auth_url    = "http://localhost:5000/v3"
+  region      = "RegionOne"
+  tenant_name = "my_project"
+  user_name   = "admin"
+  password    = "admin_password"
+  domain_name = "default"
+}
+
+# 2. Variables - pour personnaliser les configurations
+variable "instance_name" {
+  description = "Nom de l'instance OpenStack"
+  type        = string
+  default     = "debian-instance"
+}
+
+variable "flavor_name" {
+  description = "Type de machine OpenStack (flavor)"
+  type        = string
+  default     = "m1.small"
+}
+
+variable "network_name" {
+  description = "Nom du réseau auquel l'instance sera connectée"
+  type        = string
+  default     = "public"
+}
+
+# 3. Data Source - récupération de l'ID de l'image Debian
+data "openstack_images_image_v2" "debian_image" {
+  name = "debian-10"
+}
+
+# 4. Resource - création de l'instance
+resource "openstack_compute_instance_v2" "debian_instance" {
+  name            = var.instance_name
+  image_id        = data.openstack_images_image_v2.debian_image.id
+  flavor_name     = var.flavor_name
+  key_pair        = "my_keypair"
+  network {
+    name = var.network_name
+  }
+
+  # Tags pour identification
+  tags = ["Terraform", "Debian", "OpenStack"]
+}
+
+# 5. Outputs - afficher l'IP publique de l'instance
+output "instance_public_ip" {
+  description = "Adresse IP de l'instance Debian"
+  value       = openstack_compute_instance_v2.debian_instance.access_ip_v4
+}
+
+```
+
+###### Explication du fichier de configuration
+
+- Provider OpenStack : Ce bloc configure les informations d'authentification et de connexion au serveur OpenStack local.
+
+- Variables :
+    instance_name : Le nom de l'instance Debian.
+    flavor_name : Le type de machine (flavor) choisi pour l’instance, ici m1.small.
+    network_name : Le réseau auquel l’instance sera connectée, ici public.
+
+- Data Source :
+    openstack_images_image_v2 : Cette source de données récupère l'ID de l'image Debian existante sur OpenStack, nommée ici debian-10.
+
+- Resource :
+    openstack_compute_instance_v2 : Ce bloc crée l'instance Debian. Il utilise l’ID de l'image Debian, la flavor choisie, et connecte l'instance au réseau spécifié.
+
+- Outputs :
+    instance_public_ip : Cette sortie affiche l'IP publique de l'instance, facilitant l'accès et la gestion.
 
 ## Modules Terraform
 
@@ -73,6 +198,25 @@ module "web_server" {
   ami           = "ami-0c55b159cbfafe1f0"
 }
 ```
+
+### Exemple de module
+
+- main.tf
+
+```css
+```
+
+- variables.tf
+
+```css
+```
+
+- outputs.tf
+
+```css
+```
+
+
 ### Emplacement d'un module par rapport à un projet
 
 ##### 1. Modules locaux dans le projet :
@@ -129,10 +273,11 @@ module "example" {
     # autres arguments
 }
 ```
-##### Bonnes pratiques
+##### 4. Bonnes pratiques
 
 - Utilisez des modules locaux pour des composants spécifiques au projet, surtout s'ils sont réutilisés plusieurs fois dans la configuration.
 - Utilisez le Terraform Registry ou un dépôt Git pour des modules communs, maintenus indépendamment du projet.
+
 
 ## Principales commandes de Terraform
 
@@ -157,4 +302,3 @@ Voici une liste des commandes essentielles de Terraform :
 - Valider avant d’appliquer : Exécutez terraform plan avant terraform apply pour éviter les erreurs de configuration.
 
 Terraform est un outil puissant et flexible pour l'infrastructure as code. En combinant des configurations modulaires et en automatisant le provisionnement, il permet une gestion efficace des environnements cloud complexes.
-
