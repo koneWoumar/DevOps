@@ -75,7 +75,7 @@ module "web_server" {
 ```
 ### Emplacement d'un module par rapport à un projet
 
-##### Modules locaux dans le projet :
+##### 1. Modules locaux dans le projet :
 
 Les modules peuvent être placés dans un sous-répertoire appelé modules (ou un autre nom significatif) dans le répertoire racine du projet.
 
@@ -101,7 +101,7 @@ Les modules peuvent être placés dans un sous-répertoire appelé modules (ou u
       # autres arguments
     }
 ```
-##### Modules distants (référencés depuis un VCS ou un registre de modules) :
+##### 2. Modules distants (référencés depuis un VCS ou un registre de modules) :
 
 Les modules peuvent être téléchargés depuis un registre public ou privé, comme le Terraform Registry (registry.terraform.io), ou depuis un dépôt Git.
 
@@ -120,7 +120,7 @@ module "example" {
     # autres arguments
 }
 ```
-##### Modules publiés localement ou via un système de fichiers :
+##### 3. Modules publiés localement ou via un système de fichiers :
 
 Si vous souhaitez utiliser un module stocké localement ailleurs que dans le projet (par exemple dans un répertoire partagé), spécifiez le chemin du système de fichiers :
 ```css
