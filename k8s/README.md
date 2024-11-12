@@ -372,5 +372,212 @@ kubectl rollout restart deployment <deployment-name>
 kubectl rollout status deployment <deployment-name>
 ```
 
-## Déploiement sur K8S
+## Les Ressorces de K8S
+
+On peut définir les ressources de Kubernetes comme des "objets".
+
+En effet, dans Kubernetes, chaque ressource est un objet qui représente l'état souhaité pour une partie du système (comme un pod, un service, ou un volume). Ces objets décrivent des spécifications que le cluster Kubernetes utilise pour créer, gérer et maintenir les composants nécessaires à l’application.
+
+#### Ressources de base
+
+- Pod : Unité de base dans Kubernetes, qui représente un ou plusieurs conteneurs partageant le même réseau et les mêmes volumes.
+- Service : Expose un groupe de pods sur un réseau, permettant une communication stable entre les composants d’une application.
+- Namespace : Permet de diviser les ressources d’un cluster Kubernetes en environnements isolés.
+
+#### Gestion de la charge de travail (Workloads)
+
+- Deployment : Gère le déploiement et la mise à jour d'un groupe de pods répliqués, idéal pour les applications stateless.
+- ReplicaSet : Assure un nombre défini de pods identiques pour maintenir une haute disponibilité.
+- StatefulSet : Gère le déploiement et le scaling de pods ayant un état persistant, utilisé pour les applications qui nécessitent une identité stable (bases de données, etc.).
+- DaemonSet : Assure que chaque nœud exécute un pod spécifique, souvent utilisé pour la collecte de logs ou la surveillance.
+- Job : Exécute une tâche unique jusqu'à sa réussite, puis se termine. Utilisé pour des tâches ponctuelles.
+- CronJob : Planifie des tâches répétitives sur une base horaire, similaire à un cron Linux.
+- ReplicationController : Ancienne version de ReplicaSet, assure un nombre spécifique de réplicas pour des pods.
+
+#### Configuration et gestion des données
+
+- ConfigMap : Stocke des configurations sous forme de paires clé-valeur, utilisables par les pods.
+- Secret : Stocke des informations sensibles, comme des mots de passe, de manière sécurisée.
+- PersistentVolume (PV) : Représente un espace de stockage persistant dans le cluster.
+- PersistentVolumeClaim (PVC) : Demande un espace de stockage (PV) pour une application, permettant aux pods d’utiliser des volumes persistants.
+- Volume : Définit un type de stockage temporaire ou persistant pour les pods.
+
+#### Réseau
+
+- Ingress : Gère l’accès externe au cluster et le routage HTTP/HTTPS vers des services internes.
+- NetworkPolicy : Définit des règles de réseau pour contrôler le trafic entre les pods.
+
+#### Sécurité et gestion des accès
+
+- ServiceAccount : Associe une identité spécifique aux pods pour accéder aux ressources de l'API.
+- Role et ClusterRole : Définissent des autorisations sur des ressources Kubernetes au sein d'un namespace (Role) ou sur tout le cluster (ClusterRole).
+- RoleBinding et ClusterRoleBinding : Lient les rôles aux utilisateurs, groupes ou comptes de service, permettant de contrôler les autorisations dans le cluster.
+
+#### Autres ressources
+
+- Endpoint : Définit les adresses IP ou noms DNS d’un groupe de pods pour les services, permettant le routage.
+- HorizontalPodAutoscaler : Gère le scaling automatique des pods en fonction de l’utilisation des ressources (CPU, mémoire, etc.).
+- Node : Représente un nœud du cluster, tel qu'une VM ou une machine physique, sur lequel les pods sont exécutés.
+- LimitRange : Définit des limites de ressources pour les pods dans un namespace.
+- ResourceQuota : Implique des restrictions sur la quantité de ressources utilisables dans un namespace.
+
+
+
+## Fichiers de configuration de quelques ressources
+
+#### Fichier de conf de deployement
+Un fichier de déploiement Kubernetes définit les ressources nécessaires pour gérer une application. Cela inclut la configuration des pods, des réplicas, de l’image Docker, des volumes, et bien plus encore.
+##### Structure du fichier
+````yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nom-de-deploiement
+  labels:
+    app: mon-application
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: mon-application
+  template:
+    metadata:
+      labels:
+        app: mon-application
+    spec:
+      containers:
+      - name: mon-conteneur
+        image: mon-image:1.0
+        ports:
+        - containerPort: 80
+        env:
+        - name: ENV_VAR
+          value: "production"
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        volumeMounts:
+        - mountPath: /donnees
+          name: stockage
+      volumes:
+      - name: stockage
+        emptyDir: {}
+````
+##### Explications du fichier
+
+Fichier de configuration de déploiement Kubernetes
+
+Ce fichier définit et configure un déploiement Kubernetes en précisant comment les ressources d’application doivent être gérées, y compris les pods, réplicas, et les conteneurs associés.
+Structure et explication du fichier
+
+- apiVersion :
+Indique la version de l'API Kubernetes utilisée pour ce fichier de déploiement.
+
+- kind :
+Spécifie le type de ressource Kubernetes, ici Deployment, qui permet de gérer et de maintenir des pods répliqués.
+
+- metadata :
+Contient les métadonnées pour identifier le déploiement, telles que le nom et les étiquettes (labels) permettant de catégoriser ou d'organiser la ressource.
+
+- spec :
+Décrit la configuration spécifique pour le déploiement, en définissant des paramètres comme le nombre de réplicas et le modèle de pod.
+
+- s- pec.replicas :
+Indique le nombre d’instances du pod à déployer pour garantir la disponibilité.
+
+- spec.selector :
+Définit les critères d’étiquettes (labels) pour sélectionner et associer les pods à ce déploiement. Il permet de contrôler précisément quels pods le déploiement doit gérer.
+
+- template :
+Fournit le modèle pour chaque pod créé par le déploiement, en spécifiant ses métadonnées et sa configuration.
+
+- template.metadata :
+Contient les métadonnées du pod, y compris les étiquettes (labels) permettant de l'identifier et de le distinguer des autres pods.
+
+- template.spec :
+Définit la configuration des conteneurs exécutés dans chaque pod, y compris l'image Docker à utiliser et les variables d’environnement.
+
+- containers :
+Liste les conteneurs à exécuter dans le pod. Chaque conteneur est configuré avec des propriétés comme le nom, l’image Docker, et les ports exposés.
+
+- containers.image :
+Définit l’image Docker utilisée pour le conteneur, permettant de spécifier la version exacte du logiciel.
+
+- containers.ports :
+Définit les ports que le conteneur expose pour interagir avec d’autres services ou applications.
+
+- containers.env :
+Configure les variables d'environnement nécessaires au conteneur, comme des paramètres de configuration spécifiques à l’environnement.
+
+- resources :
+Gère les ressources assignées au conteneur, en définissant les besoins en CPU et en mémoire pour optimiser la stabilité et la performance.
+
+- volumeMounts :
+Définit où et comment les volumes sont montés dans le conteneur pour gérer des données persistantes ou partagées.
+
+- volumes :
+Spécifie les volumes à utiliser dans le pod. Ceux-ci peuvent servir de stockage temporaire ou persistant, accessible par les conteneurs.
+
+
+---
+**NOTE**
+
+Bien que les trois labels soient identiques ici (app: mon-application), ils n’ont pas besoin d’avoir le même nom dans tous les cas. Cependant, pour que le déploiement gère correctement les pods, il est nécessaire que le label défini dans `spec.selector.matchLabels` corresponde exactement à celui dans `template.metadata.labels`. Le label au niveau du Deployment (metadata.labels) peut être différent, car il est utilisé pour catégoriser le déploiement lui-même et n’affecte pas la sélection des pods.
+
+En effet, le label du `template.metadata.labels`, celui que portera tous les pods du deploiement afin de pouvoir se faire identifier, et la section `spec.selector.matchLabels` , permet alors au deploiement de selectionner ces pods qui sont ne sont que ses pods (à lui).
+Le label de la section du `metadata` du deploiment est juste un label pour pouvoir identifier le deploiemnt lui-meme(pour des recherches et autres), il n'a pas de lien avec les autres.
+
+---
+
+#### Fichier de conf de service
+Un fichier de configuration de service Kubernetes permet d’exposer un ensemble de pods sur le réseau, interne ou externe, en assurant la communication stable entre les différents composants d’une application.
+##### Structure du fichier
+```yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: mon-service
+  labels:
+    app: mon-application
+spec:
+  selector:
+    app: mon-application
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
+  ```
+
+##### Explications du fichier
+- apiVersion :
+Indique la version de l'API Kubernetes pour ce type de ressource, ici v1, qui est utilisé pour la configuration des services.
+
+- kind :
+Spécifie le type de ressource Kubernetes, ici Service. Ce type de ressource crée un service réseau pour exposer les pods aux autres services ou à l’extérieur du cluster.
+
+- metadata :
+Fournit des métadonnées pour le service, incluant name, qui identifie le service, et labels pour organiser ou classifier le service dans Kubernetes.
+
+- spec :
+Contient les spécifications du service, c’est-à-dire les paramètres nécessaires pour sa configuration.
+
+- spec.selector :
+Définit les labels que Kubernetes utilise pour sélectionner les pods à associer à ce service. Ici, les pods ayant le label app: mon-application seront associés au service. Ce sélecteur garantit que le trafic envoyé au service est dirigé vers les pods correspondants.
+
+- spec.ports :
+Déclare la liste des ports sur lesquels le service est accessible. Chaque port expose le service à un certain niveau du réseau et redirige le trafic vers les pods ciblés.
+
+    protocol : Spécifie le protocole de communication, ici TCP, utilisé pour la transmission des données.
+    port : Indique le port sur lequel le service est exposé aux clients du réseau interne.
+    targetPort : Correspond au port du conteneur cible dans chaque pod vers lequel le trafic doit être dirigé. Cela permet de faire correspondre le port externe et le port de l’application dans le conteneur.
+
+- type :
+Définit la portée d’accessibilité du service dans le cluster. Ici, ClusterIP expose le service uniquement dans le cluster, permettant une communication interne entre services. Les autres valeurs possibles incluent NodePort (exposition à l’extérieur via un port de nœud) et LoadBalancer (exposition externe avec une adresse IP publique via un load balancer).
+
+## 
 
