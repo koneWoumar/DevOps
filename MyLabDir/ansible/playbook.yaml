@@ -1,0 +1,35 @@
+---
+# defition des host sur lequel s'execute le playbook
+- name: Install zabbix agent
+  hosts: local
+  become: yes
+  vars:
+    configFile: /home/albarry/Bureau/DevOps/MyLabDir/ansible/file.txt
+    FQDN: localhost
+    ServerName: zabbix_server
+
+  tasks:
+
+  # config zabbix agent ip
+  - name: config server ip
+    ansible.builtin.lineinfile:
+      path: '{{configFile}}'
+      regexp: '^ServerActive='
+      line: 'ServerActive={{FQDN}}'
+
+  # config zabbix agent hostame
+  - name: config server name
+    ansible.builtin.lineinfile:
+      path: '{{configFile}}'
+      regexp: '^Hostname'
+      line: 'Hostname={{ServerName}}'
+
+  # register file contente for showing it
+  - name: Display the content of config file
+    command: cat '{{configFile}}'
+    register: file_content
+
+  # show the file contente
+  - name: Show file content
+    debug:
+      msg: "{{ file_content.stdout }}"
