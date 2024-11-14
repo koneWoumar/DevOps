@@ -372,7 +372,7 @@ kubectl rollout restart deployment <deployment-name>
 kubectl rollout status deployment <deployment-name>
 ```
 
-## Les Ressorces de K8S
+## Les Ressources de K8S
 
 On peut définir les ressources de Kubernetes comme des "objets".
 
@@ -579,5 +579,4 @@ Déclare la liste des ports sur lesquels le service est accessible. Chaque port 
 - type :
 Définit la portée d’accessibilité du service dans le cluster. Ici, ClusterIP expose le service uniquement dans le cluster, permettant une communication interne entre services. Les autres valeurs possibles incluent NodePort (exposition à l’extérieur via un port de nœud) et LoadBalancer (exposition externe avec une adresse IP publique via un load balancer).
 
-## 
 

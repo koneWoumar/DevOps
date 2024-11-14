@@ -362,7 +362,7 @@ apache_port: 80
 
 ```
 
-Étape 6 : Lancer le rôle dans un playbook
+- Étape 6 : Lancer le rôle dans un playbook
 
 Enfin, dans votre playbook, vous pouvez appeler ce rôle comme ceci :
 ```yml
@@ -374,7 +374,7 @@ Enfin, dans votre playbook, vous pouvez appeler ce rôle comme ceci :
     - apache_install
 ```
 
-Étape 7 : Exécuter le playbook
+- Étape 7 : Exécuter le playbook
 
 Pour exécuter le rôle sur un serveur, lancez simplement :
 
@@ -384,5 +384,155 @@ ansible-playbook site.yml -i hosts
 
 ## Variable Dans ansible
 
+Soit la structure complete d'un projet ansible suivante: 
+
+```perl
+my-ansible-project/
+├── playbook.yml          # Le playbook principal
+├── inventory             # Inventaire des hôtes
+├── group_vars/
+│   └── webservers.yml    # Variables pour le groupe 'webservers'
+├── host_vars/
+│   └── web1.yml          # Variables spécifiques à l'hôte 'web1'
+└── roles/
+    └── myrole/
+        ├── tasks/
+        │   └── main.yml  # Tâches du rôle 'myrole'
+        ├── vars/
+        │   └── main.yml  # Variables spécifiques au rôle
+        └── defaults/
+            └── main.yml  # Variables par défaut pour le rôle
+```
+
+En Ansible, les variables peuvent être définies dans plusieurs emplacements, chacun ayant une priorité différente. Voici les différents types de variables, l'ordre de priorité, et des exemples d'utilisation.
+
+### Ordre de Priorité des Variables dans Ansible
+
+Ansible applique les variables dans l'ordre de priorité suivant (de la plus haute priorité à la plus basse) :
+
+##### 1. Variables en ligne de commande : Définies avec -e lors de l'appel d'un playbook.
+
+```bash
+ansible-playbook playbook.yml -i inventory -e "variable_cmd=Valeur_Ligne_Commande"
+```
+
+##### 2. Variables dans les rôles (role vars) : Variables définies directement dans un rôle via vars/main.yml.
+```yaml
+# roles/myrole/vars/main.yml
+variable_role: "Valeur_Role"
+```
+##### 3. Variables définies dans le bloc vars d'un playbook.
+```yaml
+# playbook.yml
+- name: Exemple de playbook avec bloc vars
+  hosts: webservers
+  vars:
+    variable_playbook: "Valeur_Playbook"
+  roles:
+    - myrole
+```
+##### 4. Variables définies dans host_vars et group_vars.
+```yaml
+# group_vars/webservers.yml
+variable_group: "Valeur_Group"
+
+# host_vars/web1.yml
+variable_host: "Valeur_Host"
+```
+##### 5. Variables définies dans l'inventaire.
+```ini
+# inventory
+[webservers]
+web1 ansible_host=192.168.1.10 variable_inventory="Valeur_Inventaire"
+```
+##### 6. Variables des rôles par défaut (defaults) : Variables définies dans defaults/main.yml dans un rôle.
+```yaml
+# roles/myrole/defaults/main.yml
+variable_default: "Valeur_Default"
+```
+### Utilisation dans un playbook
+
+- le playbook :
+```yaml
+# playbook.yml
+- name: Exemple de playbook utilisant différentes variables
+  hosts: webservers
+  vars:
+    variable_playbook: "Valeur_Playbook"
+  tasks:
+    - name: Afficher la variable définie en ligne de commande
+      ansible.builtin.debug:
+        msg: "Variable Ligne de Commande : {{ variable_cmd | default('Non définie') }}"
+
+    - name: Afficher la variable du rôle
+      ansible.builtin.debug:
+        msg: "Variable du Rôle : {{ variable_role | default('Non définie') }}"
+
+    - name: Afficher la variable définie dans le bloc vars du playbook
+      ansible.builtin.debug:
+        msg: "Variable du Playbook : {{ variable_playbook }}"
+
+    - name: Afficher la variable définie dans group_vars
+      ansible.builtin.debug:
+        msg: "Variable du Groupe : {{ variable_group | default('Non définie') }}"
+
+    - name: Afficher la variable définie dans host_vars
+      ansible.builtin.debug:
+        msg: "Variable de l'Hôte : {{ variable_host | default('Non définie') }}"
+
+    - name: Afficher la variable définie dans l'inventaire
+      ansible.builtin.debug:
+        msg: "Variable Inventaire : {{ variable_inventory | default('Non définie') }}"
+
+    - name: Afficher la variable par défaut du rôle
+      ansible.builtin.debug:
+        msg: "Variable Par Défaut du Rôle : {{ variable_default | default('Non définie') }}"
+  roles:
+    - myrole
+```
+- l'execution :
+```bash
+ansible-playbook playbook.yml -i inventory -e "variable_cmd=Valeur_Ligne_Commande"
+```
+
+### Utilisation de variable d'environement du cible
+
+##### Étapes et Exemple de Tâche Ansible
+
+Récupérer la variable d’environnement : Ansible ne charge pas automatiquement les variables d’environnement du nœud cible. Vous devez donc y accéder en utilisant le module command ou shell pour l’importer en tant que variable fact dans Ansible.
+
+Ajouter la ligne dans le fichier avec lineinfile : Une fois que vous avez récupéré FQDN, vous pouvez l'utiliser pour insérer la ligne souhaitée dans le fichier de configuration.
+
+Voici un exemple de playbook Ansible pour accomplir cela :
+
+```yaml
+# playbook.yml
+- name: Mettre à jour le fichier de configuration Zabbix avec le FQDN
+  hosts: all
+  become: true
+  tasks:
+    - name: Récupérer la variable FQDN du nœud cible
+      ansible.builtin.command: "echo $FQDN"
+      register: fqdn_result
+
+    - name: Vérifier que la variable FQDN est définie
+      ansible.builtin.fail:
+        msg: "La variable d'environnement FQDN n'est pas définie sur le nœud cible."
+      when: fqdn_result.stdout == ""
+
+    - name: Ajouter la ligne Server=$FQDN dans le fichier de configuration
+      ansible.builtin.lineinfile:
+        path: /etc/zabbix/zabbix_agent.conf
+        line: "Server={{ fqdn_result.stdout }}"
+        state: present
+```
+
+##### Explication de la Tâche
+
+- Étape 1 : Utilisation du module command pour exécuter echo $FQDN sur le nœud cible. Cela enregistre la valeur de la variable d’environnement FQDN dans fqdn_result.
+
+- Étape 2 : Vérification que FQDN est bien définie sur le nœud cible. Si ce n’est pas le cas, la tâche échoue avec un message d’erreur.
+
+- Étape 3 : Ajout de la ligne Server=<valeur de FQDN> dans le fichier /etc/zabbix/zabbix_agent.conf en utilisant le module lineinfile.
 
 ## Module personnalisé

@@ -1,0 +1,30 @@
+# Docker
+
+* Stop docker engine
+sudo systemctl stop docker
+
+* Start docker engine
+sudo systemctl start docker
+
+* Stop all container
+docker stop $(docker ps -q)
+
+* Stop and delete all container
+docker rm -f $(docker ps -aq)
+
+* Delete all non tagged images
+docker rmi $(docker images -f "dangling=true" -q)
+
+* Delete all images
+docker rmi -f $(docker images -aq)
+
+
+# Kuberantes
+
+* Stop the cluster kubernate
+sudo systemctl stop kubelet
+
+* Start the cluster
+sudo systemctl start kubelet
+
+
