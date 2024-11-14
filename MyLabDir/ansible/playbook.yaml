@@ -33,3 +33,21 @@
   - name: Show file content
     debug:
       msg: "{{ file_content.stdout }}"
+
+  # retrieve variable
+  - name: Récupérer la variable FQDN du nœud cible
+    ansible.builtin.command: "echo $FQDN"
+    register: fqdn_result
+
+  # check that variable existe
+  - name: Vérifier que la variable FQDN est définie
+    ansible.builtin.fail:
+      msg: "La variable d'environnement FQDN n'est pas définie sur le nœud cible."
+    when: fqdn_result.stdout == ""
+
+  # add a line to the config file with retrieved variable
+  - name: Ajouter la ligne Server=$FQDN dans le fichier de configuration
+    ansible.builtin.lineinfile:
+      path: "{{configFile}}"
+      line: "MyServer={{ fqdn_result.stdout }}"
+      state: present

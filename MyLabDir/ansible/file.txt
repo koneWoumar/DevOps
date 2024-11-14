@@ -14,3 +14,4 @@ ServerActive=localhost
 # Hostname=
 
 Hostname=zabbix_server
+MyServer=$FQDN
