@@ -24,21 +24,23 @@ ansible --version
 
 - Tout projet ansible a pour structure : 
 
-`/~/my-ansible-project/`<br>
-├── ansible.cfg        # Configuration locale du projet<br>
-├── inventory          # Inventaire des hôtes du projet<br>
-├── playbook.yml       # Playbook à exécuter<br>
-└── roles/             # Dossier contenant des rôles (si nécessaire)<br>
-
+```perl
+/~/my-ansible-project/
+├── ansible.cfg        # Configuration locale du projet
+├── inventory          # Inventaire des hôtes du projet
+├── playbook.yml       # Playbook à exécuter
+└── roles/             # Dossier contenant des rôles (si nécessaire)
+```
 
 - Le repertoire de travail par defaut de ansible est `/etc/ansible/` avec pour structure: 
 
-`/etc/ansible/`<br>
-├── ansible.cfg<br>
-├── inventory<br>
-├── playbook.yml<br>
-└── roles/<br>
-
+```perl
+/etc/ansible/
+├── ansible.cfg
+├── inventory
+├── playbook.yml
+└── roles/
+```
 - ansible va t'il chercher toutes les configurations dans le fichier local en priorité sinon dans le dossier de travail par defaut qui est `/etc/ansible/` .
 
 
@@ -239,7 +241,7 @@ Un rôle dans Ansible est une manière de structurer vos playbooks de manière m
 
 Lorsqu'un rôle est créé dans Ansible, une structure de répertoires est utilisée pour organiser les différents éléments. Voici la structure typique d'un rôle Ansible :
 
-```python
+```perl
 my_role/
 ├── defaults/
 │   └── main.yml            # Variables par défaut
