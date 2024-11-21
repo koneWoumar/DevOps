@@ -20,12 +20,17 @@
         <h1 class="display-4">Bienvenue sur notre plateforme de proverbes</h1>
         <p class="lead mt-3">Explorez et partagez la sagesse des proverbes du monde entier.</p>
 
+        <!-- Image insérée -->
         <div class="mt-4">
-            <!-- Bouton de connexion -->
-            <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg me-3">Se connecter</a>
-            
-            <!-- Bouton d'inscription -->
-            <a href="#" class="btn btn-outline-light btn-lg">S'inscrire</a>
+            <img src="https://i.pinimg.com/564x/6e/25/37/6e25372f1433308a533defa640aa8430.jpg" 
+                 alt="Illustration de proverbes" 
+                 class="img-fluid rounded" 
+                 style="max-width: 100%; height: auto;">
+        </div>
+
+        <!-- Bouton de connexion -->
+        <div class="mt-4">
+            <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">Get access</a>
         </div>
     </div>
 

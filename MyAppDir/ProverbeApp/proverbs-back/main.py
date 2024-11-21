@@ -39,7 +39,9 @@ def read_proverb(proverb_id: int, db: Session = Depends(get_db)):
     return proverb
 
 @app.delete("/proverbs/{proverb_id}")
-def remove_proverb(proverb_id: int, db: Session = Depends(get_db)):
+def remove_proverb(proverb_id: int, token: str, db: Session = Depends(get_db)):
+    user_info = get_user_info(token)
+    user_id = user_info.get("sub")
     delete_proverb(db, proverb_id)
     return {"detail": "Proverb deleted"}
 
