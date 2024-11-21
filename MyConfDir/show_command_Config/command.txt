@@ -18,6 +18,20 @@ docker rmi $(docker images -f "dangling=true" -q)
 * Delete all images
 docker rmi -f $(docker images -aq)
 
+* Supprimer tous les volumes non utilisés
+docker volume prune -f
+
+* Supprimer tous les réseaux non utilisés
+docker network prune -f
+
+* Supprimer les images et conteneurs orphelins (dangling)
+docker image prune -a -f
+
+* Supprimer tous les volumes
+docker volume rm $(docker volume ls -q)
+
+* Nettoyage des données du Docker
+rm -rf /var/lib/docker/*
 
 # Kuberantes
 
@@ -28,3 +42,7 @@ sudo systemctl stop kubelet
 sudo systemctl start kubelet
 
 
+# Script executable
+
+* Purger Docker
+/home/albarry/Bureau/DevOps/MyConfDir/Executing_Scripts/purgeDocker.sh

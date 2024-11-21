@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajouter un Proverbe</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-dark text-light">
+    <div class="container mt-5">
+        <h1 class="text-center text-light">Ajouter un Proverbe</h1>
+        <form method="POST" action="/add_proverb" class="bg-secondary p-4 rounded shadow">
+            <!-- Zone de texte pour l'énoncé -->
+            <div class="mb-3">
+                <label for="enonce" class="form-label">Énoncé du Proverbe</label>
+                <textarea 
+                    class="form-control bg-dark text-light" 
+                    id="enonce" 
+                    name="enonce" 
+                    placeholder="Entrez l'énoncé du proverbe" 
+                    rows="3" 
+                    required></textarea>
+            </div>
+
+            <!-- Champ pour l'origine -->
+            <div class="mb-3">
+                <label for="origine" class="form-label">Origine</label>
+                <input 
+                    type="text" 
+                    class="form-control bg-dark text-light" 
+                    id="origine" 
+                    name="origine" 
+                    placeholder="Entrez l'origine du proverbe" 
+                    required>
+            </div>
+
+            <!-- Champ pour le genre -->
+            <div class="mb-3">
+                <label for="genre" class="form-label">Genre</label>
+                <select class="form-select bg-dark text-light" id="genre" name="genre" required>
+                    <option value="" selected disabled>Choisir un genre</option>
+                    <option value="humoristique">Humoristique</option>
+                    <option value="philosophique">Philosophique</option>
+                    <option value="culturel">Culturel</option>
+                    <option value="autre">Autre</option>
+                </select>
+            </div>
+
+            <!-- Zone de texte pour l'explication -->
+            <div class="mb-3">
+                <label for="explication" class="form-label">Explication</label>
+                <textarea 
+                    class="form-control bg-dark text-light" 
+                    id="explication" 
+                    name="explication" 
+                    placeholder="Entrez une explication du proverbe" 
+                    rows="4" 
+                    required></textarea>
+            </div>
+
+            <!-- Boutons de soumission et retour -->
+            <div class="d-flex justify-content-between">
+                <!-- Bouton pour soumettre le formulaire -->
+                <button type="submit" class="btn btn-primary">Ajouter le Proverbe</button>
+
+                <!-- Bouton pour revenir à la liste des proverbes -->
+                <a href="/proverbs" class="btn btn-outline-light">Retour à la Liste</a>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -31,7 +31,7 @@ def afficher_fichier_formatte(nom_fichier):
         console.print(f"[bold red]Erreur : le fichier '{nom_fichier}' est introuvable.[/bold red]")
 
 # Nom du fichier à lire
-nom_fichier = "/home/albarry/Bureau/DevOps/MyLab/Config/command.txt"
+nom_fichier = "/home/albarry/Bureau/DevOps/MyConfDir/show_command_Config/command.txt"
 
 # Appeler la fonction pour afficher le contenu du fichier
 afficher_fichier_formatte(nom_fichier)

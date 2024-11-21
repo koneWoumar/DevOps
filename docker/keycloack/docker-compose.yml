@@ -1,0 +1,71 @@
+services:
+  mysql:
+    image: keycloack:${KEYCLOACK_VERSION}
+    container_name: proverbs-auth
+    env_file:
+      - .env
+    # ports:
+    #   - "8080:${KEYCLOAK_PORT}"
+    network_mode: host
+    command:
+      - start-dev
+    # volumes:    
+    #   - ${KEYCLOAK_DATA_VOLUME_DIR}:/var/lib/mysql
+    deploy:
+      resources:
+        limits:
+          memory: ${MEM_LIMIT}                       
+        # reservations:
+        #   memory: ${MEM_RESERVATION}                
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:${KEYCLOAK_PORT} || exit 1"]
+      interval: ${HEALTHCHECK_INTERVAL}
+      timeout: ${HEALTHCHECK_TIMEOUT}
+      retries: ${HEALTHCHECK_RETRIES}
+      start_period: ${HEALTHCHECK_START_PERIOD}
+
+
+
+# The version that works with mysql and postgreSQL
+
+# version: '3.9'
+
+# services:
+#   keycloak:
+#     image: quay.io/keycloak/keycloak:latest
+#     container_name: keycloak
+#     command:
+#       - start-dev
+#     environment:
+#       KC_DB: postgres
+#       KC_DB_URL: jdbc:postgresql://127.0.0.1:5432/avatar_db
+#       KC_DB_USERNAME: avatar
+#       KC_DB_PASSWORD: avatar123
+#       KEYCLOAK_ADMIN: admin
+#       KEYCLOAK_ADMIN_PASSWORD: admin123
+#     # ports:
+#     #   - "8080:8080"
+#     network_mode: host
+
+
+
+
+# version: '3.9'
+
+# services:
+#   keycloak:
+#     image: quay.io/keycloak/keycloak:latest
+#     container_name: keycloak
+#     command:
+#       - start-dev
+#     environment:
+#       KC_DB: mysql
+#       KC_DB_URL: jdbc:mysql://127.0.0.1:3306/proverbs_db
+#       KC_DB_USERNAME: root
+#       KC_DB_PASSWORD: "00932"
+#       KEYCLOAK_ADMIN: admin
+#       KEYCLOAK_ADMIN_PASSWORD: admin123
+#     network_mode: host
+
+
+    #26.0.5

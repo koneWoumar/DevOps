@@ -1,19 +1,19 @@
 from sqlalchemy.orm import Session
-from models import Proverb, User
-from schemas import ProverbCreate, UserCreate
+from models import Proverb
+from schemas import ProverbCreate
 
-def create_user(db: Session, user: UserCreate):
-    db_user = User(username=user.username, email=user.email)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+# def create_user(db: Session, user: UserCreate):
+#     db_user = User(username=user.username, email=user.email)
+#     db.add(db_user)
+#     db.commit()
+#     db.refresh(db_user)
+#     return db_user
 
-def get_user(db: Session, user_id: int):
-    return db.query(User).filter(User.id == user_id).first()
+# def get_user(db: Session, user_id: int):
+#     return db.query(User).filter(User.id == user_id).first()
 
-def create_proverb(db: Session, proverb: ProverbCreate, user_id: int):
-    db_proverb = Proverb(**proverb.dict(), user_id=user_id)
+def create_proverb(db: Session, proverb: ProverbCreate):
+    db_proverb = Proverb(**proverb.dict())
     db.add(db_proverb)
     db.commit()
     db.refresh(db_proverb)

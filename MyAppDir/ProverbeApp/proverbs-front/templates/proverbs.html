@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proverbes</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <style>
+        /* Couleurs personnalisées pour le thème bleu sombre */
+        body {
+            background-color: #1a202c; /* Bleu-gris sombre */
+            color: #cbd5e0; /* Texte gris clair */
+        }
+        .navbar {
+            background-color: #2b6cb0; /* Bleu principal */
+        }
+        .navbar-brand, .nav-link {
+            color: #e2e8f0 !important; /* Texte bleu clair pour contraste */
+        }
+        .navbar-brand img {
+            width: 30px;
+            margin-right: 10px;
+        }
+        .nav-link.active {
+            color: #63b3ed !important; /* Accentuation du texte actif */
+            font-weight: bold;
+            border: 2px solid #63b3ed; /* Cadre bleu clair autour de l'élément actif */
+            border-radius: 5px;
+        }
+        .list-group-item {
+            background-color: #2a4365; /* Bleu légèrement sombre */
+            border-color: #1a202c; /* Harmonisation des bordures */
+        }
+        .list-group-item strong {
+            color: #63b3ed; /* Bleu clair pour les labels */
+        }
+        .btn-danger {
+            background-color: #e53e3e; /* Rouge vif pour suppression */
+        }
+        .btn-danger:hover {
+            background-color: #c53030; /* Rouge légèrement plus sombre au survol */
+        }
+    </style>
+</head>
+<body>
+    <!-- Barre de navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <img src="https://via.placeholder.com/30" alt="Logo"> Proverbes
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <!-- Lien vers la liste des proverbes -->
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Liste des Proverbes</a>
+                    </li>
+                    <!-- Lien vers la page d'ajout de proverbe -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('add_proverb') }}">Ajouter un Proverbe</a>
+                    </li>
+                </ul>
+                <!-- Bouton de déconnexion -->
+                <form action="/logout" method="get" class="d-flex">
+                    <button type="submit" class="btn btn-outline-light">Se déconnecter</button>
+                </form>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Contenu principal -->
+    <div class="container mt-4">
+        <h1 class="text-center">Liste des Proverbes</h1>
+        <ul class="list-group">
+            {% for proverb in proverbs %}
+                <li class="list-group-item text-light">
+                    <strong>Énoncé :</strong> {{ proverb['enonce'] }}<br>
+                    <strong>Genre :</strong> {{ proverb['genre'] }}<br>
+                    <strong>Origine :</strong> {{ proverb['origine'] }}<br>
+                    <strong>Explication :</strong> {{ proverb['explication'] }}
+                    <!-- Bouton supprimer -->
+                    <div class="text-end mt-2">
+                        <form method="POST" action="/delete_proverb/{{ proverb['id'] }}" style="display:inline;">
+                            <button type="submit" class="btn btn-danger btn-sm">Supprimer</button>
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

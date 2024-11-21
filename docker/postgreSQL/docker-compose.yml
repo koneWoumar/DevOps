@@ -22,24 +22,24 @@ services:
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
       start_period: ${HEALTHCHECK_START_PERIOD}
-    command: --default-authentication-plugin=mysql_native_password
+    # command: --default-authentication-plugin=mysql_native_password
 
 
 
 
-version: '3'
+# version: '3'
 
-services:
-  postgres:
-    image: postgres:13
-    environment:
-      POSTGRES_DB: example_db
-      POSTGRES_USER: example_user
-      POSTGRES_PASSWORD: example_password
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+# services:
+#   postgres:
+#     image: postgres:13
+#     environment:
+#       POSTGRES_DB: example_db
+#       POSTGRES_USER: example_user
+#       POSTGRES_PASSWORD: example_password
+#     ports:
+#       - "5432:5432"
+#     volumes:
+#       - postgres_data:/var/lib/postgresql/data
 
-volumes:
-  postgres_data:
+# volumes:
+#   postgres_data:

@@ -17,16 +17,16 @@ class Proverb(ProverbBase):
     class Config:
         orm_mode = True
 
-class UserBase(BaseModel):
-    username: str
-    email: str
+# class UserBase(BaseModel):
+#     username: str
+#     email: str
 
-class UserCreate(UserBase):
-    pass
+# class UserCreate(UserBase):
+#     pass
 
-class User(UserBase):
-    id: int
-    proverbs: List[Proverb] = []
+# class User(UserBase):
+#     id: int
+#     proverbs: List[Proverb] = []
 
-    class Config:
-        orm_mode = True
+#     class Config:
+#         orm_mode = True
