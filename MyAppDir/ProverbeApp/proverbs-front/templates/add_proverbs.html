@@ -3,18 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ajouter un Proverbe</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <title>Add Proverbs</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="bg-dark text-light">
+<body>
+<!-- --------------------------------------------Navigation Barre From Here---------------------------------------- -->
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #e3f2fd;">
+        <div class="container-fluid">
+            <!-- Logo -->
+            <a class="navbar-brand" href="#">
+                <img src="https://via.placeholder.com/40" alt="Logo" width="40" height="40" class="d-inline-block align-text-top">
+            </a>
+            <!-- Navbar Toggle Button for Mobile -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- Navbar Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/app/home">Home</a>
+                    </li>
+                    <!-- Dropdown for Proverbes -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="proverbesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Proverbes
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="proverbesDropdown">
+                            <li><a class="dropdown-item" href="/proverbs/get">Liste</a></li>
+                            <li><a class="dropdown-item" href="/proverbs/add">Ajouter</a></li>
+                        </ul>
+                    </li>
+                    <!-- Dropdown for Devinettes -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="devinettesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Devinettes
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="devinettesDropdown">
+                            <li><a class="dropdown-item" href="#">Liste</a></li>
+                            <li><a class="dropdown-item" href="#">Ajouter</a></li>
+                        </ul>
+                    </li>
+                    <!-- Dropdown for Histoires -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="histoiresDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Histoires
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="histoiresDropdown">
+                            <li><a class="dropdown-item" href="#">Liste</a></li>
+                            <li><a class="dropdown-item" href="#">Ajouter</a></li>
+                        </ul>
+                    </li>
+                    <!-- Dropdown for Manage -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="manageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Administrer
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="manageDropdown">
+                            <li><a class="dropdown-item" href="/app/manage/proverbs">Proverbs</a></li>
+                            <li><a class="dropdown-item" href="#">Devinette</a></li>
+                            <li><a class="dropdown-item" href="#">Enonce</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">À propos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/app/welcome">Go Out</a>
+                    </li>
+                </ul>
+                <!-- Login/Logout Section -->
+                <div class="d-flex" id="navbar-list-4">
+                    <ul class="navbar-nav">
+                        <li class="nav-item dropdown">
+                            {% if session['username'] %}
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span>{{ session['username'] }} </span><img src="https://via.placeholder.com/40" width="40" height="40" class="rounded-circle">
+                            </a>
+                            {% else %}
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdownMenuLink" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <img src="https://via.placeholder.com/40" width="40" height="40" class="rounded-circle">
+                            </a>
+                            {% endif %}
+
+                            {% if session['username'] %}
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item" href="#">Edit Profile</a></li>
+                                <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
+                            </ul>
+                            {% else %}
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
+                                <li><a class="dropdown-item" href="/auth/login">Login</a></li>
+                            </ul>
+                            {% endif %}
+                        </li>   
+                    </ul>
+                </div>
+                <!--  -->
+            </div>
+        </div>
+    </nav>
+<!-- --------------------------------------------Main Content From Here---------------------------------------- -->
+
+    <!-- Contenu principal -->
     <div class="container mt-5">
-        <h1 class="text-center text-light">Ajouter un Proverbe</h1>
-        <form method="POST" action="/add_proverb" class="bg-secondary p-4 rounded shadow">
+        <h1 class="text-center">Ajouter un Proverbe</h1>
+        <form method="POST" action="/proverbs/add" class="bg-light p-4 rounded shadow">
             <!-- Zone de texte pour l'énoncé -->
             <div class="mb-3">
                 <label for="enonce" class="form-label">Énoncé du Proverbe</label>
                 <textarea 
-                    class="form-control bg-dark text-light" 
+                    class="form-control" 
                     id="enonce" 
                     name="enonce" 
                     placeholder="Entrez l'énoncé du proverbe" 
@@ -27,7 +130,7 @@
                 <label for="origine" class="form-label">Origine</label>
                 <input 
                     type="text" 
-                    class="form-control bg-dark text-light" 
+                    class="form-control" 
                     id="origine" 
                     name="origine" 
                     placeholder="Entrez l'origine du proverbe" 
@@ -37,7 +140,7 @@
             <!-- Champ pour le genre -->
             <div class="mb-3">
                 <label for="genre" class="form-label">Genre</label>
-                <select class="form-select bg-dark text-light" id="genre" name="genre" required>
+                <select class="form-select" id="genre" name="genre" required>
                     <option value="" selected disabled>Choisir un genre</option>
                     <option value="humoristique">Humoristique</option>
                     <option value="philosophique">Philosophique</option>
@@ -50,7 +153,7 @@
             <div class="mb-3">
                 <label for="explication" class="form-label">Explication</label>
                 <textarea 
-                    class="form-control bg-dark text-light" 
+                    class="form-control" 
                     id="explication" 
                     name="explication" 
                     placeholder="Entrez une explication du proverbe" 
@@ -64,11 +167,16 @@
                 <button type="submit" class="btn btn-primary">Ajouter le Proverbe</button>
 
                 <!-- Bouton pour revenir à la liste des proverbes -->
-                <a href="/proverbs" class="btn btn-outline-light">Retour à la Liste</a>
+                <a href="/proverbs/get" class="btn btn-outline-secondary">Retour à la Liste</a>
             </div>
         </form>
     </div>
 
+<!-- main content -->
+ 
+    <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+
+ 
