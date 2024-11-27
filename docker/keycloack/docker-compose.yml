@@ -1,16 +1,17 @@
 services:
   mysql:
-    image: keycloack:${KEYCLOACK_VERSION}
-    container_name: proverbs-auth
+    image: quay.io/keycloak/keycloak:${KEYCLOACK_VERSION}
+    container_name: auth
     env_file:
       - .env
     # ports:
-    #   - "8080:${KEYCLOAK_PORT}"
+    #   - "8443:${KEYCLOAK_PORT}"
     network_mode: host
     command:
-      - start-dev
-    # volumes:    
+      - start
+    volumes:    
     #   - ${KEYCLOAK_DATA_VOLUME_DIR}:/var/lib/mysql
+      - /etc/ssl/certs/my-autosigne-cert/:/etc/x509/https:ro
     deploy:
       resources:
         limits:
@@ -23,6 +24,7 @@ services:
       timeout: ${HEALTHCHECK_TIMEOUT}
       retries: ${HEALTHCHECK_RETRIES}
       start_period: ${HEALTHCHECK_START_PERIOD}
+
 
 
 
