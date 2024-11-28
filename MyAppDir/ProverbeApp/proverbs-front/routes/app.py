@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, redirect, request, session, url_for
 import requests
 import os
+from service import *
 
 app_bp = Blueprint('app', __name__)
 
@@ -19,6 +20,7 @@ def home():
     #faut il verifier si l'auth est necessaire
 
 
+
 @app_bp.route("/manage/proverbs")
 def manage_proverbs():
     token = session.get('access_token')
@@ -28,11 +30,11 @@ def manage_proverbs():
     # check that user have right to perform this action
        # check the role of the user
 
-    response = requests.get('http://localhost:8000/proverbs')
+    response = requests.get(f'{BACK_URL}/proverbs')
     if response.status_code == 200:
         proverbs_data = response.json()
         return render_template("manage_proverbs.html", proverbs=proverbs_data)
-    return "Erreur lors du chargement des proverbes", 400
+    return (generate_error("/front/manage/proverbs",f"ERROR {response.status_code} : Something went wrong when loading proverbs list"))
 
 
 

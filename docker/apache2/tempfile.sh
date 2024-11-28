@@ -4,18 +4,15 @@
 
 # Fonction pour créer une configuration proxy Nginx
 create_proxy_config() {
-    local APP_UPSTREAM_PORT=$1
+    local APP_HTTP_PORT=$1
     local APP_HTTPS_PATH=$2
-    local APP_UPSTREAM_PATH=$3
-    local APP_UPSTREAM_ADDR=$4
+    local APP_HTTP_PATH=$3
 
     # Configuration content for reverse proxy
-    CONFIG_CONTENT="# Proxy config for app on ${APP_UPSTREAM_ADDR}:$APP_UPSTREAM_PORT$APP_UPSTREAM_PATH
+    CONFIG_CONTENT="# Proxy config for app on http://localhost:$APP_HTTP_PORT$APP_HTTP_PATH
 <Location $APP_HTTPS_PATH>
-    ProxyPass \"${APP_UPSTREAM_ADDR}:$APP_UPSTREAM_PORT$APP_UPSTREAM_PATH\"
-    ProxyPassReverse \"${APP_UPSTREAM_ADDR}:$APP_UPSTREAM_PORT$APP_UPSTREAM_PATH\"
-    RequestHeader set X-Forwarded-Proto "https"
-    RequestHeader set X-Forwarded-For "%{REMOTE_ADDR}s"
+    ProxyPass \"http://localhost:$APP_HTTP_PORT$APP_HTTP_PATH\"
+    ProxyPassReverse \"http://localhost:$APP_HTTP_PORT$APP_HTTP_PATH\"
 </Location>"
 
     # Affiche ou enregistre la configuration générée (vous pouvez adapter l'emplacement du fichier)
@@ -35,12 +32,13 @@ cat << EOF > /etc/apache2/sites-available/${VHOST_CONFIG_FILE}
     DocumentRoot $WELCOME_PAGE_DIR
 
 
-    # Activation du module SSL
+    # activation du module ssl
     SSLEngine on
-    SSLProxyEngine on
 
-    # Désactiver le mode Proxy direct
-    ProxyRequests Off
+
+    # activation de config pour le reverse proxy
+    ProxyRequests On
+    SSLProxyEngine On
 
 
     # specifié le ceritificat et sa clé privé
@@ -77,23 +75,24 @@ echo > /etc/apache2/conf-available/$PROXY_CONFIG_FILE
 
 # Parcourir les variables d'environnement pour trouver les triplets
 for env_var in $(compgen -e); do
-    if [[ $env_var =~ ^APP_(.*)_UPSTREAM_PORT$ ]]; then
+    if [[ $env_var =~ ^APP_(.*)_HTTP_PORT$ ]]; then
         APP_NAME="${BASH_REMATCH[1]}"
-        UPSTREAM_PORT_VAR="APP_${APP_NAME}_UPSTREAM_PORT"
-        UPSTREAM_PATH_VAR="APP_${APP_NAME}_UPSTREAM_PATH"
-        UPSTREAM_ADDR_VAR="APP_${APP_NAME}_UPSTREAM_ADDR"
+        HTTP_PORT_VAR="APP_${APP_NAME}_HTTP_PORT"
+        HTTP_PATH_VAR="APP_${APP_NAME}_HTTP_PATH"
         HTTPS_PATH_VAR="APP_${APP_NAME}_HTTPS_PATH"
 
         # Check that port and path are define
-        if [[ -n ${!UPSTREAM_PORT_VAR} && -n ${!HTTPS_PATH_VAR} && -n ${!UPSTREAM_ADDR_VAR} ]]; then
+        if [[ -n ${!HTTP_PORT_VAR} && -n ${!HTTPS_PATH_VAR} ]]; then
             # Create config the the app
-            create_proxy_config "${!UPSTREAM_PORT_VAR}" "${!HTTPS_PATH_VAR}" "${!UPSTREAM_PATH_VAR}" "${!UPSTREAM_ADDR_VAR}"
-            echo "***config created for upstream app listening on = ${!UPSTREAM_ADDR_VAR}:${UPSTREAM_PORT_VAR}/${UPSTREAM_PATH_VAR}"
+            create_proxy_config "${!HTTP_PORT_VAR}" "${!HTTPS_PATH_VAR}" "${!HTTP_PATH_VAR}"
+            echo "***config created for http_port = ${!HTTP_PORT_VAR}"
         else
-            echo "*X* config skit for $APP_NAME for no 'https_path, upstream_port or upstream_scheme' define"
+            echo "*X* config skit for $APP_NAME for no 'https_path or http_port' define"
         fi
     fi
 done
+
+echo "#---> ** task done"
 
 ###############################Showing the content of config files##############################
 echo
@@ -125,8 +124,6 @@ a2ensite $VHOST_CONFIG_FILE
 a2enmod proxy
 a2enmod proxy_http
 a2enmod ssl
-a2enmod headers
-
 
 # Start apache 2
 apache2ctl -D FOREGROUND

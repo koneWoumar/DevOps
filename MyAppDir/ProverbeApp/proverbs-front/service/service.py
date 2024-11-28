@@ -7,8 +7,9 @@ KEYCLOAK_URL = os.getenv('KEYCLOAK_URL')
 CLIENT_ID = os.getenv('CLIENT_ID')
 CLIENT_SECRET = os.getenv('CLIENT_SECRET')
 REALM = os.getenv('REALM')
-BASE_URL = os.getenv('BASE_URL')
-# LOGOUT_REDIRECT_URI = os.getenv('LOGOUT_REDIRECT_URI')
+FQDN = os.getenv('FQDN')
+SCHEME = os.getenv('SCHEME')
+BACK_URL = os.getenv('BACK_URL')
 
 
 # URLs pour Keycloak
@@ -16,6 +17,10 @@ AUTH_URL = f"{KEYCLOAK_URL}/realms/{REALM}/protocol/openid-connect/auth"
 TOKEN_URL = f"{KEYCLOAK_URL}/realms/{REALM}/protocol/openid-connect/token"
 USERINFO_URL = f"{KEYCLOAK_URL}/realms/{REALM}/protocol/openid-connect/userinfo"
 LOGOUT_URL = f"{KEYCLOAK_URL}/realms/{REALM}/protocol/openid-connect/logout"
+
+# Front Url Config
+# BASE_URL = f'{SCHEME}://{FQDN}'
+
 
 
 def generate_error(back_url,message):
@@ -109,7 +114,7 @@ def ask_for_auth(message):
 <body>
     <div class="container">
         <h2>{message}</h2>
-        <a href="/auth/login" class="btn">Se connecter</a>
+        <a href="/front/auth/login" class="btn">Se connecter</a>
     </div>
 </body>
 </html>"""

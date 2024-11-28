@@ -23,14 +23,6 @@ keycloak_openid = KeycloakOpenID(
 
 # --------------------------------------------#
 
-# keycloak_openid = KeycloakOpenID(
-#     server_url="http://localhost:8080/auth/",
-#     client_id="proverbs-platform",
-#     realm_name="your-realm",
-#     client_secret_key="your-client-secret"
-# )
-
-
 def get_user_info(token: str):
     try:
         user_info = keycloak_openid.introspect(token)

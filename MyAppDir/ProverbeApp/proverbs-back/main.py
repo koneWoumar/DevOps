@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import SessionLocal, engine
 from models import Base
@@ -6,7 +6,8 @@ from schemas import ProverbCreate
 from crud import create_proverb, get_proverbs, get_proverb, delete_proverb, update_proverb
 from keycloak_config import get_user_info
 
-app = FastAPI()
+
+app = FastAPI(root_path="/back")
 
 Base.metadata.create_all(bind=engine)
 
@@ -17,9 +18,6 @@ def get_db():
     finally:
         db.close()
 
-# @app.post("/users/")
-# def register_user(user: UserCreate, db: Session = Depends(get_db)):
-#     return create_user(db, user)
 
 @app.post("/proverbs/")
 def add_proverb(proverb: ProverbCreate, token: str, db: Session = Depends(get_db)):

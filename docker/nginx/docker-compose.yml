@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: nginx
+    container_name: nginx-reverse-proxy
     env_file:
       - .env
     # ports:

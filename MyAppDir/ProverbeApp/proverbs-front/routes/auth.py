@@ -14,13 +14,13 @@ from service import *
 # pour que keycloak tap à son tour sur callback
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
-
+    print("*****Login*****")   ### log of debug
     previous_url = urlparse(request.referrer)
     path = previous_url.path 
     scheme = previous_url.scheme
     host = previous_url.netloc
-    redirect_url = f'{scheme}://{host}/auth/callback?next={path}'
-
+    redirect_url = f'{scheme}://{host}/front/auth/callback?next={path}'
+    print("*****> redirecr_url=",redirect_url)  ### log of debug
     return redirect(f"{AUTH_URL}?client_id={CLIENT_ID}&redirect_uri={redirect_url}&response_type=code&scope=openid")
 
 
@@ -31,12 +31,12 @@ def logout():
     token = session.get('access_token')
 
     previous_url = request.referrer
-    logout_to_home_list = ["/proverbs/add","/app/manage/proverbs"]
+    logout_to_home_list = ["/front/proverbs/add","/front/app/manage/proverbs"]
     url_path = urlparse(request.referrer).path
     url_base = urlparse(request.referrer).netloc
     if url_path in logout_to_home_list :
         scheme = urlparse(request.referrer).scheme
-        previous_url = f'{scheme}://{url_base}/app/home'
+        previous_url = f'{scheme}://{url_base}/front/app/home'
 
 
     # Si un token est présent, rediriger vers Keycloak pour la déconnexion
@@ -58,13 +58,12 @@ def logout():
 @auth_bp.route("/callback", methods=["GET", "POST"])
 def callback():
     """Callback pour récupérer le token depuis Keycloak."""
+    print("*****Callback*****")   ### log of debug
     code = request.args.get('code')
-    
-
     path = request.args.get('next', '/')
     scheme = request.scheme
     host = request.host
-    login_redirect_url = f'{scheme}://{host}/auth/callback?next={path}'
+    login_redirect_url = f'{scheme}://{host}/front/auth/callback?next={path}'
     redirect_rout = path
 
     print( "** requst: ", request)

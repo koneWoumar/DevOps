@@ -8,11 +8,13 @@ proverbs_bp = Blueprint('proverbs', __name__)
 @proverbs_bp.route("/get")
 def get_proverbs():
 
-    response = requests.get('http://localhost:8000/proverbs')
+    print("****back_url : ", BACK_URL)
+
+    response = requests.get(f'{BACK_URL}/proverbs')
     if response.status_code == 200:
         proverbs_data = response.json()
         return render_template("proverbs.html", proverbs=proverbs_data)
-    return (generate_error("/proverbs/get",f"ERROR {response.status_code} : Something went wrong when loading proverbs list"))
+    return (generate_error("/front/proverbs/get",f"ERROR {response.status_code} : Something went wrong when loading proverbs list"))
 
 
 
@@ -31,7 +33,7 @@ def add_proverb():
         explication = request.form['explication']
         genre = request.form['genre']
 
-        url = f'http://127.0.0.1:8000/proverbs/?token={token}'
+        url = f'{BACK_URL}/proverbs/?token={token}'
         response = requests.post(
             url,
             json={'enonce': enonce, 'origine': origine, 'explication': explication, 'genre': genre},
@@ -41,7 +43,7 @@ def add_proverb():
         if response.status_code == 200:
             return redirect(url_for('proverbs.add_proverb'))
         else:
-            return (generate_error("/proverbs/add",f"ERROR {response.status_code} : Something went wrong when adding proverb"))
+            return (generate_error("/front/proverbs/add",f"ERROR {response.status_code} : Something went wrong when adding proverb"))
             # {response.text} --> for details
 
     return render_template("add_proverbs.html")
@@ -53,10 +55,10 @@ def delete_proverb(proverb_id):
     if not token:
         return(redirect(url_for('app.manage_proverbs')))
 
-    url = f'http://127.0.0.1:8000/proverbs/{proverb_id}?token={token}'
+    url = f'{BACK_URL}/proverbs/{proverb_id}?token={token}'
     response = requests.delete(url, headers={'accept': 'application/json'})
 
     if response.status_code == 200:
         return redirect(url_for('app.manage_proverbs'))
     else:
-        return (generate_error("/manage/proverbs",f"ERROR {response.status_code} : Something went wrong when deleting proverb"))
+        return (generate_error("/front/manage/proverbs",f"ERROR {response.status_code} : Something went wrong when deleting proverb"))

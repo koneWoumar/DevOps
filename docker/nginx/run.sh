@@ -4,14 +4,15 @@
 
 # Fonction pour créer une configuration proxy Nginx
 create_proxy_config() {
-    local APP_HTTP_PORT=$1
+    local APP_UPSTREAM_PORT=$1
     local APP_HTTPS_PATH=$2
-    local APP_HTTP_PATH=$3
+    local APP_UPSTREAM_PATH=$3
+    local APP_UPSTREAM_ADDR=$4
 
     # Contenu de la configuration pour Nginx
-    CONFIG_CONTENT="# Proxy configuration for app on http://localhost:$APP_HTTP_PORT$APP_HTTP_PATH
+    CONFIG_CONTENT="# Proxy configuration for app on $APP_UPSTREAM_ADDR:$APP_UPSTREAM_PORT$APP_UPSTREAM_PATH;
 location $APP_HTTPS_PATH {
-    proxy_pass http://localhost:$APP_HTTP_PORT$APP_HTTP_PATH;
+    proxy_pass $APP_UPSTREAM_ADDR:$APP_UPSTREAM_PORT$APP_UPSTREAM_PATH;
     proxy_set_header Host \$host;
     proxy_set_header X-Real-IP \$remote_addr;
     proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -49,12 +50,12 @@ server {
     # Inclusion des fichiers location pour une configuration modulaire
     include $PROXY_CONFIG_FILE;
 
-    # Proxy pass vers l'application backend
-    location / {
-        root $WELCOME_PAGE_DIR;
-        index index.html;
-        try_files \$uri \$uri/ =404; # Sert le fichier index.html ou renvoie une erreur 404 si le fichier n'existe pas
-    }
+    # # Proxy pass vers l'application backend
+    # location / {
+    #     root $WELCOME_PAGE_DIR;
+    #     index index.html;
+    #     try_files \$uri \$uri/ =404; # Sert le fichier index.html ou renvoie une erreur 404 si le fichier n'existe pas
+    # }
 
     # Fichiers statiques (optionnel, si ton backend sert des fichiers statiques)
     location /static/ {
@@ -87,19 +88,20 @@ echo > ${PROXY_CONFIG_FILE}
 
 # Parcourir les variables d'environnement pour trouver les triplets
 for env_var in $(compgen -e); do
-    if [[ $env_var =~ ^APP_(.*)_HTTP_PORT$ ]]; then
+    if [[ $env_var =~ ^APP_(.*)_UPSTREAM_PORT$ ]]; then
         APP_NAME="${BASH_REMATCH[1]}"
-        HTTP_PORT_VAR="APP_${APP_NAME}_HTTP_PORT"
-        HTTP_PATH_VAR="APP_${APP_NAME}_HTTP_PATH"
+        UPSTREAM_PORT_VAR="APP_${APP_NAME}_UPSTREAM_PORT"
+        UPSTREAM_PATH_VAR="APP_${APP_NAME}_UPSTREAM_PATH"
+        UPSTREAM_ADDR_VAR="APP_${APP_NAME}_UPSTREAM_ADDR"
         HTTPS_PATH_VAR="APP_${APP_NAME}_HTTPS_PATH"
 
         # Check that port and path are define
-        if [[ -n ${!HTTP_PORT_VAR} && -n ${!HTTPS_PATH_VAR} ]]; then
+        if [[ -n ${!UPSTREAM_PORT_VAR} && -n ${!HTTPS_PATH_VAR} && -n ${!UPSTREAM_ADDR_VAR} ]]; then
             # Create config the the app
-            create_proxy_config "${!HTTP_PORT_VAR}" "${!HTTPS_PATH_VAR}" "${!HTTP_PATH_VAR}"
-            echo "***config created for http_port = ${!HTTP_PORT_VAR}"
+            create_proxy_config "${!UPSTREAM_PORT_VAR}" "${!HTTPS_PATH_VAR}" "${!UPSTREAM_PATH_VAR}" "${!UPSTREAM_ADDR_VAR}"
+            echo "***config created for upstream app listening on = ${!UPSTREAM_ADDR_VAR}:${UPSTREAM_PORT_VAR}/${UPSTREAM_PATH_VAR}"
         else
-            echo "*X* config skit for $APP_NAME for no 'https_path or http_port' define"
+            echo "*X* config skit for $APP_NAME for no 'https_path, upstream_port or upstream_scheme' define"
         fi
     fi
 done

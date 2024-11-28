@@ -23,7 +23,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link active" href="/app/home">Home</a>
+                        <a class="nav-link active" href="/front/app/home">Home</a>
                     </li>
                     <!-- Dropdown for Proverbes -->
                     <li class="nav-item dropdown">
@@ -31,8 +31,8 @@
                             Proverbes
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="proverbesDropdown">
-                            <li><a class="dropdown-item" href="/proverbs/get">Liste</a></li>
-                            <li><a class="dropdown-item" href="/proverbs/add">Ajouter</a></li>
+                            <li><a class="dropdown-item" href="/front/proverbs/get">Liste</a></li>
+                            <li><a class="dropdown-item" href="/front/proverbs/add">Ajouter</a></li>
                         </ul>
                     </li>
                     <!-- Dropdown for Devinettes -->
@@ -61,7 +61,7 @@
                             Administrer
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="manageDropdown">
-                            <li><a class="dropdown-item" href="/app/manage/proverbs">Proverbs</a></li>
+                            <li><a class="dropdown-item" href="/front/app/manage/proverbs">Proverbs</a></li>
                             <li><a class="dropdown-item" href="#">Devinette</a></li>
                             <li><a class="dropdown-item" href="#">Enonce</a></li>
                         </ul>
@@ -73,7 +73,7 @@
                         <a class="nav-link" href="#">Contact</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/app/welcome">Go Out</a>
+                        <a class="nav-link" href="/front/app/welcome">Go Out</a>
                     </li>
                 </ul>
                 <!-- Login/Logout Section -->
@@ -93,11 +93,11 @@
                             {% if session['username'] %}
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
                                 <li><a class="dropdown-item" href="#">Edit Profile</a></li>
-                                <li><a class="dropdown-item" href="/auth/logout">Logout</a></li>
+                                <li><a class="dropdown-item" href="/front/auth/logout">Logout</a></li>
                             </ul>
                             {% else %}
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdownMenuLink">
-                                <li><a class="dropdown-item" href="/auth/login">Login</a></li>
+                                <li><a class="dropdown-item" href="/front/auth/login">Login</a></li>
                             </ul>
                             {% endif %}
                         </li>   
