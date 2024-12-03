@@ -6,10 +6,10 @@ services:
     env_file:
       - .env
     network_mode: host
-    command:
-      - start
+    command: > 
+      start --import-realm
     volumes:    
-    #   - ${KEYCLOAK_DATA_VOLUME_DIR}:/var/lib/mysql
+      - ./realm:/opt/keycloak/data/import
       - /etc/ssl/certs/my-autosigne-cert/:/etc/x509/https:ro
     deploy:
       resources:

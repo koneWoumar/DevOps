@@ -15,11 +15,12 @@ from service import *
 @auth_bp.route("/login", methods=["GET", "POST"])
 def login():
     print("*****Login*****")   ### log of debug
-    previous_url = urlparse(request.referrer)
-    path = previous_url.path 
-    scheme = previous_url.scheme
-    host = previous_url.netloc
-    redirect_url = f'{scheme}://{host}/front/auth/callback?next={path}'
+    # previous_url = urlparse(request.referrer).path
+    path = urlparse(request.referrer).path
+    # scheme = previous_url.scheme
+    # host = previous_url.netloc
+    # redirect_url = f'{scheme}://{host}/front/auth/callback?next={path}'
+    redirect_url = f'{FRONT_URL}/front/auth/callback?next={path}'
     print("*****> redirecr_url=",redirect_url)  ### log of debug
     return redirect(f"{AUTH_URL}?client_id={CLIENT_ID}&redirect_uri={redirect_url}&response_type=code&scope=openid")
 
@@ -61,12 +62,12 @@ def callback():
     print("*****Callback*****")   ### log of debug
     code = request.args.get('code')
     path = request.args.get('next', '/')
-    scheme = request.scheme
-    host = request.host
-    login_redirect_url = f'{scheme}://{host}/front/auth/callback?next={path}'
+    # scheme = request.scheme
+    # host = request.host
+    # login_redirect_url = f'{scheme}://{host}/front/auth/callback?next={path}'
+    login_redirect_url = f'{FRONT_URL}/front/auth/callback?next={path}'
     redirect_rout = path
 
-    print( "** requst: ", request)
     print("*** request.arg", request.args)
 
     response = requests.post(

@@ -25,7 +25,9 @@ keycloak_openid = KeycloakOpenID(
 
 def get_user_info(token: str):
     try:
+        print("***avant***")
         user_info = keycloak_openid.introspect(token)
+        print("***apres***")
         if user_info.get("active"):
             return user_info
         else:

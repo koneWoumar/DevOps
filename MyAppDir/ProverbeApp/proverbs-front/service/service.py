@@ -19,7 +19,7 @@ USERINFO_URL = f"{KEYCLOAK_URL}/realms/{REALM}/protocol/openid-connect/userinfo"
 LOGOUT_URL = f"{KEYCLOAK_URL}/realms/{REALM}/protocol/openid-connect/logout"
 
 # Front Url Config
-# BASE_URL = f'{SCHEME}://{FQDN}'
+FRONT_URL = f'{SCHEME}://{FQDN}'
 
 
 

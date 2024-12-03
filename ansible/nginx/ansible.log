@@ -1391,3 +1391,21 @@ The offending line appears to be:
 2024-10-27 03:34:44,333 p=520303 u=root n=ansible | changed: [localhost]
 2024-10-27 03:34:44,351 p=520303 u=root n=ansible | PLAY RECAP *******************************************************************************************************************************************************************************
 2024-10-27 03:34:44,351 p=520303 u=root n=ansible | localhost                  : ok=5    changed=3    unreachable=0    failed=0    skipped=0    rescued=0    ignored=0   
+2024-12-01 22:11:39,577 p=65603 u=root n=ansible | PLAY [Uninstall nginx] *********************************************************
+2024-12-01 22:11:39,677 p=65603 u=root n=ansible | TASK [Gathering Facts gather_subset=['all'], gather_timeout=10] ****************
+2024-12-01 22:11:42,202 p=65603 u=root n=ansible | ok: [localhost]
+2024-12-01 22:11:42,225 p=65603 u=root n=ansible | TASK [uninstall_nginx : Remove Nginx name=nginx, state=absent] *****************
+2024-12-01 22:11:51,976 p=65603 u=root n=ansible | changed: [localhost]
+2024-12-01 22:11:51,990 p=65603 u=root n=ansible | TASK [uninstall_nginx : Purge Nginx name=nginx*, purge=True, state=absent] *****
+2024-12-01 22:12:19,790 p=65603 u=root n=ansible | changed: [localhost]
+2024-12-01 22:12:19,804 p=65603 u=root n=ansible | TASK [uninstall_nginx : Autoclean and autoremove packages autoclean=True, autoremove=True] ***
+2024-12-01 22:12:21,710 p=65603 u=root n=ansible | ok: [localhost]
+2024-12-01 22:12:21,725 p=65603 u=root n=ansible | TASK [uninstall_nginx : Check if Nginx config directory exists path=/etc/nginx] ***
+2024-12-01 22:12:22,247 p=65603 u=root n=ansible | ok: [localhost]
+2024-12-01 22:12:22,266 p=65603 u=root n=ansible | TASK [uninstall_nginx : Remove Nginx config directory path=/etc/nginx, state=absent] ***
+2024-12-01 22:12:22,313 p=65603 u=root n=ansible | skipping: [localhost]
+2024-12-01 22:12:22,328 p=65603 u=root n=ansible | TASK [uninstall_nginx : Remove other Nginx-related files or directories path={{ item }}, state=absent] ***
+2024-12-01 22:12:23,013 p=65603 u=root n=ansible | changed: [localhost] => (item=/var/www/my-site-nginx)
+2024-12-01 22:12:23,372 p=65603 u=root n=ansible | ok: [localhost] => (item=/var/log/nginx)
+2024-12-01 22:12:23,405 p=65603 u=root n=ansible | PLAY RECAP *********************************************************************
+2024-12-01 22:12:23,405 p=65603 u=root n=ansible | localhost                  : ok=6    changed=3    unreachable=0    failed=0    skipped=1    rescued=0    ignored=0   
