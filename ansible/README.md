@@ -492,9 +492,18 @@ variable_default: "Valeur_Default"
   roles:
     - myrole
 ```
-- l'execution :
+- l'execution avec un fichier d'inventaire:
+le fichier d'inventaire contient les données d'authentification avec l'hote distant
+
 ```bash
 ansible-playbook playbook.yml -i inventory -e "variable_cmd=Valeur_Ligne_Commande"
+```
+
+- l'execution avec une idress ip:
+ici les données d'authentification sont fourni dans la commande
+
+```bash
+ansible-playbook -i "xxx.xxx.xxx.xxx," -u kone_wolouho --private-key=~/.ssh/idrsa ../ansibleplay/play-system-setup.yml
 ```
 
 ### Utilisation de variable d'environement du cible
