@@ -8,7 +8,9 @@ import os
 # ------------------------------------------------#
 
 # Charger variable from .env
-load_dotenv()
+area = os.getenv("ENVIRONMENT")
+if (area != "container"):
+    load_dotenv()
 
 # Accéder aux variables d'environnement
 DB_URL = os.getenv("DATABASE_URL")

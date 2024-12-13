@@ -5,7 +5,10 @@ import os
 # -------------------------------------------#
 
 # load from .env the variable
-load_dotenv()
+area = os.getenv("ENVIRONMENT")
+if (area != "container"):
+    load_dotenv()
+
 
 # get the value of variable
 SERVER_URL = os.getenv('SERVER_URL')

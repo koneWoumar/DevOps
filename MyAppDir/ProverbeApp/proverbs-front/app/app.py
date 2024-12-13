@@ -1,9 +1,14 @@
 import os
 from flask import Flask
 from dotenv import load_dotenv
+from service import *
 
-# Charger les variables d'environnement
-load_dotenv()
+# Charger variable from .env
+area = os.getenv("ENVIRONMENT")
+if (area != "container"):
+    load_dotenv()
+
+print()
 
 # Créer l'application Flask
 root_path = "/front"
@@ -21,4 +26,4 @@ app.register_blueprint(proverbs_bp, url_prefix=f'{root_path}/proverbs')  # Route
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=PORT)

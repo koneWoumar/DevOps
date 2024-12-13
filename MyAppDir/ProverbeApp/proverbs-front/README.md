@@ -1,4 +1,4 @@
-# Proverbs-back
+# Proverbs-front
 
 
 ## App overview
@@ -12,7 +12,7 @@
 -  Build docker images
 
 ```bash
-docker build -t konewoumar/proverbs-back:${version} .
+docker build -t konewoumar/proverbs-front:${version} .
 ```
 
 -  Athenticate for registry
@@ -24,5 +24,4 @@ docker login -u ${username}
 -  Push docker images
 
 ```bash
-docker push konewoumar/proverbs-back:${version}
-```
+docker push konewoumar/proverbs-front:${version}

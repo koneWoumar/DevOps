@@ -10,6 +10,7 @@ REALM = os.getenv('REALM')
 FQDN = os.getenv('FQDN')
 SCHEME = os.getenv('SCHEME')
 BACK_URL = os.getenv('BACK_URL')
+PORT = os.getenv('PORT')
 
 
 # URLs pour Keycloak
