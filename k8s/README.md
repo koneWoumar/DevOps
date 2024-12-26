@@ -572,11 +572,157 @@ Définit les labels que Kubernetes utilise pour sélectionner les pods à associ
 - spec.ports :
 Déclare la liste des ports sur lesquels le service est accessible. Chaque port expose le service à un certain niveau du réseau et redirige le trafic vers les pods ciblés.
 
-    protocol : Spécifie le protocole de communication, ici TCP, utilisé pour la transmission des données.
-    port : Indique le port sur lequel le service est exposé aux clients du réseau interne.
-    targetPort : Correspond au port du conteneur cible dans chaque pod vers lequel le trafic doit être dirigé. Cela permet de faire correspondre le port externe et le port de l’application dans le conteneur.
+- protocol : Spécifie le protocole de communication, ici TCP, utilisé pour la transmission des données.
+- port : Indique le port sur lequel le service est exposé aux clients du réseau interne.
+- targetPort : Correspond au port du conteneur cible dans chaque pod vers lequel le trafic doit être dirigé. Cela permet de faire correspondre le port externe et le port de l’application dans le conteneur.
 
 - type :
 Définit la portée d’accessibilité du service dans le cluster. Ici, ClusterIP expose le service uniquement dans le cluster, permettant une communication interne entre services. Les autres valeurs possibles incluent NodePort (exposition à l’extérieur via un port de nœud) et LoadBalancer (exposition externe avec une adresse IP publique via un load balancer).
 
 
+## PRATICAL CASE : HELLOWORD DEPLOYMENT ON GKE
+
+At this stage, the cluster GKE is already created and is running successfully.
+
+<strong> How to deploy a simple app on the cluster and make it acceible via https by clients?</strong>
+
+### Architecture
+
+There is lots of possible architecuture in making app accessible via https by client.
+see this [this article](https://www.sfeir.dev/cloud/comprendre-kubernetes-ingress-plongee-dans-le-vrai-load-balancer-demo-minikube/) .
+Here we will use Ingress as soluion to make the app accessible vai https.
+
+<strong>The are two type of Ingress in cloud context :</strong>
+- Ingress based on a web server like NGINX
+- Ingress based on a Load-balancer on a cloud, managed by the cloud provider
+
+#### Implementation with the Ingress based on cloud Load-balancer
+
+We have performed the following actions :
+
+- Reserved a `static ip adress` in gke for the Ingress
+Here i have already donne this, in my project, i had to be carefull with the type of the ip wich could be global or regional.
+According to the what had been chosen, an annotation on the `Ingress file` should be updated to match the type of the ip addr.
+
+- Register a `dns-names` pointing to the static ip adress
+We need a dn-name to ask for a managed certificate.
+
+- Config a k8s ressource file for `ManagedCertificate` that can be done directly in gke
+This can be donne directly in gke console or with gke api. But here i have used k8s ressource file to performe this action.
+```yaml
+---
+# Certificate managed by GKE
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: managed-cert
+spec:
+  domains:
+    - web.kone-wolouho-oumar.com
+    - prod.kone-wolouho-oumar.com
+```
+- Config a k8s ressource file for `FrontendConfig` to redirect http to https
+```yaml
+---
+# Config use by ingress to redirect http to https
+apiVersion: networking.gke.io/v1beta1
+kind: FrontendConfig
+metadata:
+  name: http-to-https
+spec:
+  redirectToHttps:
+    enabled: true
+    responseCodeName: MOVED_PERMANENTLY_DEFAULT
+```
+- Config a k8s ressource file for `Ingress` to define the proxy redirection rule to differents app
+```yaml
+
+---
+# Ingress ressource using GCE ingress-controller
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress
+  annotations:
+    # If the class annotation is not specified it defaults to "gce".
+    spec.ingressClassName: "gce"
+    kubernetes.io/ingress.global-static-ip-name: "wke-cluster-static-ip-addr"
+    networking.gke.io/managed-certificates: managed-cert
+    networking.gke.io/v1beta1.FrontendConfig: "http-to-https"
+spec:
+  rules:
+  - host: web.kone-wolouho-oumar.com
+    http:
+      paths:
+      - path: /wke-web-site
+        pathType: Prefix
+        backend:
+          service:
+            name: wke-web-site-service
+            port:
+              number: 5000
+
+
+  # - host: prod.kone-wolouho-oumar.com
+  #   http:
+  #     paths:
+  #     - path: /*
+  #       pathType: ImplementationSpecific
+  #       backend:
+  #         service:
+  #           name: proverbs-app-service
+  #           port:
+  #             number: 5000
+```
+- Config a k8s ressource file for `deployment` to run the app on a pod or set of pods
+```yaml
+---
+# Deployment YAML
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wke-web-site-deployment
+  labels:
+    app: wke-web-site
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wke-web-site
+  template:
+    metadata:
+      labels:
+        app: wke-web-site
+    spec:
+      containers:
+      - name: wke-web-site
+        image: konewoumar/wke-web-site:1.0.0
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            memory: "128Mi"
+          limits:
+            memory: "128Mi"
+```
+- Config a k8s ressource file for `Service` to expose the app on the cluster
+```yaml
+---
+# Service YAML
+apiVersion: v1
+kind: Service
+metadata:
+  name: wke-web-site-service
+spec:
+  selector:
+    app: wke-web-site
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP
+```
+
+- Update the compute `helthcheck` of the service [here in GKE](https://console.cloud.google.com/compute/healthChecks)
+
+The default helthcheck path of the back-end (back-end = a service used by Ingress) is set to "/", if your app serve under un subpath, you should update this helthcheck path with the subpath of your app.
