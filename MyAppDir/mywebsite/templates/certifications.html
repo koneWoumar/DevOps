@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Certifications</h1>
+{% for cert in certifications %}
+<div class="card mb-3">
+    <div class="card-body">
+        <!-- Titre de la certification -->
+        <h5 class="card-title"><i class="bi bi-patch-check-fill"></i> {{ cert.name }}</h5>
+        
+        <!-- Dates d'obtention du diplome -->
+        <p class="card-text text-muted">
+            <i class="bi bi-calendar4"></i> 
+            {{ cert.date }}
+        </p>
+
+        <!-- Description de la certification -->
+        <p class="card-text text-muted">
+            <i class="bi bi-book"></i> <strong>Description</strong><br>
+            
+            {{ cert.description }}
+        </p>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

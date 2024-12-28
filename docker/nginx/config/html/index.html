@@ -1,46 +1,96 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nginx</title>
+    <title>My Personal Links</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 60vh;
-            background-color: #f4f4f4;
-            color: #333;
+            background-color: #f8f9fa;
         }
-        h1 {
-            font-size: 4rem;
-            color: #4CAF50; /* Couleur verte pour rappeler Nginx */
-            margin: 0;
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #6c757d;
         }
-        h3 {
-            font-size: 2rem;
-            color: #2196F3; /* Couleur bleue pour "Bienvenue" */
-            margin: 10px 0 0;
+        .links-section a {
+            display: block;
+            margin: 10px 0;
+            font-size: 18px;
+            color: #495057;
+            text-decoration: none;
         }
-        h5 {
-            font-size: 1.5rem;
-            color: #ba11c0; /* Couleur orange pour "Kone Wolouho Oumar" */
-            margin: 5px 0 0;
+        .links-section a:hover {
+            color: #007bff;
+            text-decoration: underline;
         }
-        p {
-            font-size: 1.5rem;
-            margin: 10px 0 0;
+        .links-section i {
+            margin-right: 10px;
+        }
+        .footer {
+            margin-top: 150px;
+            font-size: 20px;
+        }
+        .name {
+            color: #007bff;
+            font-weight: bold;
+        }
+        .title {
+            color: #6c757d;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
-    <h1>Nginx</h1>
-    <h3>Bienvenue</h3>
-    <h5>Kone Wolouho Oumar</h5>
+    <div class="container text-center mt-5">
+        <!-- Main Title -->
+        <h1 class="display-4 fw-bold">Welcome to My Personal Hub</h1>
+        
+        <!-- Description -->
+        <p class="mt-3">This page serves as a gateway to explore my professional profiles, projects, and personal initiatives. Feel free to explore the links below!</p>
+        
+        <!-- Profile Image -->
+        <div class="mt-4">
+            <img src="Photo_wkone.jpg" alt="Your Photo" class="profile-image">
+        </div>
+
+        <!-- Links Section -->
+        <div class="links-section mt-5">
+            <a href="https://web.kone-wolouho-oumar.com/wke-web-site" target="_blank">
+                <i class="fas fa-globe"></i> My Personal Website
+            </a>
+            <a href="https://prod.kone-wolouho-oumar.com/proverbs-app" target="_blank">
+                <i class="fas fa-book"></i> My Proverbs Platform
+            </a>
+            <a href="https://github.com/koneWoumar" target="_blank">
+                <i class="fab fa-github"></i> My GitHub Profile
+            </a>
+            <a href="https://gitlab.com/wkone" target="_blank">
+                <i class="fab fa-gitlab"></i> My GitLab Profile
+            </a>
+            <a href="https://www.linkedin.com/in/wolouho-oumar-kone-3a4954245" target="_blank">
+                <i class="fab fa-linkedin"></i> My LinkedIn Profile
+            </a>
+
+            <a href="https://web.kone-wolouho-oumar.com/zabbix" target="_blank">
+                <img src="https://www.zabbix.com/favicon.ico" alt="Zabbix" style="width: 20px; height: 20px;"> Zabbix Dashboard
+            </a>
+            
+        </div>
+
+        <!-- Footer Section -->
+        <div class="footer text-center">
+            <p class="name">KONE Wolouho Oumar</p>
+            <p class="title">DevOps Engineer</p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+

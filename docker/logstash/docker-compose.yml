@@ -1,0 +1,16 @@
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.17.0
+    container_name: logstash
+    env_file:
+      - .env
+    volumes:
+      - ./config/pipeline:/usr/share/logstash/pipeline
+    network_mode: host
+
+
+
+
+
+
+# logstash:
+    # ports: "5044:5044"

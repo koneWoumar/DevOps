@@ -1,0 +1,37 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress-nginx
+  namespace: wke-prod
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - demo.kone-wolouho-oumar.com
+    secretName: tls-secret
+  rules:
+  - host: demo.kone-wolouho-oumar.com
+    http:
+      paths:
+      - path: /wke-web-site/
+        pathType: Prefix
+        backend:
+          service:
+            name: wke-web-site-service
+            port:
+              number: 5000
+
+  # - host: prod.kone-wolouho-oumar.com
+  #   http:
+  #     paths:
+  #     - path: /wke-prod
+  #       pathType: Prefix
+  #       backend:
+  #         service:
+  #           name: wke-prod-service
+  #           port:
+  #             number: 5000

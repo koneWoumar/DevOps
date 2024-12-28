@@ -1,0 +1,44 @@
+---
+# Deployment YAML
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wke-web-site-deployment
+  labels:
+    app: wke-web-site
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wke-web-site
+  template:
+    metadata:
+      labels:
+        app: wke-web-site
+    spec:
+      containers:
+      - name: wke-web-site
+        image: konewoumar/wke-web-site:1.0.0
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            memory: "128Mi"
+          limits:
+            memory: "128Mi"
+
+
+---
+# Service YAML
+apiVersion: v1
+kind: Service
+metadata:
+  name: wke-web-site-service
+spec:
+  selector:
+    app: wke-web-site
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP

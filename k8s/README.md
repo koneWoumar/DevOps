@@ -726,3 +726,149 @@ spec:
 - Update the compute `helthcheck` of the service [here in GKE](https://console.cloud.google.com/compute/healthChecks)
 
 The default helthcheck path of the back-end (back-end = a service used by Ingress) is set to "/", if your app serve under un subpath, you should update this helthcheck path with the subpath of your app.
+
+
+#### Implementation with the Ingress based on a web server : INGINX Ingress controller
+
+We have performed the following actions :
+
+- Install an Ingress controller NGINX, in the cluster :
+This can be perform with the next command :
+```bash
+# Installing helm first if your don't have
+curl -fsSL https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 > get_helm.sh
+chmod +x get_helm.sh
+./get_helm.sh
+# Installing with helm
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+# Installing with a yaml file
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/cloud/deploy.yaml
+```
+
+After installing the controller, GCP attribute an ip adress automatically to the Ingress controller; this can be seen by executing the next command:
+```bash
+albarry@albarry-Latitude-E5450:~/Bureau/DevOps/k8s$ kubectl get svc -n ingress-nginx
+NAME                                 TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)                      AGE
+ingress-nginx-controller             LoadBalancer   34.118.232.209   34.70.168.163   80:30781/TCP,443:30996/TCP   46h #<--ip adress of the ingress controller
+ingress-nginx-controller-admission   ClusterIP      34.118.234.36    <none>          443/TCP                      46h
+```
+
+This ip will be use as the NGNIX Ingress ip adress (to whom we should register a dns name). Alternatively we can attribute a static ip adress (reserved from GCP) to attribute to the Ingress controller. 
+
+At this stage a dn-name is register to the ip adress of the Ingress-controller.
+
+
+
+- Register a `dns-names` pointing to the static ip adress
+We need a dn-name to request for a certificate.
+
+- Create a certificate with certbot for example : 
+
+Here we can use directly cert-manager in kubernate to automate the certificate management; But here we are doing it manually as we entourted some problem with this method.
+
+Our domaine point to an ip adress (the one of the ingress-controller). We don't have acces to the machine to wich the ip is assign, in this case to generate certificate, we use the certbot challenge method.
+This method request registering a TXT record for the domaine with a token prompt by the command that is use to request the certificate. 
+This command is as follow :
+
+```bash
+sudo certbot certonly --manual --preferred-challenges dns -d example.com -d "*.example.com"
+```
+
+- Create a kubernates tls secret :
+
+This secret will be the certificate in kubernate context and will be used by the ingress to secure ssl connection.
+We will create this like this :
+```bash
+kubectl create secret tls tls-secret --namespace=<namespace> --cert=tls.crt --key=tls.key
+```
+
+- Config a k8s ressource file for `Ingress` to define the proxy redirection rule to differents app
+```yaml
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: my-ingress-nginx
+  namespace: wke-prod
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    cert-manager.io/issuer: letsencrypt-prod
+spec:
+  ingressClassName: nginx
+  tls:
+  - hosts:
+    - demo.kone-wolouho-oumar.com
+    secretName: tls-secret
+  rules:
+  - host: demo.kone-wolouho-oumar.com
+    http:
+      paths:
+      - path: /wke-web-site/
+        pathType: Prefix
+        backend:
+          service:
+            name: wke-web-site-service
+            port:
+              number: 5000
+
+  # - host: prod.kone-wolouho-oumar.com
+  #   http:
+  #     paths:
+  #     - path: /wke-prod
+  #       pathType: Prefix
+  #       backend:
+  #         service:
+  #           name: wke-prod-service
+  #           port:
+  #             number: 5000
+
+```
+- Config a k8s ressource file for `deployment` to run the app on a pod or set of pods
+```yaml
+---
+# Deployment YAML
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wke-web-site-deployment
+  labels:
+    app: wke-web-site
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: wke-web-site
+  template:
+    metadata:
+      labels:
+        app: wke-web-site
+    spec:
+      containers:
+      - name: wke-web-site
+        image: konewoumar/wke-web-site:1.0.0
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            memory: "128Mi"
+          limits:
+            memory: "128Mi"
+```
+- Config a k8s ressource file for `Service` to expose the app on the cluster
+```yaml
+---
+# Service YAML
+apiVersion: v1
+kind: Service
+metadata:
+  name: wke-web-site-service
+spec:
+  selector:
+    app: wke-web-site
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP
+```

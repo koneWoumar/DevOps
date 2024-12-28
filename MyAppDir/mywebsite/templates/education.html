@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Formations</h1>
+{% for edu in education %}
+<div class="card mb-3">
+    <div class="card-body">
+        <!-- Titre de la formation -->
+        <h5 class="card-title">{{ edu.degree }}</h5>
+        
+        <!-- Nom de l'école -->
+        <p class="card-text">
+            <i class="bi bi-house-fill"></i> 
+            <strong>{{ edu.school }}</strong>
+        </p>
+        
+        <!-- Lieu de l'ecole -->
+        <p class="card-text">
+            <i class="bi bi-geo-alt-fill"></i> 
+            {{ edu.location }}
+        </p>
+        
+        <!-- Dates de la formation -->
+        <p class="card-text">
+            <i class="bi bi-calendar-event-fill"></i> 
+            {{ edu.date }}
+        </p>
+        
+        <!-- Description de la formation -->
+        <p class="card-text">
+            <i class="bi bi-book-fill"></i> <strong>Description</strong><br>
+            {{edu.description}}
+        </p>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

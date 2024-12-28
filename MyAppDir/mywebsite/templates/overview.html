@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <!-- Photo -->
+    <div class="col-md-3 text-center">
+        <img src="{{ url_for('static', filename='images/profile.jpg') }}" alt="Wolouho KONE" class="img-thumbnail mb-3" style="width: 100%; max-width: 200px;">
+    </div>
+    <!-- Informations principales -->
+    <div class="col-md-9">
+        <h1>Wolouho KONE</h1>
+        <h3 class="text-muted">{{ overview.title }}</h3>
+        <hr>
+        <!-- <h5>Informations personnelles</h5> -->
+        <div class="links-section">
+            <p>
+                <i class="fas fa-user"></i> {{ overview.name }}
+            </p>
+            <p>
+                <i class="fas fa-envelope"></i>{{ overview.address }}
+            </p>
+            <p>
+                <i class="fas fa-phone"></i>{{ overview.phone }}
+            </p>
+            <p>
+                <i class="fas fa-map-marker-alt"></i>{{ overview.email }}
+            </p>
+
+            <p>
+            <a href="{{ overview.github }}" target="_blank">
+                <i class="fab fa-github"></i> My GitHub Profile
+            </a>
+            <a href="{{ overview.gitlab }}" target="_blank">
+                <i class="fab fa-gitlab"></i> My GitLab Profile
+            </a>
+            <a href="{{ overview.linkedin }}" target="_blank">
+                <i class="fab fa-linkedin"></i> My LinkedIn Profile
+            </a>
+            <a href="{{ overview.proverbsapp }}" target="_blank">
+                <i class="fas fa-book"></i> My Proverbs Platform
+            </a>
+        </div>
+    </div>
+</div>
+
+
+<!-- Profil personnel -->
+<div class="mt-4">
+    <h5> <strong>Profil</strong> </h5>
+    <p>
+        {{ overview.profile }}
+    </p>
+</div>
+
+<!-- Situation actuelle -->
+<div class="mt-4">
+    <h5><strong>Situation actuelle</strong></h5>
+    <p>
+        {{ overview.situation }}
+    </p>
+</div>
+
+
+{% endblock %}

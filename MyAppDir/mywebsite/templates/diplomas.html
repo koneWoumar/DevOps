@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Diplomes</h1>
+{% for dip in diplomas %}
+<div class="card mb-3">
+    <div class="card-body">
+        <!-- Titre du diplome -->
+        <h5 class="card-title"><i class="bi bi-mortarboard-fill"></i> {{ dip.titre }}</h5>
+        
+        <!-- Nom de l'école d'obtention du diplome -->
+        <p class="card-text text-muted">
+            <i class="bi bi-house"></i> 
+            {{ dip.school }}
+        </p>
+        
+        <!-- Lieu d'obtention du diplome -->
+        <p class="card-text text-muted">
+            <i class="bi bi-geo-alt"></i> 
+            {{ dip.location }}
+        </p>
+        
+        <!-- Dates d'obtention du diplome -->
+        <p class="card-text text-muted">
+            <i class="bi bi-calendar4"></i> 
+            {{ dip.date }}
+        </p>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}
+

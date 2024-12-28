@@ -1,0 +1,37 @@
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.17.0
+    container_name: elasticsearch
+    env_file:
+      - .env
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    network_mode: host
+
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.17.0
+    container_name: kibana
+    env_file:
+      - .env
+    network_mode: host
+
+
+
+volumes:
+  esdata:
+    driver: local
+
+
+
+
+
+
+# Kibana
+  # port : 5601
+  # http_url : http://localhost:5601
+
+# elasticsearch : 
+  # port : 9200
+
+

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Expériences</h1>
+{% for experience in experiences %}
+<div class="card mb-3">
+    <div class="card-body">
+        <!-- Titre de l'expérience -->
+        <h5 class="card-title">{{ experience.title }}</h5>
+        
+        <!-- Nom de l'entreprise -->
+        <p class="card-text">
+            <i class="bi bi-building"></i> 
+            <strong>{{ experience.company }}</strong>
+        </p>
+        
+        <!-- Lieu de l'expérience -->
+        <p class="card-text">
+            <i class="bi bi-geo-alt-fill"></i> 
+            {{ experience.location }}
+        </p>
+        
+        <!-- Dates de l'expérience -->
+        <p class="card-text">
+            <i class="bi bi-calendar-event-fill"></i> 
+            {{ experience.date }}
+        </p>
+        
+        <!-- Liste des tâches -->
+        <p class="card-text">
+            <i class="bi bi-list-task"></i> <strong>Tasks</strong>
+        </p>
+        <ul>
+            {% for task in experience.tasks %}
+            <li>{{ task }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

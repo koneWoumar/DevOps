@@ -1,0 +1,111 @@
+{
+    "overview": {
+      "name": "KONE Wolouho Oumar",
+      "title": "Ingénieur DevOps",
+      "address": "30 Rue de Brest, 35000 Rennes",
+      "phone": "+33766381574",
+      "email": "kone.wolouho@gmail.com",
+      "linkedin": "https://www.linkedin.com/in/wolouho-oumar-kone-3a4954245/",
+      "gitlab": "https://gitlab.com/Wkone",
+      "github": "https://gitlab.com/yourprofile",
+      "proverbsapp": "https://web.kone-wolouho-oumar.com",
+      "profile": "Passionné par les technologies DevOps, avec une expertise en automatisation, cloud computing, conteneurisation et CI/CD.",
+      "situation": "Actuellement en poste chez Oustest France Rennes"
+
+    },
+ 
+
+    "skills": [
+      {
+        "name":"docker",
+        "note": 80
+      },
+      {
+        "name":"docker-compose",
+        "note": 80
+      },
+      {
+        "name":"kubernates",
+        "note": 80
+      }
+    ],
+
+
+    "experiences": [
+      {
+        "title": "Ingénieur DevOps",
+        "company": "KEREVAL",
+        "date": "Septembre 2023 - Septembre 2024",
+        "location": "Thorigné-Fouillard, France",
+        "tasks":[
+          "Mise en place de pipelines CI/CD.",
+          "Automatisation des processus d'industrialisation.",
+          "Déploiement et conteneurisation sous Linux avec Docker et Kubernetes.",
+          "Maintenance des serveurs et applications."
+        ]
+      },
+      {
+        "title": "Ingénieur DevOps",
+        "company": "KEREVAL",
+        "date": "Juin 2023 - Août 2023",
+        "location": "Thorigné-Fouillard, France",
+        "tasks":[
+          "Standardisation des configurations pour Node.js.",
+          "Documentation en anglais des processus.",
+          "Redistribution des briques logicielles sur des serveurs optimisés."
+        ]
+      }
+
+    ],
+    "education": [
+      {
+        "degree": "Ingénieur en Informatique",
+        "school": "École Supérieure d'Ingénieurs de Rennes",
+        "location": "Rennes, Bretagne, France",
+        "date": "2022 - 2024",
+        "description": "Formation en génie logiciel, DevOps, cloud et architectures microservices."
+      },
+      {
+        "degree": "Ingénieur en TI",
+        "school": "Institut National Polytechnique Félix HOUPHOUËT-BOIGNY",
+        "location": "Rennes, Bretagne, France",
+        "date": "2020 - 2022",
+        "description": "Sécurité, réseaux et développement logiciel."
+      }
+    ],
+
+
+    "diplomas":[
+      {
+      "level":"Ingénieur",
+      "titre":"Ingénieur des systèmes d'information",
+      "date":"Janvier 2025",
+      "school":"École Supérieure d'Ingénieurs de Rennes",
+      "location":"Rennes, Bretagne, France"
+      }
+    ],
+
+
+    "certifications": [
+      {
+        "name": "LinguaSkill",
+        "date":"septembre 2024",
+        "description": "Anglais Niveau B2"
+      }
+    ],
+    
+    "languages":[
+      {
+        "name":"Français",
+        "level":100,
+        "comment":"langue maternelle"
+      }
+    ],
+
+    "hobby": [
+
+    ],
+
+    "blog": []
+  }
+  

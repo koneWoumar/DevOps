@@ -1,0 +1,28 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1>Languages</h1>
+
+<div class="mt-4">
+    {% for lang in languages %}
+    <div class="mb-3">
+        <p class="mb-1">
+            <strong>{{ lang.name }}</strong>
+        </p>
+        <div class="progress" style="height: 20px;">
+            <div 
+                class="progress-bar" 
+                role="progressbar" 
+                style="width: {{ lang.level ~ '%' }}"
+                aria-valuemin="0" 
+                aria-valuemax="100">
+                {{ lang.comment }}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}
