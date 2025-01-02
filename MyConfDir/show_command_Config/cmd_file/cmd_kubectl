@@ -1,7 +1,111 @@
 # Kuberantes
 
-* Stop the cluster kubernate
-sudo systemctl stop kubelet
+* Ressource Kuberantes
+nodes
+pods
+namespaces
+services or svs
+deployments or deploy
+replicasets or rs
+statefulsets or sts
+daemonsets or ds
+jobs
+cronjobs
+configmaps or cm
+secrets
+pvc
+pv
+storageclasses or sc
+ingress or ing
+networkpolicies or netpol
+roles
+rolebindings
+clusterrolebindings
+serviceaccounts or sa
+volumes
+hpa
+events or ev
+endpoints or ep
+limitranges
 
-* Start the cluster
-sudo systemctl start kubelet
+
+* Getting commands
+kubectl get <ressource> --all-namespaces
+kubectl get <ressource> -n <nom-du-namespace>
+kubectl get <ressource> <nom> -o yaml
+kubectl get <ressource> <nom> -o json
+kubectl get <ressource> --selector <clé=valeur>
+
+* Creating commands
+kubectl create -f <fichier.yaml>
+kubectl create namespace <nom-du-namespace>
+kubectl create deployment <nom> --image=<image>
+kubectl create configmap <nom> --from-file=<chemin>
+kubectl create secret generic <nom> --from-literal=<clé>=<valeur>
+
+* Delete commands
+kubectl delete <ressource> <nom>
+kubectl delete <ressource> --all
+kubectl delete -f <fichier.yaml>
+kubectl delete namespace <nom-du-namespace>
+kubectl delete pod <nom> --grace-period=0 --force
+
+* Edit commands 
+kubectl edit <ressource> <nom>
+kubectl edit deployment <nom>
+kubectl edit configmap <nom>
+
+
+* Apply commands
+kubectl apply -f <fichier.yaml>
+kubectl apply -k <répertoire>
+kubectl apply --prune -f <fichier.yaml> --all
+
+
+* Updating commands
+kubectl set image deployment/<nom> <container>=<nouvelle-image>
+kubectl set env deployment/<nom> <clé>=<valeur>
+kubectl rollout restart deployment/<nom>
+kubectl rollout status deployment/<nom>
+kubectl scale deployment <nom> --replicas=<nombre>
+
+* Describe commands
+kubectl describe <ressource> <nom>
+kubectl describe node <nom>
+kubectl describe pod <nom> -n <nom-du-namespace>
+
+* Logs commands
+kubectl logs <nom-du-pod>
+kubectl logs <nom-du-pod> -f
+kubectl logs <nom-du-pod> -c <nom-du-container>
+kubectl logs -l <label>=<valeur>
+
+
+* Exec commands in pod
+kubectl exec -it <nom-du-pod> -- /bin/bash
+kubectl exec <nom-du-pod> -- <commande>
+
+
+* Debaugging commands
+kubectl describe <ressource> <nom>
+kubectl logs <nom-du-pod> -f
+kubectl exec -it <nom-du-pod> -- /bin/bash
+kubectl get events -n <nom-du-namespace>
+kubectl get events --sort-by='.metadata.creationTimestamp'
+
+
+* Ressource configuration commands
+kubectl annotate <ressource> <nom> <clé>=<valeur>
+kubectl label <ressource> <nom> <clé>=<valeur>
+kubectl patch <ressource> <nom> --type='json' -p='<modification>'
+kubectl replace -f <fichier.yaml>
+
+* Exporte / Backup commands
+kubectl get <ressource> <nom> -o yaml > export.yaml
+kubectl get all -n <nom-du-namespace> -o yaml > backup.yaml
+
+
+* Miscellaneous Commands
+kubectl explain <ressource>                 # Documentation sur une ressource
+kubectl wait --for=condition=ready pod/<nom>
+kubectl completion bash > /etc/bash_completion.d/kubectl  # Auto-complétion
