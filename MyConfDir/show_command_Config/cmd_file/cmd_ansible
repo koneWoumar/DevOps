@@ -1,0 +1,20 @@
+# Ansible
+
+* Executer un playbook avec un fichier inventaire
+ansible-playbook -i path-to-inventory [-u kone_wolouho --private-key=~/.ssh/idrsa] -e "variable1=Valeur1" -e "variable2=valeur2" path-to-playbook.yml
+ansible-playbook -i inventory [-u kone_wolouho --private-key=~/.ssh/idrsa] -e "variable1=Valeur1" -e "variable2=valeur2" playbook.yml
+
+* Executer un playbook avec une ipaddr
+ansible-playbook -i "xxx.xxx.xxx.xxx," [-u kone_wolouho --private-key=~/.ssh/idrsa] -e "variable1=Valeur1" -e "variable2=valeur2" path-to-playbook.yml
+ansible-playbook -i "xxx.xxx.xxx.xxx," [-u kone_wolouho --private-key=~/.ssh/idrsa] ../ansibleplay/play-system-setup.yml
+
+* Les differentes option de la commande playbook ansible
+-u <username> ou --user=<username>
+-i <inventory> ou --inventory=<inventory>
+--ask-pass : Demande un mot de passe SSH interactif.
+--private-key=<path> : Spécifie le chemin de la clé privée pour l'authentification SSH.
+-e <key=value> ou --extra-vars=<key=value> : Passe des variables supplémentaires
+--extra-vars "@<file>" : Charge des variables à partir d'un fichier JSON ou YAML.
+
+* Creer un role Ansible
+ansible-galaxy init nom-du-role

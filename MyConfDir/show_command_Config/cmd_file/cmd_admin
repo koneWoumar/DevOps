@@ -1,0 +1,15 @@
+# Gestion des Ressources
+
+* Afficher l’utilisation CPU
+top
+htop
+
+* Afficher l’utilisation de la RAM
+free -h
+
+* Afficher l’utilisation du disque
+df -h
+du -h <chemin>
+
+* Afficher les dossiers les plus volumineux 
+du -ah <chemin> | sort -rh | head -n 10

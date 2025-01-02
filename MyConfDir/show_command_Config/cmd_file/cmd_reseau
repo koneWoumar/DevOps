@@ -1,0 +1,92 @@
+# Reseaux Linux
+
+* Afficher l’adresse IP
+ip addr show
+ifconfig
+
+* Afficher la table de routage 
+route -n
+ip route show
+
+* Afficher les interfaces réseau 
+ip link show
+
+* Tester la connectivité 
+ping <adresse>
+traceroute <adresse>
+
+* Résoudre un nom de domaine 
+nslookup <nom_domaine>
+dig <nom_domaine>
+host <nom_domaine>
+
+* Voir les connexions actives 
+netstat -tuln
+ss -tuln
+
+* Afficher les sockets 
+lsof -i
+
+
+# Firewall
+
+* Activer/désactiver le pare-feu
+sudo ufw enable
+sudo ufw disable
+
+* Autoriser un port
+sudo ufw allow <port>
+sudo ufw allow <service> # Exemple : sudo ufw allow ssh
+
+* Bloquer un port
+sudo ufw deny <port>
+
+* Afficher l’état du pare-feu
+sudo ufw status verbose
+
+# Iptables
+
+* Afficher les règles
+sudo iptables -L -n -v
+
+* Ajouter une règle pour autoriser un port 
+sudo iptables -A INPUT -p tcp --dport <port> -j ACCEPT
+
+* Bloquer un port spécifique
+sudo iptables -A INPUT -p tcp --dport <port> -j DROP
+
+* Sauvegarder la configuration
+sudo iptables-save > /etc/iptables/rules.v4
+
+* Restaurer une configuration
+sudo iptables-restore < /etc/iptables/rules.v4
+
+# Gestion des ports
+
+* Voir si un port est ouvert sur un hote
+telnet <adresse_IP> <port>
+nc -zv <adresse_IP> <port>
+nmap -p <port> <adresse_IP>
+curl -I http://<adresse_IP>:<port>
+
+
+* Scanner les ports (voir les ports ouverts)
+nmap <adresse>
+
+* Voir les services sur les ports ouverts 
+sudo netstat -tuln
+ss -tuln
+
+* Afficher les connexions sur un port spécifique
+lsof -i:<port>
+
+* Ouvrir et fermer les ports :
+    **Avec ufw**
+sudo ufw allow <port>
+sudo ufw deny <port>
+**Avec iptables**
+sudo iptables -A INPUT -p tcp --dport <port> -j ACCEPT
+sudo iptables -A INPUT -p tcp --dport <port> -j DROP
+
+
+

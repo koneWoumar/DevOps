@@ -1,0 +1,7 @@
+# Certbot
+
+* Afficher les certificat dispobible
+sudo certbot certificates
+
+* Delete a certificat
+sudo certbot delete --cert-name <nom_du_domaine>

@@ -1,0 +1,7 @@
+# Kuberantes
+
+* Stop the cluster kubernate
+sudo systemctl stop kubelet
+
+* Start the cluster
+sudo systemctl start kubelet

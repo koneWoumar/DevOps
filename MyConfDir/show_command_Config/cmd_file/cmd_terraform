@@ -1,0 +1,14 @@
+# Terraform
+
+* Initialiser un nouvelle ressource
+terraform init
+
+* Voir les changement 
+terraform plan
+
+* Apply les changement
+terraform apply
+
+* Detruire la ressource
+terrraform destroy
+
