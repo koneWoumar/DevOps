@@ -27,7 +27,6 @@ spec:
           limits:
             memory: "128Mi"
 
-
 ---
 # Service YAML
 apiVersion: v1

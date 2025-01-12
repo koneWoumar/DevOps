@@ -1,2 +1,2 @@
-wke-gcp-infra=ssh kone_wolouho@infra.kone-wolouho-oumar.com
+wke-gcp-infra=ssh kone_wolouho@web.kone-wolouho-oumar.com
 
