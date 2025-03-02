@@ -1,0 +1,28 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  labels:
+    app: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:latest
+    ports:
+    - containerPort: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80      # Le port sur lequel le service sera accessible
+      targetPort: 80 # Le port que le conteneur Nginx écoute
+      nodePort: 30080 # Port d'accès externe
+  type: NodePort  # Cela expose le service à l'extérieur du cluster via un port
+
