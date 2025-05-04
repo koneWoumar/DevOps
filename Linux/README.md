@@ -1,5 +1,289 @@
-regerer exactement la meme chose sous forme de :
-commande : description sans cela soit dans un tableau :
+# Introduction aux Notions Systèmes Linux
+
+## Notions Importantes
+
+### Console vs Terminal vs Shell
+
+- **Console** : Interface native d'interaction avec le système d'exploitation, fournie par l'OS en local.
+- **Terminal** : Interface permettant d'interagir avec l'OS, émulée par des applications comme Terminator.
+- **Shell** : Interpréteur de commande utilisé dans le terminal pour exécuter des commandes.
+
+### Types de Fichiers sous Linux
+
+- **Fichier standard (-)** : Contenu ordinaire comme texte, binaire, script, etc.
+- **Répertoire (d)** : Contient des fichiers et d'autres répertoires.
+- **Lien symbolique (l)** : Raccourci pointant vers un autre fichier ou dossier.
+- **Fichier périphérique bloc (b)** : Représente des périphériques comme les disques.
+- **Fichier périphérique caractère (c)** : Périphérique en lecture/écriture caractère par caractère (ex. terminal).
+- **Fichier de socket (s)** : Point de communication pour l’échange de données entre processus.
+- **Tube nommé FIFO (p)** : Canal de communication unidirectionnel entre processus.
+- **Lien physique (hard link)** : Pointeur supplémentaire vers un fichier existant.
+
+---
+
+## Système de Fichiers
+
+### Structure des Répertoires
+
+- **/boot** : Fichiers nécessaires au démarrage du système (ex. noyau Linux, chargeur d’amorçage).
+- **/lib** : Bibliothèques partagées essentielles pour les exécutables de /bin et /sbin.
+- **/bin** : Commandes système de base accessibles à tous, même en mode de secours.
+- **/sbin** : Commandes système réservées à l’administration (souvent root).
+- **/dev** : Fichiers représentant les périphériques (disques, terminaux, ports, etc.).
+- **/etc** : Fichiers de configuration du système et des services.
+- **/var** : Données variables (logs, mails, caches, spool).
+- **/opt** : Applications tierces installées manuellement.
+- **/usr** : Logiciels et données non critiques installés par le gestionnaire de paquets.
+
+---
+
+## Gestion des Paquets et Dépendances
+
+### Formats de Paquets
+
+- **Archive (.tar)** : Ensemble de fichiers regroupés dans un seul fichier sans compression.
+- **Zip (.gz/.tar.gz)** : Archive compressée.
+- **Paquet (.deb)** : Archive contenant un logiciel distribuable et installable.
+  - **.deb** contient :
+    - `control.tar.gz` : Métadonnées (nom, version, dépendances, description).
+    - `data.tar.gz` : Fichiers à installer sur le système.
+    - `debian-binary` : Version du format Debian.
+
+### Gestionnaire de Paquets et Dépendances
+
+- **dpkg** : Installe un paquet sans gérer ses dépendances.
+- **apt** : Installe un paquet et ses dépendances.
+
+### Dépôts
+
+- **Dépôt officiel (/etc/apt/sources.list)** : Maintenu par la distribution elle-même (ex. Ubuntu).
+- **Dépôt tiers (/etc/apt/sources.d)** : Maintenu par une autre organisation ou développeur.
+- **PPA (Personal Package Archive)** : Dépôt spécifique à Ubuntu, souvent hébergé sur Launchpad.net.
+
+---
+
+## Gestion des Services avec Systemd
+
+### Système d'Init et Gestion des Services
+
+- **systemd** : Orchestration du démarrage du système, gestion des cycles de vie et des ressources des processus.
+- Chaque service a un fichier de configuration dans `/etc/systemd/system/`, définissant :
+  - Chemin du binaire/exécutable.
+  - Définition des limitations de ressources.
+  
+### Composants de systemd
+
+- **journald** : Centralisation et gestion des logs système.
+- **networkd** : Gestion des interfaces réseau (configurations IP, routage, VLAN, tunnels, etc.).
+- **logind** : Gestion des sessions utilisateurs, des connexions, et des actions d'alimentation.
+
+---
+
+## Cgroups (Control Groups)
+
+Les **Cgroups** sont des mécanismes du noyau permettant d'isoler, prioriser, limiter et surveiller l’utilisation des ressources (RAM, CPU, réseau, périphériques). Chaque cgroup est un dossier situé dans `/sys/fs/cgroup/`.
+
+Exemples de fichiers de configuration dans un cgroup :
+- `cfs_quota_us` : Limite le temps CPU.
+- `memory.limit_in_bytes` : Limite de la mémoire.
+- `net_cls.classid` : Classe de réseau affectée au cgroup.
+- `devices.list`, `devices.allow`, `devices.deny` : Liste des périphériques autorisés/forbidden.
+
+
+## Commande Linux
+
+
+### 🔐 **Gestion des utilisateurs :**
+
+| Commande  | Description                                                        |
+| --------- | ------------------------------------------------------------------ |
+| `useradd` | Crée un nouvel utilisateur.                                        |
+| `usermod` | Modifie un utilisateur existant.                                   |
+| `userdel` | Supprime un utilisateur du système.                                |
+| `passwd`  | Définit ou change le mot de passe d’un utilisateur.                |
+| `id`      | Affiche l’UID, GID et les groupes d’un utilisateur.                |
+| `whoami`  | Affiche le nom de l’utilisateur courant.                           |
+| `who`     | Liste les utilisateurs connectés.                                  |
+| `w`       | Montre qui est connecté et ce qu’ils font.                         |
+| `login`   | Lance une session utilisateur (nécessite souvent des droits root). |
+
+---
+
+### 👥 **Gestion des groupes :**
+
+| Commande   | Description                                                      |
+| ---------- | ---------------------------------------------------------------- |
+| `groupadd` | Crée un nouveau groupe.                                          |
+| `groupmod` | Modifie un groupe existant.                                      |
+| `groupdel` | Supprime un groupe.                                              |
+| `groups`   | Affiche les groupes d’un utilisateur.                            |
+| `gpasswd`  | Gère les membres d’un groupe (ajout, suppression, mot de passe). |
+
+---
+
+### 🔒 **Gestion des permissions :**
+
+| Commande | Description                                                         |
+| -------- | ------------------------------------------------------------------- |
+| `chmod`  | Change les permissions d’un fichier ou dossier.                     |
+| `chown`  | Change le propriétaire et/ou le groupe d’un fichier.                |
+| `chgrp`  | Change uniquement le groupe d’un fichier.                           |
+| `umask`  | Définit les permissions par défaut lors de la création de fichiers. |
+| `ls -l`  | Affiche les permissions des fichiers de façon détaillée.            |
+
+---
+
+### 🌍 **Gestion des variables d'environnement :**
+
+| Commande   | Description                                                                 |
+| ---------- | --------------------------------------------------------------------------- |
+| `export`   | Définit une variable d’environnement disponible pour les processus enfants. |
+| `env`      | Affiche l’environnement complet.                                            |
+| `printenv` | Affiche la valeur d’une variable d’environnement.                           |
+| `set`      | Affiche les variables d’environnement et shell.                             |
+| `unset`    | Supprime une variable d’environnement.                                      |
+
+---
+
+### 🗓 **Manipulation de la date :**
+
+| Commande      | Description                                                         |
+| ------------- | ------------------------------------------------------------------- |
+| `date`        | Affiche ou modifie la date et l’heure système.                      |
+| `timedatectl` | Gère l’heure, la date, le fuseau horaire et la synchronisation NTP. |
+| `hwclock`     | Lit ou écrit l’horloge matérielle (BIOS).                           |
+
+---
+
+### 🔍 **Commandes de recherche :**
+
+| Commande  | Description                                                          |
+| --------- | -------------------------------------------------------------------- |
+| `find`    | Recherche de fichiers selon critères (nom, taille, date…).           |
+| `locate`  | Recherche rapide à partir d’une base indexée (nécessite `updatedb`). |
+| `which`   | Trouve le chemin d’une commande dans le `PATH`.                      |
+| `whereis` | Trouve les fichiers binaires, sources et manuels d’une commande.     |
+| `grep`    | Recherche un motif dans un fichier ou un flux.                       |
+
+---
+
+### ⚙️ **Gestion des services :**
+
+| Commande     | Description                                                                 |
+| ------------ | --------------------------------------------------------------------------- |
+| `systemctl`  | Gère les services (`start`, `stop`, `enable`, `status`…).                   |
+| `service`    | Ancienne interface pour gérer les services (wrapper autour de `systemctl`). |
+| `journalctl` | Affiche les logs système de `systemd` (journal système).                    |
+
+---
+
+### ⚖️ **Gestion des processus :**
+
+| Commande  | Description                                                     |
+| --------- | --------------------------------------------------------------- |
+| `ps`      | Affiche les processus en cours.                                 |
+| `top`     | Affiche en temps réel les processus, consommation CPU/mémoire.  |
+| `htop`    | Version améliorée et interactive de `top`.                      |
+| `kill`    | Envoie un signal à un processus (par exemple pour le terminer). |
+| `killall` | Termine tous les processus ayant un certain nom.                |
+| `nice`    | Lance un processus avec une priorité donnée.                    |
+| `renice`  | Modifie la priorité d’un processus déjà lancé.                  |
+
+---
+
+### 📊 **Gestion des ressources (RAM, CPU, disque) :**
+
+| Commande       | Description                                                        |
+| -------------- | ------------------------------------------------------------------ |
+| `free`         | Affiche la mémoire utilisée et disponible.                         |
+| `vmstat`       | Statistiques mémoire, swap, CPU…                                   |
+| `iostat`       | Statistiques d’entrées/sorties disque.                             |
+| `iotop`        | Affiche les processus les plus consommateurs d’I/O.                |
+| `df`           | Affiche l’espace disque utilisé par les systèmes de fichiers.      |
+| `du`           | Affiche l’espace utilisé par les fichiers/répertoires.             |
+| `uptime`       | Affiche le temps depuis le dernier démarrage et la charge système. |
+| `top` / `htop` | Également utiles pour surveiller l’usage CPU/RAM en direct.        |
+
+
+---
+
+## Logs et Monitoring
+
+| Commande     | Description                                                                 |
+| ------------ | --------------------------------------------------------------------------- |
+| `journalctl` | Affiche les journaux système collectés par `systemd-journald`, avec filtres possibles (par service, unité, date, etc.). |
+| `dmesg`      | Affiche les messages du noyau (buffer de démarrage, périphériques détectés, erreurs matériel). |
+| `top`        | Affiche en temps réel les processus en cours, leur consommation CPU, mémoire. |
+| `htop`       | Version interactive et améliorée de `top`, avec navigation au clavier, tri, et couleurs. |
+| `iotop`      | Affiche la consommation d’entrées/sorties disque par processus, en temps réel. |
+| `vmstat`     | Affiche des statistiques sur la mémoire, le swap, le CPU, les processus, les IO, etc. |
+| `iostat`     | Donne les statistiques d’utilisation CPU et des entrées/sorties des périphériques de stockage. |
+| `netstat`    | Affiche les connexions réseau, les tables de routage, les statistiques d’interface (désuet, remplacé par `ss`). |
+| `ss`         | Affiche les connexions réseau actives (plus rapide et plus moderne que `netstat`). |
+
+---
+
+## Réseau et Connectivité
+
+| Commande     | Description                                                                 |
+| ------------ | --------------------------------------------------------------------------- |
+| `ip`         | Outil moderne de gestion des interfaces réseau, des routes, des adresses IP, etc. (remplace `ifconfig` et `route`). |
+| `ifconfig`   | Ancien outil de configuration des interfaces réseau (obsolète sur de nombreuses distributions récentes). |
+| `ping`       | Vérifie la connectivité réseau avec une machine distante via ICMP (envoie des paquets et mesure le temps de réponse). |
+| `traceroute` | Affiche le chemin (les routeurs intermédiaires) emprunté par les paquets pour atteindre une destination. |
+| `dig`        | Interroge les serveurs DNS pour obtenir des informations sur un nom de domaine (détaillé et puissant). |
+| `nslookup`   | Interroge les serveurs DNS, plus simple que `dig`, mais moins flexible. |
+| `netplan`    | Utilitaire de configuration réseau basé sur YAML utilisé dans Ubuntu pour gérer les interfaces réseau. |
+| `nmcli`      | Interface en ligne de commande pour NetworkManager, permet de gérer les connexions réseau (wifi, ethernet, VPN...). |
+
+---
+
+## Archivage, Sauvegarde et Transfert
+
+| Commande     | Description                                                                 |
+| ------------ | --------------------------------------------------------------------------- |
+| `tar`        | Utilitaire d’archivage qui permet de regrouper plusieurs fichiers en une seule archive `.tar` (souvent combiné avec `gzip` ou `bzip2`). |
+| `zip`        | Compresse un ou plusieurs fichiers dans une archive `.zip`, avec ou sans mot de passe. |
+| `rsync`      | Synchronise des fichiers et des répertoires localement ou à distance avec détection des différences (rapide et efficace). |
+| `scp`        | Copie sécurisée de fichiers entre machines via SSH (simple, mais sans reprise en cas de coupure). |
+| `sftp`       | Client FTP sécurisé via SSH, permet de transférer des fichiers avec des commandes interactives. |
+| `dd`         | Fait une copie brute de blocs de données (disques, partitions, ISO…), souvent utilisé pour créer ou restaurer des images. |
+| `cpio`       | Utilitaire d’archivage utilisé pour empaqueter et extraire des fichiers, souvent dans les systèmes `initramfs`. |
+| `rclone`     | Outil de synchronisation de fichiers avec des services cloud (Google Drive, S3, Dropbox, etc.). |
+
+---
+
+## Sécurité et Authentification
+
+| Commande     | Description                                                                 |
+| ------------ | --------------------------------------------------------------------------- |
+| `sudo`       | Exécute une commande avec les privilèges d’un autre utilisateur (par défaut root), tout en conservant les journaux d’audit. |
+| `su`         | Change d’utilisateur ou devient root (nouvelle session shell sous l'identité cible). |
+| `passwd`     | Modifie le mot de passe de l’utilisateur actuel ou d’un autre utilisateur (si root). |
+| `ssh`        | Client SSH permettant de se connecter à un autre système de manière sécurisée via le réseau. |
+| `sshd`       | Le démon SSH qui écoute les connexions entrantes (`/usr/sbin/sshd`), fournit l'accès distant sécurisé. |
+| `fail2ban`   | Analyse les journaux pour bannir automatiquement les adresses IP en cas de comportements suspects (ex : tentatives de connexion SSH échouées). |
+| `ufw`        | Interface simplifiée pour gérer `iptables`, utilisée pour configurer un pare-feu facilement sur Ubuntu. |
+| `iptables`   | Outil avancé de configuration de pare-feu en ligne de commande basé sur le noyau Linux (règles de filtrage des paquets). |
+| `auditctl`   | Utilitaire pour gérer les règles d'audit du noyau (surveillance des accès aux fichiers, exécutions, etc.). |
+| `semanage`   | Commande utilisée avec SELinux pour gérer les politiques de sécurité (contextes, ports, etc.). |
+
+---
+
+## Gestion des Cron
+
+| Commande       | Description                                                                |
+| -------------- | -------------------------------------------------------------------------- |
+| `crontab`      | Gère les tâches cron (édition, suppression, affichage des tâches programmées). |
+| `cron`         | Service qui exécute les tâches cron programmées.                           |
+| `crontab -e`   | Édite la table des tâches cron de l'utilisateur courant.                   |
+| `crontab -l`   | Affiche les tâches cron programmées pour l'utilisateur courant.           |
+| `crontab -r`   | Supprime les tâches cron programmées de l'utilisateur courant.            |
+
+---
+
+
+## Gestion de Flux de donnée
 
 | Commande   | Description                                                                                       |
 | ---------- | ------------------------------------------------------------------------------------------------- |
