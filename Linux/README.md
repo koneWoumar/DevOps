@@ -298,8 +298,62 @@ Après `netplan apply`, les configurations sont **traduites** et envoyées vers 
 
 ---
 
-> Souhaitez-vous un exemple de configuration Netplan pour un cas spécifique (comme plusieurs interfaces, un pont, du VLAN, etc.) ?
 
+## 🔥 Pare-feu sous Linux : de `iptables` à `ufw`
+
+### 🧱 `iptables` (bas niveau)
+
+#### Qu’est-ce que c’est ?
+
+`iptables` est un outil en ligne de commande pour configurer le pare-feu **netfilter** (un framework du noyaux linux pour filter les paquet tcp/ip) du noyau Linux.
+
+#### Fonctionnement :
+
+Il agit sur des **tables** composées de **chaînes** (*chains*) et de **règles** (*rules*) qui définissent quoi faire avec les paquets réseau : `ACCEPT`, `DROP`, `REJECT`, etc.
+
+#### Exemple simple :
+
+```bash
+iptables -A INPUT -p tcp --dport 22 -j ACCEPT
+```
+
+Cette règle autorise les connexions SSH entrantes (port 22).
+
+#### Limite :
+
+* Syntaxe complexe
+* Peu intuitive, surtout pour les débutants
+
+---
+
+### 🔄 `ufw` (Uncomplicated Firewall)
+
+#### Qu’est-ce que c’est ?
+
+`ufw` est une interface **simplifiée** pour gérer `iptables`, principalement utilisée sur **Ubuntu**.
+
+#### Avantages :
+
+* Syntaxe claire et facile à utiliser
+* Bonne abstraction pour les configurations simples
+* Activé automatiquement sur certaines distributions Ubuntu Server
+
+#### Exemples courants :
+
+```bash
+ufw enable                # Active le pare-feu
+ufw allow 22/tcp          # Autorise SSH
+ufw deny 80               # Bloque le port HTTP
+ufw status verbose        # Affiche les règles en cours
+```
+
+#### Important :
+
+* `ufw` **ne remplace pas** `iptables` : il le **contrôle** en arrière-plan
+* Ne pas **mélanger** configuration `iptables` et `ufw` simultanément (risque de conflits)
+* Sous Redhat `ufw` --> `firewalld`
+
+---
 
 
 ## Commande Linux
@@ -536,3 +590,78 @@ Après `netplan apply`, les configurations sont **traduites** et envoyées vers 
 | `stat`     | Donne des infos détaillées sur un fichier (taille, dates, permissions, etc.).                     |
 | `basename` | Extrait le nom de fichier d’un chemin complet.                                                    |
 | `dirname`  | Extrait le répertoire d’un chemin de fichier.                                                     |
+
+
+
+## 🌍 Command Reseaux et Sécurité
+
+### 📌 Commandes `ip`
+
+| Commande                    | Description                                                                |
+|----------------------------|-----------------------------------------------------------------------------|
+| `ip a` ou `ip addr`        | Affiche les adresses IP de toutes les interfaces                            |
+| `ip addr show dev eth0`    | Affiche les adresses IP de l'interface `eth0`                               |
+| `ip addr add 192.168.1.10/24 dev eth0` | Ajoute une adresse IP à une interface                           |
+| `ip addr del 192.168.1.10/24 dev eth0` | Supprime une adresse IP d'une interface                         |
+
+### 🔗 Commandes `ip link`
+
+| Commande                          | Description                                                          |
+|----------------------------------|-----------------------------------------------------------------------|
+| `ip link`                        | Liste les interfaces réseau                                           |
+| `ip link show`                   | Affiche les informations détaillées des interfaces                    |
+| `ip link set eth0 up`            | Active l'interface `eth0`                                             |
+| `ip link set eth0 down`          | Désactive l'interface `eth0`                                          |
+| `ip link set dev eth0 mtu 1400`  | Change la taille MTU de l'interface `eth0`                            |
+| `ip link set dev eth0 promisc on`| Active le mode promiscuité (sniffing)                                 |
+
+### 🛣️ Commandes `ip route`
+
+| Commande                           | Description                                                          |
+|-----------------------------------|-----------------------------------------------------------------------|
+| `ip route`                        | Affiche la table de routage                                           |
+| `ip route add default via 192.168.1.1` | Définit une passerelle par défaut                             |
+| `ip route add 10.0.0.0/24 via 192.168.1.254` | Ajoute une route spécifique                                |
+| `ip route del default`            | Supprime la route par défaut                                          |
+| `ip route flush dev eth0`         | Vide toutes les routes associées à l’interface `eth0`                 |
+
+---
+
+### ⚙️ Commandes `netplan` et `dhclient`
+
+| Commande                        | Description                                                          |
+|--------------------------------|-----------------------------------------------------------------------|
+| `netplan apply`                | Applique les modifications des fichiers YAML                          |
+| `netplan try`                  | Applique temporairement (revert si problème dans 120s)                |
+| `netplan generate`             | Génère les fichiers pour le renderer depuis les fichiers YAML         |
+| `netplan info`                 | Affiche les informations de configuration netplan                     |
+| `dhclient`                     | Demande une adresse IP via DHCP pour toutes les interfaces            |
+| `dhclient etho`                | Demande une adresse IP via DHCP pour eth0                             |
+| `dhclient -r etho`             | Libère l'adresse IP actuelle de l'interface eth0                      |
+
+
+### ⚙️ Commandes  de gestion des connexion `hostname` & `netstats` & `ss` 
+
+| Commande   | Description                                                                 |
+|------------|------------------------------------------------------------------------------|
+| `netstat`  | -t : TCP                                                                     |
+|            | -u : UDP                                                                     |
+|            | -l : listening (écoute uniquement)                                           |
+|            | -n : adresses et ports numériques (pas de résolution DNS)                   |
+| `ss`       | -t : TCP                                                                     |
+|            | -u : UDP                                                                     |
+|            | -l : listening (écoute uniquement)                                           |
+|            | -n : adresses et ports numériques (pas de résolution DNS)                   |
+
+
+### ⚙️ Commandes de gestion de la sécurité
+
+| Commande                        | Description                                                          |
+|--------------------------------|-----------------------------------------------------------------------|
+| `netplan apply`                | Applique les modifications des fichiers YAML                          |
+| `netplan try`                  | Applique temporairement (revert si problème dans 120s)                |
+| `netplan generate`             | Génère les fichiers pour le renderer depuis les fichiers YAML         |
+| `netplan info`                 | Affiche les informations de configuration netplan                     |
+| `dhclient`                     | Demande une adresse IP via DHCP pour toutes les interfaces            |
+| `dhclient etho`                | Demande une adresse IP via DHCP pour eth0                             |
+| `dhclient -r etho`             | Libère l'adresse IP actuelle de l'interface eth0                      |
