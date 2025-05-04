@@ -90,6 +90,218 @@ Exemples de fichiers de configuration dans un cgroup :
 - `devices.list`, `devices.allow`, `devices.deny` : Liste des périphériques autorisés/forbidden.
 
 
+## Configuration Reseaux Linux
+
+---
+
+### 🔧 Qu’est-ce que `network-scripts` ?
+
+**`network-scripts`** est un ensemble de scripts shell utilisés par les anciennes versions de **Red Hat** et ses dérivés (CentOS, Oracle Linux, etc.) pour **configurer le réseau**.
+
+- Il repose sur des **fichiers de configuration `ifcfg-*`** situés dans un répertoire spécifique.
+- Ces scripts sont **interprétés par le service `network`**, ou parfois par `NetworkManager` si configuré.
+- Ce système est désormais **obsolète dans RHEL 9**, remplacé totalement par **NetworkManager**.
+
+---
+
+#### 📁 Fichiers de configuration
+
+- Les fichiers sont stockés dans `/etc/sysconfig/network-scripts/`
+
+- Par exemple : `ifcfg-eth0`, `ifcfg-enp0s3`
+
+- Voici un exemple de configuration avec une **adresse IP statique** :
+
+```ini
+DEVICE=eth0
+BOOTPROTO=none
+ONBOOT=yes
+IPADDR=192.168.1.100
+NETMASK=255.255.255.0
+GATEWAY=192.168.1.1
+DNS1=8.8.8.8
+DNS2=1.1.1.1
+```
+
+---
+
+### 🔧 Qu’est-ce que NetworkManager ?
+
+**NetworkManager** est un **gestionnaire de réseau dynamique** utilisé dans la plupart des distributions Linux modernes (RHEL, CentOS, Fedora, Ubuntu, Debian...).
+
+- Il permet de **gérer automatiquement** les connexions réseau (filaire, Wi-Fi, VPN, etc.).
+- Il **remplace les anciens scripts `network-scripts`** sur RHEL/CentOS depuis la version 8.
+- Il peut être **utilisé en ligne de commande (`nmcli`), via l'interface graphique ou avec des fichiers de configuration**.
+
+---
+
+#### 📁 Fichiers de configuration
+
+- Exemple de fichier `/etc/NetworkManager/system-connections/static-eth0.nmconnection` :
+
+```ini
+[connection]
+id=static-eth0
+type=ethernet
+interface-name=eth0
+autoconnect=true
+
+[ipv4]
+method=manual
+addresses=192.168.1.100/24;192.168.1.1;
+dns=8.8.8.8;1.1.1.1;
+ignore-auto-dns=true
+
+[ipv6]
+method=ignore
+```
+
+
+
+### 🔧 Qu’est-ce que Netplan ?
+
+**Netplan** est un outil d’abstraction de la configuration réseau introduit par **Ubuntu depuis la version 17.10**.
+
+* Il permet de **décrire la configuration réseau dans un fichier YAML**.
+* Il **génère automatiquement la configuration** pour le backend (renderer) réseau choisi : `NetworkManager` ou `systemd-networkd`.
+* Il se situe **entre l’administrateur et les gestionnaires bas-niveau**, pour unifier la gestion réseau.
+
+---
+
+## 📁 Fichier de configuration Netplan
+
+Les fichiers de configuration Netplan sont situés dans :
+
+```
+/etc/netplan/
+```
+
+Les fichiers doivent avoir une **extension `.yaml`**. Exemples : `01-netcfg.yaml`, `50-cloud-init.yaml`
+
+---
+
+## 🧱 Structure d’un fichier Netplan
+
+Exemple simple (IP statique) avec renderer `networkd` :
+
+```yaml
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp0s3:
+      dhcp4: no
+      addresses:
+        - 192.168.1.100/24
+      gateway4: 192.168.1.1
+      nameservers:
+        addresses: [8.8.8.8, 1.1.1.1]
+```
+
+### 🧹 Explication ligne par ligne
+
+| Clé            | Rôle                                                |
+| -------------- | --------------------------------------------------- |
+| `network:`     | Racine de la configuration réseau                   |
+| `version: 2`   | Version du format Netplan (actuellement toujours 2) |
+| `renderer:`    | Backend utilisé : `networkd` ou `NetworkManager`    |
+| `ethernets:`   | Déclaration des interfaces Ethernet                 |
+| `enp0s3:`      | Nom de l’interface à configurer                     |
+| `dhcp4:`       | Activer (yes) ou désactiver (no) le DHCP pour IPv4  |
+| `addresses:`   | Adresse IP statique (CIDR)                          |
+| `gateway4:`    | Adresse de la passerelle IPv4                       |
+| `nameservers:` | Adresses DNS                                        |
+
+---
+
+## ⚙️ Les Renderers : `networkd` vs `NetworkManager`
+
+| Renderer           | Description                                                       | Utilisation typique                   |
+| ------------------ | ----------------------------------------------------------------- | ------------------------------------- |
+| **networkd**       | Géré par **`systemd-networkd`**, léger et idéal pour les serveurs | Ubuntu Server, cloud-init, conteneurs |
+| **NetworkManager** | Gère les connexions complexes (Wi-Fi, VPN, etc.) avec GUI         | Ubuntu Desktop, laptops               |
+
+### 🔴 Choix du renderer
+
+Il dépend du système :
+
+* Ubuntu Server → `networkd`
+* Ubuntu Desktop → `NetworkManager`
+
+> 💡 Certains fichiers peuvent contenir plusieurs interfaces avec des renderers différents.
+
+---
+
+## 📘 Autres exemples
+
+### 1. **DHCP automatique**
+
+```yaml
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp0s3:
+      dhcp4: true
+```
+
+### 2. **Configurer une interface Wi-Fi (NetworkManager requis)**
+
+```yaml
+network:
+  version: 2
+  renderer: NetworkManager
+  wifis:
+    wlan0:
+      dhcp4: true
+      access-points:
+        "NomDuRéseau":
+          password: "motdepasse"
+```
+
+---
+
+## 🔄 Appliquer la configuration Netplan
+
+Après modification du fichier :
+
+```bash
+sudo netplan apply
+```
+
+⚠️ Pour tester sans l’appliquer définitivement :
+
+```bash
+sudo netplan try
+```
+
+> Reviendra à la configuration précédente si la connexion échoue dans les 120 secondes.
+
+---
+
+## 📂 Dossier généré par Netplan
+
+Après `netplan apply`, les configurations sont **traduites** et envoyées vers :
+
+* `/run/systemd/network/` si `networkd` est utilisé
+* `/etc/NetworkManager/system-connections/` si `NetworkManager` est utilisé
+
+---
+
+## 🛠️ Outils utiles pour déboguer
+
+* `ip a` → Voir les interfaces et adresses IP
+* `netplan try` → Tester la conf temporairement
+* `netplan generate` → Générer les fichiers sans les appliquer
+* `journalctl -u systemd-networkd` → Logs de systemd-networkd
+* `nmcli` → Outil CLI pour NetworkManager
+
+---
+
+> Souhaitez-vous un exemple de configuration Netplan pour un cas spécifique (comme plusieurs interfaces, un pont, du VLAN, etc.) ?
+
+
+
 ## Commande Linux
 
 
