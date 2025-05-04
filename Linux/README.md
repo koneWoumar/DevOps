@@ -642,16 +642,12 @@ ufw status verbose        # Affiche les règles en cours
 
 ### ⚙️ Commandes  de gestion des connexion `hostname` & `netstats` & `ss` 
 
-| Commande   | Description                                                                 |
+| Commande   | Description                                                                  |
 |------------|------------------------------------------------------------------------------|
-| `netstat`  | -t : TCP                                                                     |
-|            | -u : UDP                                                                     |
-|            | -l : listening (écoute uniquement)                                           |
-|            | -n : adresses et ports numériques (pas de résolution DNS)                   |
-| `ss`       | -t : TCP                                                                     |
-|            | -u : UDP                                                                     |
-|            | -l : listening (écoute uniquement)                                           |
-|            | -n : adresses et ports numériques (pas de résolution DNS)                   |
+| `netstat` & `ss`  | -t : TCP                                                              |
+|                     -u : UDP                                                              |
+|                     -l : listening (écoute uniquement)                                    |
+|                     -n : adresses et ports numériques (pas de résolution DNS)             |                  |
 
 
 ### ⚙️ Commandes de gestion de la sécurité
