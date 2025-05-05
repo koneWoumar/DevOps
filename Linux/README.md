@@ -305,7 +305,20 @@ Après `netplan apply`, les configurations sont **traduites** et envoyées vers 
 
 #### Qu’est-ce que c’est ?
 
-`iptables` est un outil en ligne de commande pour configurer le pare-feu **netfilter** (un framework du noyaux linux pour filter les paquet tcp/ip) du noyau Linux.
+`iptables` est un outil en ligne de commande pour gérer le pare-feu **netfilter** (un framework du noyau Linux pour filtrer les paquets TCP/IP) du noyau Linux et le routage des paquets avec la NAT (traduction d’adresses réseau)
+
+#### Les tables d'iptables
+
+`iptables` dispose de 5 tables principales pour gérer différentes facettes du trafic réseau :
+
+- **filter** : Pare-feu (géré par `ufw` pour autoriser/filtrer les paquets)
+- **nat** : Traduction d’adresses (parfois géré par `ufw` pour le NAT et le redirectionnement)
+- **mangle** : Modification des paquets (non géré par `ufw`)
+- **raw** : Bypass du suivi des connexions (non géré par `ufw`)
+- **security** : Politiques SELinux (non géré par `ufw`)
+
+🛡️ **ufw** (surcouche à `iptables`) gère principalement la table `filter`, permettant de faciliter la gestion du pare-feu et du trafic entrant/sortant.
+
 
 #### Fonctionnement :
 
@@ -323,6 +336,8 @@ Cette règle autorise les connexions SSH entrantes (port 22).
 
 * Syntaxe complexe
 * Peu intuitive, surtout pour les débutants
+
+### Les
 
 ---
 
@@ -660,9 +675,9 @@ ufw status verbose        # Affiche les règles en cours
 | `sudo ufw disable`                                         | Désactive le pare-feu                                                       |
 | `sudo ufw status`                                          | Affiche l’état du pare-feu (actif/inactif)                                  |
 | `sudo ufw status verbose`                                  | Affiche les règles actives de manière détaillée                             |
-| `sudo ufw allow <port>`                                    | Autorise un port (ex : `sudo ufw allow 22`)                                 |
+| `sudo ufw allow (in/out) <port>`                           | Autorise un port (ex : `sudo ufw allow 22`)  par defaut le sens est `in`    |
 | `sudo ufw allow <port>/<protocole>`                        | Autorise un port en précisant TCP ou UDP (ex : `sudo ufw allow 80/tcp`)     |
-| `sudo ufw allow from <IP>`                                 | Autorise une IP spécifique (ex : `sudo ufw allow from 192.168.1.100`)        |
+| `sudo ufw allow from <IP>`                                 | Autorise une IP spécifique (ex : `sudo ufw allow from 192.168.1.100`)       |
 | `sudo ufw allow from <IP> to any port <port>`              | Autorise une IP sur un port précis (ex : `sudo ufw allow from 10.0.0.5 to any port 22`) |
 | `sudo ufw deny <port>`                                     | Bloque un port (ex : `sudo ufw deny 80`)                                    |
 | `sudo ufw delete allow <port>`                             | Supprime une règle autorisant un port                                       |
@@ -671,7 +686,9 @@ ufw status verbose        # Affiche les règles en cours
 | `sudo ufw default allow outgoing`                          | Autorise toutes les connexions sortantes par défaut                         |
 | `sudo ufw app list`                                        | Liste les profils d’application supportés par UFW                           |
 | `sudo ufw allow <nom_app>`                                 | Autorise une application (ex : `sudo ufw allow "OpenSSH"`)                  |
-| `sudo iptables -L -v -n`                                   | Afficher la table de routage avec les regles(L) detaillée(-v) en num (-n)   |
-
-
-
+| `sudo iptables -L -v -n`                                   | Afficher les regles de iptable avec les regles(L) detaillée(-v) en num (-n) |
+| `sudo iptables -L -v -n -t nat`                            | Afficher la table de nat 
+| `sudo iptables -A INPUT -p tcp --dport 80 -j ACCEPT`       | ACCEPTER les paquets entrante (IN) pour un port from all remote ip          |
+| `sudo iptables -A INPUT -p tcp --dport 80 -j DROP`         | DROPER les paquets entrants pour un port from all remote ip                 |
+| `sudo iptables -A INPUT -p tcp --dport 80 -j DENIED`       | DENIED les paquets entrants pour un port from all remote ip                 |
+| `sudo iptables -A INPUT -p tcp --dport 80 -s 192.1.1.1 -j DENIED`       | DENIED les paquets entrants pour un port from a given ipadres  |
