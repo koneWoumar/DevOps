@@ -640,24 +640,38 @@ ufw status verbose        # Affiche les règles en cours
 | `dhclient -r etho`             | Libère l'adresse IP actuelle de l'interface eth0                      |
 
 
-### ⚙️ Commandes  de gestion des connexion `hostname` & `netstats` & `ss` 
+
+### ⚙️ Commandes  de gestion des connexion `netstats` and `ss` 
 
 | Commande   | Description                                                                  |
 |------------|------------------------------------------------------------------------------|
-| `netstat` & `ss`  | -t : TCP                                                              |
-|                     -u : UDP                                                              |
-|                     -l : listening (écoute uniquement)                                    |
-|                     -n : adresses et ports numériques (pas de résolution DNS)             |                  |
+| `netstat` & `ss`  |  -t : TCP                                                             |
+|                   |  -u : UDP                                                             |
+|                   |  -l : listening (écoute uniquement)                                   |
+|                   |  -n : adresses et ports numériques (pas de résolution DNS)            |
 
 
-### ⚙️ Commandes de gestion de la sécurité
 
-| Commande                        | Description                                                          |
-|--------------------------------|-----------------------------------------------------------------------|
-| `netplan apply`                | Applique les modifications des fichiers YAML                          |
-| `netplan try`                  | Applique temporairement (revert si problème dans 120s)                |
-| `netplan generate`             | Génère les fichiers pour le renderer depuis les fichiers YAML         |
-| `netplan info`                 | Affiche les informations de configuration netplan                     |
-| `dhclient`                     | Demande une adresse IP via DHCP pour toutes les interfaces            |
-| `dhclient etho`                | Demande une adresse IP via DHCP pour eth0                             |
-| `dhclient -r etho`             | Libère l'adresse IP actuelle de l'interface eth0                      |
+### 🔥 Commandes de gestion du parfeu UFW
+
+| Commande                                                   | Description                                                                 |
+|------------------------------------------------------------|-----------------------------------------------------------------------------|
+| `sudo ufw enable`                                          | Active le pare-feu                                                          |
+| `sudo ufw disable`                                         | Désactive le pare-feu                                                       |
+| `sudo ufw status`                                          | Affiche l’état du pare-feu (actif/inactif)                                  |
+| `sudo ufw status verbose`                                  | Affiche les règles actives de manière détaillée                             |
+| `sudo ufw allow <port>`                                    | Autorise un port (ex : `sudo ufw allow 22`)                                 |
+| `sudo ufw allow <port>/<protocole>`                        | Autorise un port en précisant TCP ou UDP (ex : `sudo ufw allow 80/tcp`)     |
+| `sudo ufw allow from <IP>`                                 | Autorise une IP spécifique (ex : `sudo ufw allow from 192.168.1.100`)        |
+| `sudo ufw allow from <IP> to any port <port>`              | Autorise une IP sur un port précis (ex : `sudo ufw allow from 10.0.0.5 to any port 22`) |
+| `sudo ufw deny <port>`                                     | Bloque un port (ex : `sudo ufw deny 80`)                                    |
+| `sudo ufw delete allow <port>`                             | Supprime une règle autorisant un port                                       |
+| `sudo ufw reset`                                           | Réinitialise toutes les règles UFW                                          |
+| `sudo ufw default deny incoming`                           | Refuse toutes les connexions entrantes par défaut                           |
+| `sudo ufw default allow outgoing`                          | Autorise toutes les connexions sortantes par défaut                         |
+| `sudo ufw app list`                                        | Liste les profils d’application supportés par UFW                           |
+| `sudo ufw allow <nom_app>`                                 | Autorise une application (ex : `sudo ufw allow "OpenSSH"`)                  |
+| `sudo iptables -L -v -n`                                   | Afficher la table de routage avec les regles(L) detaillée(-v) en num (-n)   |
+
+
+
