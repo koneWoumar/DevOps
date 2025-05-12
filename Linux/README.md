@@ -702,7 +702,9 @@ ufw status verbose        # Affiche les règles en cours
 
 ### Variable
 
-#### Les variables standard
+#### 🔧 Les variables standard en Bash
+
+
 
 <span style="color:blue">Declaration de variable de typée dynamiquement</span>
 
