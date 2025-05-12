@@ -368,7 +368,7 @@ ufw status verbose        # Affiche les règles en cours
 * Ne pas **mélanger** configuration `iptables` et `ufw` simultanément (risque de conflits)
 * Sous Redhat `ufw` --> `firewalld`
 
----
+--- 
 
 
 ## Commande Linux
@@ -692,3 +692,203 @@ ufw status verbose        # Affiche les règles en cours
 | `sudo iptables -A INPUT -p tcp --dport 80 -j DROP`         | DROPER les paquets entrants pour un port from all remote ip                 |
 | `sudo iptables -A INPUT -p tcp --dport 80 -j DENIED`       | DENIED les paquets entrants pour un port from all remote ip                 |
 | `sudo iptables -A INPUT -p tcp --dport 80 -s 192.1.1.1 -j DENIED`       | DENIED les paquets entrants pour un port from a given ipadres  |
+
+
+
+
+
+## PROGRAMMATION BASH
+
+
+### Variable
+
+#### Les variables standard
+
+<span style="color:blue">Declaration de variable de typée dynamiquement</span>
+
+- chaine='ma chaine brute sans variable'
+- chaine="ma chaine avec des $variables"
+- variable=`ls -al`  # variable contenat qui va contenir retour d'une commande
+- variable=25        # variable contenant un entier
+
+<span style="color:blue">Declaration de variable de controlée avec `declare`</span>
+
+- declare -r readOnlyVariable=value   <<>> readonly readOnlyVariable=value
+- declare -i ingeterVariable=value
+- declare -a tableVariable=(value1, value2 value3 value4)
+- declare -A associatifTable=([key1]="value1" [key2]="value2" [key3]="value3")
+
+<span style="color:blue">Substition et indirection</span>
+
+- sustition : variable=$(command) --> replace une commande par une variable
+- indirection : evaluer la valeur d'une variable ;
+ab = c
+c=valeur
+retrouver valeur
+
+#### Les variables spéciales
+
+- les variables special :
+s# , $0 , $1, $3, ${X}
+ $$ --> le PID du process 
+$*, $@ 
+
+#### Les tableaux
+
+tableau simple
+t=() --> tableau vide
+t[valeur]=valeur
+t=("je" "suis" "25" 5)
+
+tableau associatif
+ta = (["cle"="valeur" "cle2"="valeur"])
+key_set=${!ta}
+ajout d'element
+modification d'elements
+taille du tableau
+etendre un ancien tableau
+fusion de deux tableaux ou concatenation
+unset pour supprimer un element d'indice ou supprimer le tableau
+
+
+
+### Operations
+- arithmetic : 
+$((num_tring operateur num_string)) par exemple : $((25 + 25))
+operateur : +, -, *, **, /, %
+a+=((1)) ?
+- let var= 2+3 ?
+
+- comparaison numerique
+- comparaison chaine caractere
+- appartenance à un ensemble
+- operations sur les fichiers
+- operations sur les chaines
+- autres operations ?
+
+## Conditions
+
+- pour numerique
+-lt
+-le
+-gt
+-ge
+-ne
+-eq
+
+- pour les chaine :
+ =
+ !=
+
+- appartenance à un ensemble
+
+
+
+- syntaxe 1 :
+
+if test $vara -eq $varb ; then
+  echo "yes"
+fi
+
+- syntaxe 2 : 
+
+if [ $vara -eq $var2 ] ; then 
+  echo "yes" 
+fi
+
+- syntaxe 3 : 
+
+if [ $vara -eq $varb ] || [ $varc -eq $vard ] ; then 
+  echo "something" here
+fi
+
+- syntax 4 : beaucoup moins portable : voir postx la norme
+
+if [[ $ptr1 -eq 252 && ptr -eq 5 ]] ; then 
+    echo "yes"
+fi
+- verificaiton sur les chaine:
+
+-n $chaine : pas vide
+-z $chaine : chaine vide
+
+- verification sur  les fichier
+
+-d fichier : si c'est un dossier
+-f : est un fichier
+-e : existe dans le repertoire spéficier
+-r : disponible en lecture
+-x dispobible en execution
+-W : disponible en ecriture
+-s si la taille est supperieur à O
+---> trouver le man permettant de retrouver ces info
+
+- autres verification possible dans le language bash du meme genre
+
+
+- case : 
+
+case $cmd in 
+  1) echo "something" ; do something ;;
+  2) echo "something" ;;
+  *) echo "otherthing" ;;
+esac
+
+## Boucle
+
+while ((condition))
+do
+something to do
+done
+ -continue
+ -break
+ -exit
+
+until (( condition))
+do
+done
+
+for tmp in sequence 
+do
+something
+done
+
+for ((i=0 ; i> 10 ; i++))
+do
+something
+done
+
+
+### Tableau
+
+
+### Foncton
+
+
+
+### Traitement sur les chaine 
+- {}  --> permet de faire des operations sur les chaines
+- longueur d'une chaine  : ${#chaine}
+- mettre la chaine en majuscule : ${chaine}
+- ${chaine,} --> premieres caracteres en miniscule
+- ${chaine,,} --> toutes la chaine en miniscule
+- ${chaine,,[W]} --> toutes les w en miniscule
+- ${chaine^}  --> les premieres caracteres en majuscule
+- ${chaine^^}  --> toutes les chaines en majuscule
+- ${chaine:0:7} --> extraction de sous chaine allant de 0 à 7
+- ${chaine//motif/remplaçant} --> remple tous les motif par remplaçant
+- ${chaine//motif/} --> remplace tous les motif par rien donc supressio
+  exemple : ${chaine// /} --> supprime toutes les espace vides
+- ${chaine#H*o} --> suppression des sous chaines "H..o" le motif le plus court(avec le ## on aura le motif le plus long)
+
+### Commande et Operations Utils
+
+- read name ;
+read - p "votre nom ?"  name
+read - p "votre nom ?"  -n 5 name 
+echo name ;
+(option - p, -n, -t voir le man  read)
+
+
+
+> 🟦 **Info importante** : Ce projet utilise Docker et Kubernetes.
