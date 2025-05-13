@@ -695,81 +695,138 @@ ufw status verbose        # Affiche les règles en cours
 
 
 
-
-
 ## PROGRAMMATION BASH
 
 
 ### Variable
 
-#### 🔧 Les variables standard en Bash
-
 ####    Les variables standard en Bash
 
-<span style="color:blue">Declaration de variable de typée dynamiquement</span>
+#####   Declaration de variable de typée dynamiquement
 
 - chaine='ma chaine brute sans variable'
 - chaine="ma chaine avec des $variables"
 - variable=`ls -al`  # variable contenat qui va contenir retour d'une commande
 - variable=25        # variable contenant un entier
 
-<span style="color:blue">Declaration de variable de controlée avec `declare`</span>
+#####   Declaration de variables controlées avec `declare`
 
 - declare -r readOnlyVariable=value   <<>> readonly readOnlyVariable=value
 - declare -i ingeterVariable=value
 - declare -a tableVariable=(value1, value2 value3 value4)
 - declare -A associatifTable=([key1]="value1" [key2]="value2" [key3]="value3")
 
-<span style="color:blue">Substition et indirection</span>
 
-- sustition : variable=$(command) --> replace une commande par une variable
-- indirection : evaluer la valeur d'une variable ;
-ab = c
-c=valeur
-retrouver valeur
+#####    sustition : affecté le retour d'une commande dans une variable 
 
-#### Les variables spéciales
+- variable=$(command)
+- user=$(whoami)
 
-- les variables special :
-s# , $0 , $1, $3, ${X}
- $$ --> le PID du process 
-$*, $@ 
+##### expansion : etendre la valeur d'une variable
+
+- variableNom="oumar"
+- variableExpandu="${variableNom}DevOps"
+- variableExpandu --> oumarDevOps
+
+#####    indirection : acces à la valeur d'une variable dont le nom est contenu dans une autre variable
+
+- varAge=25
+- myVarName="varAge"
+- ${!myVarName}  --> 25
+
+#####  valeur par defaut
+
+- myvar=${variable:-default} # if variable empty or non define, set myvar to default
+- myvar=${variable:+default} # if variable define and non empty, affecte default to myvar
+- myvar=${variable?message} # if variable empty or non define, give error with message
+
+#### Les variables spéciales : elles sont disposible dans un script en execution
+
+- $@ : liste des arguments sous forme mis dans un tableau
+- $* : liste des arguments concatenée dans une chaine
+- $# : le nombre d'argument passée au scipt
+- $1 : le 1er argument
+- $2 : le 2eme argument
+- $3 : le 3eme argument
+- $$ : le PID du scipt actuel
+- $? : le code de retour de la dernière commande
+- $! : le PID de la dernière commande
 
 #### Les tableaux
 
-tableau simple
-t=() --> tableau vide
-t[valeur]=valeur
-t=("je" "suis" "25" 5)
+#####   tableau indixé
 
-tableau associatif
-ta = (["cle"="valeur" "cle2"="valeur"])
-key_set=${!ta}
-ajout d'element
-modification d'elements
-taille du tableau
-etendre un ancien tableau
-fusion de deux tableaux ou concatenation
-unset pour supprimer un element d'indice ou supprimer le tableau
+- tab=() : declaration d'un tableau vide (- declare -a tab=() # typé à la declaration)
+- tab=("value1" "value2" "value3" 25 3 "value") # tableau initialisé à la declaration
+- tab[indice]=valeur : affectation ou modification d'une valeur du tableau
+- ${tab[indice]} --> valeur du tableau à l'indice `indice`
+- ${tab[@]} --> le tableau entier
+- ${#tab[@]} --> la taille du tableau
+- tab=(${tab[@]} value1 value2) : extension du tableau
+- tab=(${tab1[@]} ${tab2[@]}) : fusion de deux tableaux
+- unset ${tab[indice]} : supprimer la valeur à l'indice `indice`
+
+#####   tableau associatif
+
+- taba=() # declaration de tableau associatif vide (declare -A taba=() # declaration typée)
+- taba=(["key"]="valeur" ["key1"]="valeur1" ["key2"]="valeur2") # declaration et initialisation
+- taba[key]=value  # affectation d'un nouveau couple ou modification d'un ancien
+- ${taba[key]} --> valeur associée à `key`
+- ${taba[@]} --> le tableau associatif complet
+- ${#taba[@]} --> la taille du tableau
+
+
+#### operations arithmetriques
+
+affectation d'une operation arithmetrique avec substition
+- myvar=$((num1 operateur num2))
+- myvar=$(($var1 operateur $var2))
+- myvar=$((2+3))
+affectation d'une operation arithmetrique sans substition
+- let myvar=num1 operateur num2
+- let myvar=$varInt1+varInt2
+- let myvar=2+3
+les operateurs arithemetriques
+- operateur : +, -, *, **, /, %
+
+###  Conditions
+
+### syntaxe
+
+Syntaxe generale
+
+- if [ `condition` ] 
+  then
+    instruction
+  fi
+
+  - if [ `condition` ]
+  then
+    instructions
+  else
+    instructions
+  fi
+
+- if [ `condition1` ]||[ `condition2` ]
+  then
+    instructions
+  fi
+
+- if [ `condition1` ]&&[ `condition2` ]
+  then
+    instructions
+  fi
+
+Exemples 
 
 
 
-### Operations
-- arithmetic : 
-$((num_tring operateur num_string)) par exemple : $((25 + 25))
-operateur : +, -, *, **, /, %
-a+=((1)) ?
-- let var= 2+3 ?
-
-- comparaison numerique
-- comparaison chaine caractere
-- appartenance à un ensemble
-- operations sur les fichiers
-- operations sur les chaines
-- autres operations ?
-
-## Conditions
-
+#### comparaison de nombre
+#### comparaison de string
+#### test d'appartenance à un ensemble
+#### operations sur les fichiers
+#### operation sur les chaines
+#### Exemples
 - pour numerique
 -lt
 -le

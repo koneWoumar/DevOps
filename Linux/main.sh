@@ -6,9 +6,9 @@
 #echo "$(( "$1" + "$2" ))"
 
 
-ptr1=252
-ptr2=5
-ptr=5
+# ptr1=252
+# ptr2=5
+# ptr=5
 
 # read -p "enter i : " data
 
@@ -49,9 +49,6 @@ ptr=5
 # echo ${str#.*}    # → tar.gz (supprime le plus court préfixe avant le 1er .)
 # echo ${str##.*}   # → gz (supprime le plus long préfixe jusqu’au dernier .)
 
-declare -A table=(["key1"]="value1" ["key2"]="val2" ["key3"]="5")
-# for i in "${t[@]}"
-# do
-# echo "$i"
-# done
-echo ${table[@]}
+declare -a tab=(25 3 5 4)
+
+echo ${tab[@]}
