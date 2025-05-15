@@ -43,11 +43,16 @@
 
 - **Archive (.tar)** : Ensemble de fichiers regroupés dans un seul fichier sans compression.
 - **Zip (.gz/.tar.gz)** : Archive compressée.
-- **Paquet (.deb)** : Archive contenant un logiciel distribuable et installable.
+- **Paquet (.deb)** : Archive contenant un ensemble de fichiers permettant l'installation automatique d'un logiciel et (eventuellement ses dependances)
   - **.deb** contient :
-    - `control.tar.gz` : Métadonnées (nom, version, dépendances, description).
+    - `control.tar.gz` : Métadonnées (nom, version, dépendances, description, post/pre-install script).
     - `data.tar.gz` : Fichiers à installer sur le système.
     - `debian-binary` : Version du format Debian.
+
+### Type de Paquet
+IL existe deux type de paquet :
+- Paquet  binaire : Paquet distribué directement avec les binaire de l'application.
+- Paquet source : Paquet distribué avec les fichiers sources de l'application qu'il faut compiler avant l'installation avec pour avantage d'avoir un binaire plus optimisé pour le systeme guest.
 
 ### Gestionnaire de Paquets et Dépendances
 
@@ -702,252 +707,519 @@ ufw status verbose        # Affiche les règles en cours
 
 ####    Les variables standard en Bash
 
-#####   Declaration de variable de typée dynamiquement
+- Declaration de variable de typée dynamiquement
+```bash
+chaine='ma chaine brute sans variable' 
+chaine="ma chaine avec des $variables"
+variable=`ls -al`  # variable contenat qui va contenir retour d'une commande
+variable=25        # variable contenant un entier
+```
 
-- chaine='ma chaine brute sans variable'
-- chaine="ma chaine avec des $variables"
-- variable=`ls -al`  # variable contenat qui va contenir retour d'une commande
-- variable=25        # variable contenant un entier
+- Declaration de variables controlées avec `declare`
+```bash
+declare -r readOnlyVariable=value # readonly variable
+readonly readOnlyVariable=value   # readonly variable
+declare -i ingeterVariable=value  # integrer variable
+declare -a tableVariable=(value1, value2 value3 value4)  # a table variable
+declare -A associatifTable=([key1]="value1" [key2]="value2" [key3]="value3")  # an associatif variable
+```
 
-#####   Declaration de variables controlées avec `declare`
+- Sustition : affecté le retour d'une commande dans une variable 
+```bash
+variable=$(command)
+user=$(whoami)
+```
 
-- declare -r readOnlyVariable=value   <<>> readonly readOnlyVariable=value
-- declare -i ingeterVariable=value
-- declare -a tableVariable=(value1, value2 value3 value4)
-- declare -A associatifTable=([key1]="value1" [key2]="value2" [key3]="value3")
+- Expansion : etendre la valeur d'une variable
+```bash
+variableNom="oumar"
+variableExpandu="${variableNom}DevOps"
+variableExpandu # --> oumarDevOps
+```
+- Indirection : acces à la valeur d'une variable dont le nom est contenu dans une autre variable
+```bash
+varAge=25
+myVarName="varAge"
+${!myVarName}  # --> 25
+```
 
+- Valeur par defaut
+```bash
+myvar=${variable:-default}  # if variable empty or non define, set myvar to default
+myvar=${variable:+default}  # if variable define and non empty, affecte default to myvar
+myvar=${variable?message}   # if variable empty or non define, give error with message
+```
 
-#####    sustition : affecté le retour d'une commande dans une variable 
-
-- variable=$(command)
-- user=$(whoami)
-
-##### expansion : etendre la valeur d'une variable
-
-- variableNom="oumar"
-- variableExpandu="${variableNom}DevOps"
-- variableExpandu --> oumarDevOps
-
-#####    indirection : acces à la valeur d'une variable dont le nom est contenu dans une autre variable
-
-- varAge=25
-- myVarName="varAge"
-- ${!myVarName}  --> 25
-
-#####  valeur par defaut
-
-- myvar=${variable:-default} # if variable empty or non define, set myvar to default
-- myvar=${variable:+default} # if variable define and non empty, affecte default to myvar
-- myvar=${variable?message} # if variable empty or non define, give error with message
-
-#### Les variables spéciales : elles sont disposible dans un script en execution
-
-- $@ : liste des arguments sous forme mis dans un tableau
-- $* : liste des arguments concatenée dans une chaine
-- $# : le nombre d'argument passée au scipt
-- $1 : le 1er argument
-- $2 : le 2eme argument
-- $3 : le 3eme argument
-- $$ : le PID du scipt actuel
-- $? : le code de retour de la dernière commande
-- $! : le PID de la dernière commande
+- Les variables spéciales : elles sont disposible dans un script en execution
+```bash
+$@   # liste des arguments sous forme mis dans un tableau
+$*   # liste des arguments concatenée dans une chaine
+$#   # le nombre d'argument passée au scipt
+$1   # le 1er argument
+$2   # le 2eme argument
+$3   # le 3eme argument
+$$   # le PID du scipt actuel
+$?   # le code de retour de la dernière commande
+$!   # le PID de la dernière commande
+```
 
 #### Les tableaux
 
-#####   tableau indixé
+- Tableau indicé
 
-- tab=() : declaration d'un tableau vide (- declare -a tab=() # typé à la declaration)
-- tab=("value1" "value2" "value3" 25 3 "value") # tableau initialisé à la declaration
-- tab[indice]=valeur : affectation ou modification d'une valeur du tableau
-- ${tab[indice]} --> valeur du tableau à l'indice `indice`
-- ${tab[@]} --> le tableau entier
-- ${#tab[@]} --> la taille du tableau
-- tab=(${tab[@]} value1 value2) : extension du tableau
-- tab=(${tab1[@]} ${tab2[@]}) : fusion de deux tableaux
-- unset ${tab[indice]} : supprimer la valeur à l'indice `indice`
+```bash
+tab=() # declaration d'un tableau vide (- declare -a tab=() # typé à la declaration)
+tab=("value1" "value2" "value3" 25 3 "value") # tableau initialisé à la declaration
+tab[indice]=valeur   # affectation ou modification d'une valeur du tableau
+${tab[indice]}   #--> valeur du tableau à l'indice `indice`
+${tab[@]}        #-->  le tableau entier
+${#tab[@]}       #--> la taille du tableau
+tab=(${tab[@]} value1 value2)   # extension du tableau
+tab=(${tab1[@]} ${tab2[@]})   # fusion de deux tableaux
+unset ${tab[indice]}          # supprimer la valeur à l'indice `indice`
+```
 
-#####   tableau associatif
-
-- taba=() # declaration de tableau associatif vide (declare -A taba=() # declaration typée)
-- taba=(["key"]="valeur" ["key1"]="valeur1" ["key2"]="valeur2") # declaration et initialisation
-- taba[key]=value  # affectation d'un nouveau couple ou modification d'un ancien
-- ${taba[key]} --> valeur associée à `key`
-- ${taba[@]} --> le tableau associatif complet
-- ${#taba[@]} --> la taille du tableau
-
+- Tableau associatif
+```bash
+taba=()  # declaration de tableau associatif vide (declare -A taba=() # declaration typée)
+taba=(["key"]="valeur" ["key1"]="valeur1" ["key2"]="valeur2") # declaration et initialisation
+taba[key]=value  # affectation d'un nouveau couple ou modification d'un ancien
+${taba[key]} # --> valeur associée à `key` 
+${taba[@]} # --> le tableau associatif complet
+${#taba[@]} # --> la taille du tableau
+```
 
 #### operations arithmetriques
 
-affectation d'une operation arithmetrique avec substition
-- myvar=$((num1 operateur num2))
-- myvar=$(($var1 operateur $var2))
-- myvar=$((2+3))
-affectation d'une operation arithmetrique sans substition
-- let myvar=num1 operateur num2
-- let myvar=$varInt1+varInt2
-- let myvar=2+3
-les operateurs arithemetriques
-- operateur : +, -, *, **, /, %
+- Affectation d'une operation arithmetrique avec substition
+```bash
+myvar=$((num1 operateur num2)) 
+myvar=$(($var1 operateur $var2))
+myvar=$((2+3))
+```
+- Affectation d'une operation arithmetrique sans substition
+```bash
+let myvar=num1 operateur num2
+let myvar=$varInt1+$varInt2
+let myvar=2+3
+```
+- Les operateurs arithemetriques
+```bash
++ ; - ; * ; ** ; / ; %
+```
 
 ###  Conditions
 
-### syntaxe
+#### syntaxe
 
-Syntaxe generale
+- Syntaxe generale
 
-- if [ `condition` ] 
+```bash
+#
+if [ condition ] 
   then
-    instruction
-  fi
+  instruction
+fi
+#
+if [ condition ]
+then
+  instructions
+else
+  instructions
+fi
+#
+if [ condition1 ]||[ condition2 ]
+then
+  instructions
+fi
+#
+if [ condition1 ]&&[ condition2 ]
+then
+  instructions
+fi
+#
+```
+- Exemples 
 
-  - if [ `condition` ]
-  then
-    instructions
-  else
-    instructions
-  fi
-
-- if [ `condition1` ]||[ `condition2` ]
-  then
-    instructions
-  fi
-
-- if [ `condition1` ]&&[ `condition2` ]
-  then
-    instructions
-  fi
-
-Exemples 
-
-
-
-#### comparaison de nombre
-#### comparaison de string
-#### test d'appartenance à un ensemble
-#### operations sur les fichiers
-#### operation sur les chaines
-#### Exemples
-- pour numerique
--lt
--le
--gt
--ge
--ne
--eq
-
-- pour les chaine :
- =
- !=
-
-- appartenance à un ensemble
-
-
-
-- syntaxe 1 :
-
+```bash
+#
 if test $vara -eq $varb ; then
   echo "yes"
 fi
-
-- syntaxe 2 : 
-
+#
 if [ $vara -eq $var2 ] ; then 
   echo "yes" 
 fi
-
-- syntaxe 3 : 
-
-if [ $vara -eq $varb ] || [ $varc -eq $vard ] ; then 
-  echo "something" here
+#
+if [ $vara -eq $var2 ] ; then 
+  echo "yes"
+else
+  echo "non"
 fi
-
-- syntax 4 : beaucoup moins portable : voir postx la norme
-
-if [[ $ptr1 -eq 252 && ptr -eq 5 ]] ; then 
-    echo "yes"
+#
+if [ $var1 -eq $var2 ]||[ $var3 -ne $var4 ] ; then
+  echo "yes"
 fi
-- verificaiton sur les chaine:
+#
+#
+if [ $var1 -eq $var2 ]&&[ $var3 -ne $var4 ] ; then
+  echo "yes"
+fi
+#
+```
+#### comparaison
+- Comparaison avec les nombres
+```bash
+-gt ; -ge # greater than ; greater or equal
+-lt ; -le # lower than ; lower or equal
+-eq ; -ne # equal ; enequal 
+```
+- Comparaison avec les string
+```bash
+== # equal
+=! # different
+```
 
--n $chaine : pas vide
--z $chaine : chaine vide
+#### Diverses Operations de Tests Utilisées Dans les Conditions
 
-- verification sur  les fichier
+- Operation sur les chaines
 
--d fichier : si c'est un dossier
--f : est un fichier
--e : existe dans le repertoire spéficier
--r : disponible en lecture
--x dispobible en execution
--W : disponible en ecriture
--s si la taille est supperieur à O
----> trouver le man permettant de retrouver ces info
+```bash
+-n $chaine # si la chaine existe et non vide
+-z $chaine # si la chaine est vide ou non existante
+```
 
-- autres verification possible dans le language bash du meme genre
+- Operations sur les fichiers
+```bash
+-e fichier # si le fichier existe
+-d fichier # si le fichier est un fichier standard
+-f fichier # si le fichier est un dossier
+-r fichier # si le fichier est disponible en lecture
+-w fichier # si le fichier est disponible en ecriture
+-x fichier # si le fichier est disponible en execution
+-s fichier # si le fichier existe et n'est pas vide
+-O fichier # si l'utilisateur courant est le proprietaire du fichier
+-G fchier  # si le group proprietaire du fichier est celui du user courant
+```
 
 
-- case : 
+###  Boucle
 
-case $cmd in 
-  1) echo "something" ; do something ;;
-  2) echo "something" ;;
-  *) echo "otherthing" ;;
-esac
-
-## Boucle
-
-while ((condition))
-do
-something to do
+- Boucle while
+```bash
+## Syntaxe :
+while ((condition)) ; do
+  # intruction
 done
- -continue
- -break
- -exit
 
-until (( condition))
-do
+# continue : continuer la boucle, recommencer la boucle
+# break    : quitter la boucle
+# exit     : quitter arreter le script avec un code retour (0 ou 1)
+# les operateurs : == ; != ; > ; >= ;< ; <=
+# les operateurs logique : && ; ||
+
+## Exemple :
+let i=0
+while (( i<10 )) ; do
+  echo "${i}éme occurance"
+  let i-=1
+done
+```
+
+- Boucle until
+```bash
+util (( condition )) ; do
+  # instructions
 done
 
-for tmp in sequence 
-do
-something
+# continue : continuer la boucle, recommencer la boucle
+# break    : quitter la boucle
+# exit     : quitter arreter le script avec un code retour (0 ou 1)
+# les operateurs : == ; != ; > ; >= ;< ; <=
+# les operateurs logique : && ; ||
+
+## Exemple :
+let i=0
+until (( i==10 )) ; do
+  echo "${i}éme occurance"
+  let i+=1
 done
+```
+
+- Boucle for
+```bash
+for (( intialisation ; condition ; incrementation )) ; do
+  # instructions
+done
+
+## Exemple
 
 for ((i=0 ; i> 10 ; i++))
 do
-something
+  #something
+done
+```
+
+- Parcours d'ensemble ou sequence
+```bash
+# syntaxe generale
+for var in ensemble; do
+  # instructions
 done
 
+## sur une sequence
+for i in 1 2 3 4 5; do
+  echo "i = $i"
+done
 
-### Tableau
+## sur des chaine de caractere
+for couleur in rouge vert bleu; do
+  echo "Couleur : $couleur"
+done
 
+## sur un tableau
+fruits=("pomme" "banane" "cerise")
+for fruit in "${fruits[@]}"; do
+  echo "Fruit : $fruit"
+done
 
+## sur la sortie d'une commande
+for user in $(cut -d: -f1 /etc/passwd); do
+  echo "Utilisateur : $user"
+done
+
+## sur des fichiers d'un dossier
+for fichier in *.txt; do
+  echo "Fichier texte : $fichier"
+done
+
+## sur des fichiers depuis divers repertoire
+for file in /var/log/*.log /tmp/*.log; do
+  echo "Log : $file"
+done
+```
 ### Foncton
 
+- Definition de fonction
+```bash
+# Syntaxe classique
+ma_fonction() {
+  echo "Hello"
+}
+
+# Ou bien avec le mot-clé function
+function ma_fonction {
+  echo "Hello"
+}
+
+# Les variables dans une fonctions
+function ma_fonction(){
+    echo "numer of argument :$#"
+    echo "list of argument in a table forma : $@"
+    echo "list of argument in a string forma : $*"
+    echo "PID of the process executing this fonction : $$"
+    echo "command that lunched this process : $0"
+    echo "argument i : $i" # i ={1,2,3,4,5,6,7,8,9}
+}
+```
+
+- Appel de fonction
+```bash
+# appel sans argument
+ma_fonction
+# appel avec arguments
+ma_fonction arg1 arg2 arg3
+```
 
 
-### Traitement sur les chaine 
-- {}  --> permet de faire des operations sur les chaines
-- longueur d'une chaine  : ${#chaine}
-- mettre la chaine en majuscule : ${chaine}
-- ${chaine,} --> premieres caracteres en miniscule
-- ${chaine,,} --> toutes la chaine en miniscule
-- ${chaine,,[W]} --> toutes les w en miniscule
-- ${chaine^}  --> les premieres caracteres en majuscule
-- ${chaine^^}  --> toutes les chaines en majuscule
-- ${chaine:0:7} --> extraction de sous chaine allant de 0 à 7
-- ${chaine//motif/remplaçant} --> remple tous les motif par remplaçant
-- ${chaine//motif/} --> remplace tous les motif par rien donc supressio
-  exemple : ${chaine// /} --> supprime toutes les espace vides
-- ${chaine#H*o} --> suppression des sous chaines "H..o" le motif le plus court(avec le ## on aura le motif le plus long)
+### Traitement sur les chaine  
 
-### Commande et Operations Utils
+Les `{}` permettent d'executer des operations sur les chaines string.
 
-- read name ;
-read - p "votre nom ?"  name
-read - p "votre nom ?"  -n 5 name 
+- Longueur d'une chaine
+```bash
+str="Bonjour"
+echo ${#str}      # → 7
+```
+
+- Changement de la case
+```bash
+str="bonjour"
+echo ${str^}        # → Bonjour (1re lettre en majuscule)
+echo ${str^^}       # → BONJOUR (tout en majuscule)
+echo ${str,}        # → bonjour (1re lettre en minuscule)
+echo ${str,,}       # → bonjour (tout en minuscule)
+```
+
+- Remplacement de motif
+```bash
+str="bonjour le monde"
+echo ${str/le/LA}       # → bonjour LA monde (le 1er 'le' rencontré)
+echo ${str//le/LA}      # → bonjour LA monde (tous les 'le')
+```
+
+- Remplacer un suffix/prefix
+```bash
+str="prefix_chaine_suffix"
+echo ${str#/prefix/"new_prefix"}          # → new_prefix_chaine_suffix
+echo ${str%/suffix/"new_suffix"}          # → prefix_chaine_new_suffix
+#####
+echo ${str#/prefix/}                      # → chaine_suffix
+echo ${str%/suffix/}                      # → prefix_chaine
+```
+
+- Extraction de sous chaine
+```bash
+str="Bonjour"
+echo ${str:1}     # → onjour
+echo ${str:1:3}   # → onj (début à 1, longueur 3)
+echo echo ${str::3} # --> bon
+```
+
+- Supression de prefix/suffix
+```bash
+str="fichier.tar.gz"
+echo ${str#*.}    # → tar.gz (supprime le plus court préfixe avant le 1er .)
+echo ${str##*.}   # → gz (supprime le plus long préfixe jusqu’au dernier .)
+#########
+str="fichier.tar.gz"
+echo ${str%.*}    # → fichier.tar (supprime le plus court suffixe après le dernier .)
+echo ${str%%.*}   # → fichier (supprime le plus long suffixe après le 1er .)
+```
+
+
+### Commande et Operations Utils et Divers
+
+
+#### Commande et pratiques utiles
+
+- Lecture depuis le clavier via l'entrée standard
+
+```bash
+read -p "votre nom ?"  name
+read -p "votre nom ?"  -n 5 name
+read -p "votre non ?" -n 5 -t  name
 echo name ;
-(option - p, -n, -t voir le man  read)
+#  -p  : message display
+#  -n  : limiter le nonbre de caracare
+#  -t  : 
+```
+
+- Equivalent non interactive d'une comandes inernal
+
+```bash
+# Modification du mot de pass d'un user
+echo "user:password" | sudo chpasswd
+# 
+```
+
+#### Expression reguliere
+
+- Caractere spéciaux des expressions regulières
+
+|Caractere special|Role du caractere dans les regex|
+|-----------------|--------------------------------|
+| [ xyz ] | ensemble ou classe de caractere |
+| [ x-x ] | interval |
+| . | n'importe quel caractere |
+| * | 0 ou plusieurs fois |
+| + | 1 ou plusieurs fois |
+| ? | 0 ou 1 fois |
+| {n,m} | entre n et m fois |
+| '|' | ou logique |
+| (...) | sous section |
+| ^ | debut de ligne |
+| $ | fin de ligne |
+
+- Utilisation des expressions regulières
+```bash
+############### ensemble et interval
+[xyz] # : un des caractere x, y ou z
+[^xyz] # : tous les caractere sauf x, y et z
+[a-z] # : un des caractere  alphabetique miniscule
+[A-Z] # : un des caractere alphabetique majuscule
+[0-9] # : un chiffre
+[a-zA-Z0-9] # : un alphanumérique
+############### repetitons de caractere
+regex* # : regex repeter plusieurs fois
+regex+ # : regex repeter une ou plusieurs fois
+regex? # : regex repeter un ou zero
+regex(n,m) # : regex repeter entre n et m fois
+###############  debut de ligne
+regex^ # : ligne commençant par regex 
+regex$ # : ligne se terminat par regex
+###############  sous ensemble
+(chien|chat) # : match si "chien" ou "chat"
+(ha){n,m}   # : match si "ha" répété entre n et m fois
+(ha)?       # : match si "ha" répété au plus une fois
+(ha)*       # : match si "ha" répété plusieurs fois ou zero fois
+(ha)+       # : match si "ha" répété au moins une fois
+regex(chien|chat) # : match si regexchien ou regexchat
+```
+- Exemples d'utilisation des expressins regulière
+```bash
+############### Ensemble et Interval
+echo "alpha beta" | grep '[ae]'      # Match les lignes contenant 'a' ou 'e'
+echo "bon" | grep '[^aeiou]'         # Match les consonnes
+echo "Zebra" | grep '[a-z]'          # Match les lettres minuscules
+echo "Zebra" | grep '[A-Z]'          # Match 'Z'
+echo "Apt 407" | grep '[0-9]'        # Match les chiffres
+echo "!@#Alpha4" | grep '[a-zA-Z0-9]'  # Match tout sauf les symboles
+############### Repetition
+echo "baaa" | grep 'ba*'     # Match 'ba', 'baa', 'baaa'
+echo "color colour" | grep -E 'colou?r'   # Match les deux versions
+echo "hahaha-1" "ha-ha-ha-2" | grep -E '(ha){2,3}'  # Match 'hahaha-1' et non ha-ha-ha
+############### Debut et fin de ligne
+echo "Start here" | grep '^Start'     # Match uniquement si la ligne commence par 'Start'
+echo "finish" | grep 'sh$'            # Match si la ligne se termine par 'sh'
+```
+
+#### Traitement de flux avec `sed` ,`grep` ,`awk`
+
+#### grep
+
+Consulter des lignes correspondant à une regex dans un flu.
+
+```bash
+######### syntaxe
+grep -option regex fichier
+######### option
+-c # : afficher pluto le nombre de ligne correspondante
+-i # : ignorer la case
+-E ou egrep # : utilisé la syntaxe etendu des regex 
+```
+
+#### sed
+
+Modifier le contenu d'un fichier ou d'un flux ligne par ligne : `substitition` , `suppression`, `insertion`, `ajout`, `affichage`, `Remplacement`
+
+- Substition
+
+```bash
+########## syntaxe
+sed -option "s/regex/remplaçant/flag" fichier_flux
+########## options:
+-i # : save output directly in the file flux ou flux
+-n # : desactiver l'affichage automatique de la sortie
+-e # : appliquer plusieur commande les une apres les autres
+-f # : la commande sed est lire depuis un fichier
+######### flag
+g # : 'global' remplacer toutes les occurrence trouvé sur les lignes
+chiffre n # :  remplacer uniquement la nième occurrence sur les lignes
+e # : evaluate' --> le remplaçant est retour d'une commande
+w # : indiquer un fichier de sortie qui va contenir l'output de la commande
+```
+
+- Insertion, Ajout, Remplacement, Suppression et Affichage
+
+| Commandes | Usages | Exemples | Resultat |
+--------------------------------------------
+| p, = | Printing de ligne du texte | sed '3p' fichier | Afficher la 3ème ligne|
+| d | deleting line | sed '3d' fichir | Supprimer la 3ème ligne | 
+| i | Insert before current line | sed '3i\sentence_to_insert' fichier | inserer "sentence_to_inser' avant la 3eme line et decaler le reste : elle se trouve donc à la 3eme ligne|
+| a | Append after current line | sed '3a\text_to_append' fichier | ajouter "tesxt_to_append" apres la 3eme ligne : elle se trouve donc à la 4ème ligne|
+| c | Change current line | sed '3c\new_text' | changer la 3eme ligne par "new text" |
 
 
+#### awk
 
-> 🟦 **Info importante** : Ce projet utilise Docker et Kubernetes.

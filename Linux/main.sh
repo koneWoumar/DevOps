@@ -49,6 +49,51 @@
 # echo ${str#.*}    # → tar.gz (supprime le plus court préfixe avant le 1er .)
 # echo ${str##.*}   # → gz (supprime le plus long préfixe jusqu’au dernier .)
 
-declare -a tab=(25 3 5 4)
+# declare -a tab=(25 3 5 4)
 
-echo ${tab[@]}
+# echo ${tab[@]}
+
+# chaine='je suis'
+# if [ "je" == ${chaine} ] ; then
+#     echo "yes"
+# fi
+
+# let i=10
+# while (( 1 )) ; do
+#     if [ $i -gt 0 ] ; then
+#         echo "${i}ème terme"
+#         let i-=1
+#     fi
+#     break
+# done
+
+# for i in '1 2 3 4 5' ; do
+#   echo "i = $i"
+# done
+
+# liste="janvier février mars"
+# for mois in $liste; do
+#   echo "Mois : $mois"
+# done
+
+fonction(){
+    echo "num of arg :$#"
+    echo "tab of args : $@"
+    echo "concate of args : $*"
+    echo "PID of this process : $$"
+    echo "command started this process : $0"
+    echo "arg1 : $1"
+    if [ -z "$3" ] ; then
+        echo "the first arg existe"
+    fi
+}
+
+fonction $1 $2
+
+# color 
+# coulor
+# culer
+# hahaha 
+# ha-ok-ha-yes-ha
+# ha ha ha
+# hacarhajesuishafor
