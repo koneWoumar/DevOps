@@ -342,8 +342,6 @@ Cette règle autorise les connexions SSH entrantes (port 22).
 * Syntaxe complexe
 * Peu intuitive, surtout pour les débutants
 
-### Les
-
 ---
 
 ### 🔄 `ufw` (Uncomplicated Firewall)
@@ -763,7 +761,7 @@ $?   # le code de retour de la dernière commande
 $!   # le PID de la dernière commande
 ```
 
-#### Les tableaux
+####    Les tableaux
 
 - Tableau indicé
 
@@ -789,7 +787,7 @@ ${taba[@]} # --> le tableau associatif complet
 ${#taba[@]} # --> la taille du tableau
 ```
 
-#### operations arithmetriques
+####    operations arithmetriques
 
 - Affectation d'une operation arithmetrique avec substition
 ```bash
@@ -808,9 +806,9 @@ let myvar=2+3
 + ; - ; * ; ** ; / ; %
 ```
 
-###  Conditions
+###     Conditions
 
-#### syntaxe
+####     syntaxe
 
 - Syntaxe generale
 
@@ -867,7 +865,7 @@ if [ $var1 -eq $var2 ]&&[ $var3 -ne $var4 ] ; then
 fi
 #
 ```
-#### comparaison
+####    comparaison
 - Comparaison avec les nombres
 ```bash
 -gt ; -ge # greater than ; greater or equal
@@ -880,7 +878,7 @@ fi
 =! # different
 ```
 
-#### Diverses Operations de Tests Utilisées Dans les Conditions
+####     Diverses Operations de Tests Utilisées Dans les Conditions
 
 - Operation sur les chaines
 
@@ -903,7 +901,7 @@ fi
 ```
 
 
-###  Boucle
+###    Boucle
 
 - Boucle while
 ```bash
@@ -998,7 +996,7 @@ for file in /var/log/*.log /tmp/*.log; do
   echo "Log : $file"
 done
 ```
-### Foncton
+###     Foncton
 
 - Definition de fonction
 ```bash
@@ -1032,7 +1030,7 @@ ma_fonction arg1 arg2 arg3
 ```
 
 
-### Traitement sur les chaine  
+###    Traitement sur les chaine  
 
 Les `{}` permettent d'executer des operations sur les chaines string.
 
@@ -1088,10 +1086,10 @@ echo ${str%%.*}   # → fichier (supprime le plus long suffixe après le 1er .)
 ```
 
 
-### Commande et Operations Utils et Divers
+###    Commande et Operations Utils et Divers
 
 
-#### Commande et pratiques utiles
+####     Commande et pratiques utiles
 
 - Lecture depuis le clavier via l'entrée standard
 
@@ -1113,7 +1111,7 @@ echo "user:password" | sudo chpasswd
 # 
 ```
 
-#### Expression reguliere
+####     Expression reguliere
 
 - Caractere spéciaux des expressions regulières
 
@@ -1174,7 +1172,7 @@ echo "Start here" | grep '^Start'     # Match uniquement si la ligne commence pa
 echo "finish" | grep 'sh$'            # Match si la ligne se termine par 'sh'
 ```
 
-#### Traitement de flux avec `sed` ,`grep` ,`awk`
+####     Traitement de flux avec `sed` ,`grep` ,`awk`
 
 #### grep
 
@@ -1189,7 +1187,7 @@ grep -option regex fichier
 -E ou egrep # : utilisé la syntaxe etendu des regex 
 ```
 
-#### sed
+####     sed
 
 Modifier le contenu d'un fichier ou d'un flux ligne par ligne : `substitition` , `suppression`, `insertion`, `ajout`, `affichage`, `Remplacement`
 
@@ -1221,5 +1219,5 @@ w # : indiquer un fichier de sortie qui va contenir l'output de la commande
 | c | Change current line | sed '3c\new_text' | changer la 3eme ligne par "new text" |
 
 
-#### awk
+####     awk
 
