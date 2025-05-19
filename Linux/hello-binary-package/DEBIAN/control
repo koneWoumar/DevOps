@@ -1,0 +1,12 @@
+Package: myapp
+Version: 1.0
+Section: base
+Priority: optional
+Architecture: all
+Depends: python3 (>= 3.6), bash, python3-flask
+Maintainer: Ton Nom <ton.email@example.com>
+Description: MyApp - une application simple en Python
+ Une application exemple empaquetée au format .deb.
+ Elle installe un script Python, un fichier de configuration
+ et des données persistantes dans les emplacements standards. 
+ Il s'agit d'une applis flask qui lance un mini server

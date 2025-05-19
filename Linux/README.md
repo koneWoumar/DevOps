@@ -39,7 +39,7 @@
 
 ## Gestion des Paquets et Dépendances
 
-### Formats de Paquets
+### Definition et Notions
 
 - **Archive (.tar)** : Ensemble de fichiers regroupés dans un seul fichier sans compression.
 - **Zip (.gz/.tar.gz)** : Archive compressée.
@@ -51,7 +51,7 @@
 
 ### Type de Paquet
 IL existe deux type de paquet :
-- Paquet  binaire : Paquet distribué directement avec les binaire de l'application.
+- Paquet  binaire : Paquet distribué directement avec les binaire de l'application, ce sont des `paquet.deb`
 - Paquet source : Paquet distribué avec les fichiers sources de l'application qu'il faut compiler avant l'installation avec pour avantage d'avoir un binaire plus optimisé pour le systeme guest.
 
 ### Gestionnaire de Paquets et Dépendances
@@ -64,6 +64,157 @@ IL existe deux type de paquet :
 - **Dépôt officiel (/etc/apt/sources.list)** : Maintenu par la distribution elle-même (ex. Ubuntu).
 - **Dépôt tiers (/etc/apt/sources.d)** : Maintenu par une autre organisation ou développeur.
 - **PPA (Personal Package Archive)** : Dépôt spécifique à Ubuntu, souvent hébergé sur Launchpad.net.
+
+### Mise en Place d'un Paquet Binaire Debian
+
+On peut obtenir un paquet binaire soit à partir d'un paquet source soit en metant en mettant en place une architecture de paquet avec les données de l'application à distribuer.
+- Dans le premiere cas, il faut telecharger le bianaire source, compiler, installer oubien en faire un paquet.
+- Dans le second cas, il faut respecter l'architecture d'un paquet sous debian (cas de debian ici) : dossier et fichier à mettre en place puis transformer le dossier obtenu en paquet avec dpgk.
+
+
+####  Debian package from source code
+
+
+```bash
+# Ici nous telechargeons le paquet source de zsh
+wget https://sourceforge.net/projects/zsh/files/zsh/5.9/zsh-5.9.tar.xz
+# Ensuite il faut installer 'build-essential' qui est un métapaquet qui contient les outils necessaires pour compiler un logiciel ecrit en c/c++ à savoir gcc, g++, make, dpkg-dev.
+sudo apt update
+sudo apt install build-essential
+# Il faut en suite lancer le script d'auto-generation s'il existe dans le repertoire. Ce script va generer la configuration de make. S'il n'existe pas dans le dossier, cela voudrais dire que la config de make est deja en place.
+./autogen.sh
+# Il faut executer le script configure qui va configurer la compilation (optimisaiton pour le systeme actuel)
+./configure
+# On peut compiler maintenat le code source avec make
+make -j$(nproc)
+# Enfin on peut transformer le resultat obtenu en paquet debian 
+sudo checkinstall
+# On peut eventuellement installer directement le binaire obtenu avec make
+sudo make install
+```
+
+
+####  Tutoriel
+
+#####    Architecture du paquet à venir
+
+```bash
+myapp/
+├── DEBIAN
+│   ├── control          # Métadonnées du paquet (nom, version, dépendances, etc.)
+│   ├── preinst          # Script exécuté avant l’installation
+│   ├── postinst         # Script exécuté après l’installation
+│   ├── prerm            # Script exécuté avant la suppression
+│   └── postrm           # Script exécuté après la suppression
+├── usr
+│   └── local
+│       └── bin
+│           └── myapp.py        # Script exécutable de l’application
+├── var
+│   └── lib
+│       └── myapp
+│           └── myapp.data      # Données persistantes de l’application
+└── etc
+│    └── myapp
+│        └── myapp.conf         # Fichier de configuration de l’application
+└── lib
+    └── systemd
+        └── system
+            └── myapp.service   # Fichier de configuration de service pour l'applis si on veut executer l'appli en tant que service (cela est optionnelle)
+```
+#####  Les fichiers du paquet à venir
+
+- `/myapp/DEBIAN/control`
+```conf
+Package: myapp
+Version: 1.0
+Section: base
+Priority: optional
+Architecture: all
+Depends: python3 (>= 3.6), bash, python3-flask
+Maintainer: Ton Nom <ton.email@example.com>
+Description: MyApp - une application simple en Python
+ Une application exemple empaquetée au format .deb.
+ Elle installe un script Python, un fichier de configuration
+ et des données persistantes dans les emplacements standards.
+```
+
+- `/myapp/DEBIAN/preinst`
+```bash
+#!/bin/bash
+echo "Préparation à l'installation de MyApp..."
+```
+
+- `/myapp/DEBIAN/postint`
+```bash
+#!/bin/bash
+echo "MyApp a été installé."
+echo "Pour lancer le service : python3 /usr/local/bin/myapp.py &"
+```
+
+- `/myapp/DEBIAN/prerm`
+```bash
+#!/bin/bash
+echo "Suppression de MyApp en cours..."
+```
+
+- `/myapp/DEBIAN/postrm`
+```bash
+#!/bin/bash
+echo "MyApp a été complètement supprimé."
+```
+
+- `/myapp/lib/systemd/system/myapp.service`
+```
+
+```
+
+- `/myapp/usr/local/bin/myapp.py`
+```py
+
+```
+- `/myapp/etc/myapp.conf`
+```conf
+#!/usr/bin/env python3
+from flask import Flask, request
+import datetime
+
+# Lire configuration
+conf_path = '/etc/myapp.conf'
+with open(conf_path) as f:
+    lines = f.readlines()
+    port = int([l for l in lines if l.startswith('port')][0].split('=')[1].strip())
+    chemin = [l for l in lines if l.startswith('chemin')][0].split('=')[1].strip()
+
+data_path = "/var/lib/myapp/myapp.data"
+
+app = Flask(__name__)
+
+@app.route(chemin, methods=["GET"])
+def hello():
+    with open(data_path, "a") as f:
+        f.write(f"{datetime.datetime.now()} - {request.url}\n")
+    return "Ceci est un message de test depuis MyApp."
+
+if __name__ == "__main__":
+    app.run(port=port)
+
+```
+- `/myapp/var/lib/myapp/myapp.data`
+```
+# Les logs des requêtes seront automatiquement ajoutés ici par l’application.
+
+```
+
+
+
+#####  Creation du paquet et installation du paquet
+```bash
+# Creation du paquet .deb
+dpkg-deb --build myapp
+# Installation du paquet .deb
+dpkg -i myapp.deb
+```
 
 ---
 
@@ -81,6 +232,99 @@ IL existe deux type de paquet :
 - **journald** : Centralisation et gestion des logs système.
 - **networkd** : Gestion des interfaces réseau (configurations IP, routage, VLAN, tunnels, etc.).
 - **logind** : Gestion des sessions utilisateurs, des connexions, et des actions d'alimentation.
+
+### Exemple de configuration de service pour une applis
+
+Pour configurer un service pour une application, il faut : 
+
+- Créer un fichier de configurer de service pour l'application soit `/etc/systemd/system/mon-app.service` :
+
+``` conf
+[Unit]
+Description=Mon application personnalisée
+After=network.target
+Requires=network.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+StartLimitBurst=5
+Documentation=https://mon-app.example.com/docs
+
+
+[Service]
+# Type de processus
+Type=simple
+# Utilisateur et groupe
+User=monutilisateur
+Group=monutilisateur
+# Dossier de travail
+WorkingDirectory=/opt/mon-app
+# Commande de démarrage
+ExecStart=/opt/mon-app/start.sh
+# Commande d’arrêt (optionnelle)
+ExecStop=/bin/kill -s TERM $MAINPID
+ExecReload=/bin/kill -HUP $MAINPID
+# Variables d’environnement
+Environment="ENV=production"
+EnvironmentFile=-/etc/mon-app/env.conf
+# Redémarrage automatique
+Restart=on-failure
+RestartSec=5
+TimeoutStartSec=30
+TimeoutStopSec=20
+# Journalisation
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mon-app
+# Ressources CPU
+CPUQuota=50%
+CPUSchedulingPolicy=other
+CPUSchedulingPriority=0
+Nice=5
+# Ressources mémoire
+MemoryMax=512M
+MemoryHigh=256M
+MemorySwapMax=1G
+OOMScoreAdjust=-500
+# Ressources IO
+IOSchedulingClass=best-effort
+IOSchedulingPriority=4
+# File descriptor & processus
+LimitNOFILE=65536
+LimitNPROC=4096
+# Sécurité et confinement
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+ReadOnlyPaths=/opt/mon-app
+ReadWritePaths=/var/log/mon-app
+CapabilityBoundingSet=CAP_NET_BIND_SERVICE CAP_CHOWN
+AmbientCapabilities=CAP_NET_BIND_SERVICE
+SystemCallFilter=~@debug @privileged
+PrivateDevices=true
+# Dépendances conditionnelles
+ConditionPathExists=/opt/mon-app/start.sh
+
+
+[Install]
+WantedBy=multi-user.target
+```
+- Gerer le cycle de vie de l'applis en tant que service : 
+
+```bash
+# Gerer le cycle de vie de l'applis avec le systemcl
+sudo systemctl daemon-reload      # ou daemon-reload si systemd déjà lancé
+sudo systemctl enable mon-app     # active au démarrage
+sudo systemctl start mon-app      # démarre immédiatement
+systemctl status mon-app          # voir le status de l'applis
+systemctl stop mon-app            # arreter l'applis
+# Afficher les logs de l'applis avec le sous composant journald de systemd : 
+# Systemd capture automatiquement les logs des services via stdout et stderr pour les envoyer à journald qui va les centraliser pour une gestion plus efficace.
+journalctl -u mon-app -f
+
+```
 
 ---
 
@@ -1210,8 +1454,9 @@ w # : indiquer un fichier de sortie qui va contenir l'output de la commande
 
 - Insertion, Ajout, Remplacement, Suppression et Affichage
 
-| Commandes | Usages | Exemples | Resultat |
 --------------------------------------------
+| Commandes | Usages | Exemples | Resultat |
+|-----------|--------|----------|-----------|
 | p, = | Printing de ligne du texte | sed '3p' fichier | Afficher la 3ème ligne|
 | d | deleting line | sed '3d' fichir | Supprimer la 3ème ligne | 
 | i | Insert before current line | sed '3i\sentence_to_insert' fichier | inserer "sentence_to_inser' avant la 3eme line et decaler le reste : elle se trouve donc à la 3eme ligne|

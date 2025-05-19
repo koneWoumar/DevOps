@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# ici creaiton des configuration pour l'execution de l'application : creation de user 
+
+
+# Crée un utilisateur système "myapp" s'il n'existe pas déjà
+if ! id "myapp" >/dev/null 2>&1; then
+    useradd -r myapp
+fi
+
+
+#####
+echo "l'application a été installée avec succès"
+
+echo "Demarrage du service de l'application . . ."
+
+# Recharger systemd pour prendre en compte le nouveau fichier .service
+systemctl daemon-reload
+
+# Démarrer immédiatement le service
+systemctl start mon-app.service
+####
+
+echo "Service demarré avec succès . . ."
