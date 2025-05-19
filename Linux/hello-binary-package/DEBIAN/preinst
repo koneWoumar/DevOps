@@ -1,21 +1,21 @@
 #!/bin/bash
-echo "Préparation à l'installation de l'application ..."
+echo "Préparation à l'installation de l'application myapp ..."
 # Ici tout ce qui est netoyage, preparation de migration, etc
 
 # Suppresion des anciens fichiers de config s'ils existe sur le systèm
 
 if [ -f /etc/myapp.conf ]; then
-    rm -f /etc/myapp/myapp.conf
+    sudo rm -f /etc/myapp/myapp.conf
 fi
 
 if [ -f /lib/systemd/system/myapp.service ]; then
-    rm -f /lib/systemd/system/myapp.service
+    sudo rm -f /lib/systemd/system/myapp.service
 fi
 
 if [ -f /var/lib/myapp ]; then
-    rm -f /var/lib/myapp
+    sudo rm -f /var/lib/myapp
 fi
 
 if [ -f /usr/local/bin/myapp.py ]; then
-    rm -f /usr/local/bin/myapp.py
+    sudo rm -f /usr/local/bin/myapp.py
 fi

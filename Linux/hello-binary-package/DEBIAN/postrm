@@ -3,7 +3,7 @@
 
 # supprimer l'utilisateur du service s'il existe
 if id "myapp" > /dev/null 2>&1; then
-    userdel myapp
+    sudo userdel myapp
 fi
 ###
 

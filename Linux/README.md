@@ -87,14 +87,14 @@ sudo apt install build-essential
 ./configure
 # On peut compiler maintenat le code source avec make
 make -j$(nproc)
-# Enfin on peut transformer le resultat obtenu en paquet debian 
+# On peut eventuellement installer directement le binaire obtenu avec make (sudo make install)
+# Sinon transformer le resultat obtenu en paquet debian puis l'installer avec apt ou dpkg
 sudo checkinstall
-# On peut eventuellement installer directement le binaire obtenu avec make
-sudo make install
+dpkg -i zsh-5.9.deb
 ```
 
 
-####  Tutoriel
+####  Debian paquet from a binary or executable file
 
 #####    Architecture du paquet à venir
 
@@ -142,14 +142,63 @@ Description: MyApp - une application simple en Python
 - `/myapp/DEBIAN/preinst`
 ```bash
 #!/bin/bash
-echo "Préparation à l'installation de MyApp..."
+echo "Préparation à l'installation de l'application myapp ..."
+# Ici tout ce qui est netoyage, preparation de migration, etc
+
+# Suppresion des anciens fichiers de config s'ils existe sur le systèm
+
+if [ -f /etc/myapp.conf ]; then
+    sudo rm -f /etc/myapp/myapp.conf
+fi
+
+if [ -f /lib/systemd/system/myapp.service ]; then
+    sudo rm -f /lib/systemd/system/myapp.service
+fi
+
+if [ -f /var/lib/myapp ]; then
+    sudo rm -f /var/lib/myapp
+fi
+
+if [ -f /usr/local/bin/myapp.py ]; then
+    sudo rm -f /usr/local/bin/myapp.py
+fi
 ```
 
 - `/myapp/DEBIAN/postint`
 ```bash
 #!/bin/bash
-echo "MyApp a été installé."
-echo "Pour lancer le service : python3 /usr/local/bin/myapp.py &"
+
+# ici creaiton des configuration pour l'execution de l'application : creation de user 
+
+
+# Crée un utilisateur système "myapp" s'il n'existe pas déjà
+if ! id "myapp" >/dev/null 2>&1; then
+    echo "... creating user myapp for the service ..."
+    sudo useradd -r myapp
+else 
+    echo "... user myapp already exist , skip creation ..."
+fi
+
+
+# Changer le propretaire du fichier des donnée de l'application
+echo "Giving owership of data file to the service user"
+sudo chown myapp:myapp /var/lib/myapp/myapp.data
+
+echo "l'application a été installée avec succès"
+
+########
+########
+
+
+echo "Demarrage du service de l'application . . ."
+
+# Recharger systemd pour prendre en compte le nouveau fichier .service
+systemctl daemon-reload
+
+# Démarrer immédiatement le service
+systemctl start myapp.service
+
+echo "Service demarré avec succès . . ."
 ```
 
 - `/myapp/DEBIAN/prerm`
@@ -165,16 +214,39 @@ echo "MyApp a été complètement supprimé."
 ```
 
 - `/myapp/lib/systemd/system/myapp.service`
+```conf
+[Unit]
+Description=Service pour mon application myapp
+After=network.target
+
+[Service]
+Type=simple
+User=myapp
+Group=myapp
+WorkingDirectory=/etc/myapp
+ExecStart=/usr/local/bin/myapp.py
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
 ```
 
+
+- `/myapp/etc/myapp.conf`
+```conf
+port=5000
+chemin=/monapi
+```
+
+
+- `/myapp/var/lib/myapp/myapp.data`
+```
+# Les logs des requêtes seront automatiquement ajoutés ici par l’application.
+# file of data for the application
 ```
 
 - `/myapp/usr/local/bin/myapp.py`
 ```py
-
-```
-- `/myapp/etc/myapp.conf`
-```conf
 #!/usr/bin/env python3
 from flask import Flask, request
 import datetime
@@ -198,12 +270,6 @@ def hello():
 
 if __name__ == "__main__":
     app.run(port=port)
-
-```
-- `/myapp/var/lib/myapp/myapp.data`
-```
-# Les logs des requêtes seront automatiquement ajoutés ici par l’application.
-
 ```
 
 

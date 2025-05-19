@@ -5,12 +5,22 @@
 
 # Crée un utilisateur système "myapp" s'il n'existe pas déjà
 if ! id "myapp" >/dev/null 2>&1; then
-    useradd -r myapp
+    echo "... creating user myapp for the service ..."
+    sudo useradd -r myapp
+else 
+    echo "... user myapp already exist , skip creation ..."
 fi
 
 
-#####
+# Changer le propretaire du fichier des donnée de l'application
+echo "Giving owership of data file to the service user"
+sudo chown myapp:myapp /var/lib/myapp/myapp.data
+
 echo "l'application a été installée avec succès"
+
+########
+########
+
 
 echo "Demarrage du service de l'application . . ."
 
@@ -18,7 +28,6 @@ echo "Demarrage du service de l'application . . ."
 systemctl daemon-reload
 
 # Démarrer immédiatement le service
-systemctl start mon-app.service
-####
+systemctl start myapp.service
 
 echo "Service demarré avec succès . . ."
