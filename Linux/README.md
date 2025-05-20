@@ -4,8 +4,8 @@
 
 ### Console vs Terminal vs Shell
 
-- **Console** : Interface native d'interaction avec le système d'exploitation, fournie par l'OS en local.
-- **Terminal** : Interface permettant d'interagir avec l'OS, émulée par des applications comme Terminator.
+- **Console** : Interface native d'interaction avec le système d'exploitation, accessible directement sur le materiel.
+- **Terminal** : Interface permettant d'interagir avec l'OS, émulée par des applications comme Terminator (historiquement c'etait de petits ordinateur : ecran+classier+materiel permettant d'avoir acces à l'interpreteur de command d'un ordinateur).
 - **Shell** : Interpréteur de commande utilisé dans le terminal pour exécuter des commandes.
 
 ### Types de Fichiers sous Linux
@@ -50,8 +50,8 @@
     - `debian-binary` : Version du format Debian.
 
 ### Type de Paquet
-IL existe deux type de paquet :
-- Paquet  binaire : Paquet distribué directement avec les binaire de l'application, ce sont des `paquet.deb`
+Il existe deux type de paquet :
+- Paquet  binaire : Paquet distribué directement avec les binaires de l'application, ce sont des `paquet.deb`
 - Paquet source : Paquet distribué avec les fichiers sources de l'application qu'il faut compiler avant l'installation avec pour avantage d'avoir un binaire plus optimisé pour le systeme guest.
 
 ### Gestionnaire de Paquets et Dépendances
@@ -69,7 +69,7 @@ IL existe deux type de paquet :
 
 On peut obtenir un paquet binaire soit à partir d'un paquet source soit en metant en mettant en place une architecture de paquet avec les données de l'application à distribuer.
 - Dans le premiere cas, il faut telecharger le bianaire source, compiler, installer oubien en faire un paquet.
-- Dans le second cas, il faut respecter l'architecture d'un paquet sous debian (cas de debian ici) : dossier et fichier à mettre en place puis transformer le dossier obtenu en paquet avec dpgk.
+- Dans le second cas, il faut respecter l'architecture d'un paquet sous debian (cas de debian ici) : dossier et fichier à mettre en place puis transformer le dossier obtenu en paquet avec dpkg.
 
 
 ####  Debian package from source code
@@ -1532,3 +1532,63 @@ w # : indiquer un fichier de sortie qui va contenir l'output de la commande
 
 ####     awk
 
+
+####     find
+
+- Syntaxe general
+
+```bash
+# Syntaxe general
+find base-path -option1 value -option2 value -option3 value -simple_command
+find base-path -option1 value -option2 value -option3 value -exec cmd1 {} \; -exec cmd2 {} \;
+#
+{} # sera remplacer par le chemin du fichier
+# Options
+-type [f,d,l]         # file, dir, symbolic link
+-size (+/-)value(k/M) # moins/plus de value (KiB, units of 1024 bytes)/Megaoctet(KiB, units of 1024*1024 bytes)
+-user user            # file own by user
+-name "regex"         # mame, regex of the file
+-mtime (-/+)n         # modifier il y'a moins/plus de n jours
+```
+
+- Exemples
+
+```bash
+# Recherche par nom
+find . -name "*.log"
+# Recherche type
+find . -type f
+find . -type d
+find . -type l
+# Recherche size
+find . -size +10M
+find . -size -10M
+find . -size 1M
+# Recherche date de modificatin
+find . -mtime -2
+find . -mtime +2
+# Recherche par user and group
+find . -user monuser
+find . -group mongroupe
+# Recherche par combinaison d'option
+find . -name "*.sh" -type f -size +1M
+# Recherche et execution de command
+find . -name "*.tmp" -type f -exec rm -f {} \;
+```
+
+####     locate
+
+
+- Syntaxe general
+
+```bash
+# Syntaxe general
+
+```
+
+- Exemples
+
+```bash
+# Recherche par nom
+
+```
