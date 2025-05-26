@@ -1741,3 +1741,30 @@ locate htop_          # result : /home/ubuntu/tmp/htop_2.1.0-1_amd64.deb
 
 
 
+
+## BROUILLONS
+
+
+### Installation d'Oracle Database Free 23ai sur Red Hat 8 / CentOS 8 / AlmaLinux 8
+
+
+#### Liens de téléchargement officiels
+
+- Oracle Database Free 23ai RPM (x86_64)
+Fichier : oracle-database-free-23ai-1.0-1.el8.x86_64.rpm
+Lien de téléchargement : https://www.oracle.com/database/technologies/free-downloads.html
+Oracle Docs
+
+- Oracle Database Preinstallation RPM (x86_64)
+Fichier : oracle-database-preinstall-23ai-1.0-2.el8.x86_64.rpm
+Ce paquet est inclus dans les ressources de préinstallation disponibles sur la même page.
+
+Ces fichiers sont adaptés pour les systèmes basés sur RHEL 8, tels que CentOS 8, AlmaLinux 8 et Rocky Linux 8.
+📚 Documentation officielle
+
+#### Guide d'installation d'Oracle Database Free 23ai
+
+Pour des instructions détaillées sur l'installation, vous pouvez consulter le guide officiel :
+
+Lien : https://docs.oracle.com/en/database/oracle/oracle-database/23/xeinl/installing-oracle-database-free.html
+Oracle Docs+7Oracle Docs+7
