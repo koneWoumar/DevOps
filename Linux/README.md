@@ -225,7 +225,13 @@ User=myapp
 Group=myapp
 WorkingDirectory=/etc/myapp
 ExecStart=/usr/local/bin/myapp.py
-Restart=on-failure
+Restart=on-failure      # restart the service if it fail
+#####################################################################
+CPUQuota=50%           # limite le service à 50% d'un coeur du cpu
+MemoryMax=500M         # limitation de la memoire allouée
+MemoryAccounting=true  # acitvé le suivi de la memoire
+# le noyau tue les process qui ne respectent pas la limitation definie
+#####################################################################
 
 [Install]
 WantedBy=multi-user.target
@@ -871,8 +877,35 @@ ufw status verbose        # Affiche les règles en cours
 | `crontab`      | Gère les tâches cron (édition, suppression, affichage des tâches programmées). |
 | `cron`         | Service qui exécute les tâches cron programmées.                           |
 | `crontab -e`   | Édite la table des tâches cron de l'utilisateur courant.                   |
-| `crontab -l`   | Affiche les tâches cron programmées pour l'utilisateur courant.           |
-| `crontab -r`   | Supprime les tâches cron programmées de l'utilisateur courant.            |
+| `crontab -l`   | Affiche les tâches cron programmées pour l'utilisateur courant.            |
+| `crontab -r`   | Supprime les tâches cron programmées de l'utilisateur courant.             |
+|     `at`       | Programmer des taches cron ponctuelle                                |
+
+- Exemple d'utilisation de at :
+```bash
+# Syntaxe Generale
+at [HEURE | DATE]
+# Schedule in a given date
+command | at 10:30 2025-05-21   # le 21/05/2025 à 10h30
+# Schedule in a given hour
+command | at 10:30              # à 10h30 suivant, donc demain si 10h30 est deja passé
+# Schedule related from now
+command | at now + 10 minutes
+command | at now + 1 hour
+command | at now + 2 days
+command | at now + 3 weeks
+# Schedule weekly
+command | at tomorrow
+command | at next monday
+command | at next friday
+command | at next week
+# Schedule weekly with precision
+command | at 10:30 tomorrow
+command | at 22:30 next monday
+command | at 21:50 next friday
+command | at 23:30 next week
+```
+
 
 ---
 
@@ -1487,7 +1520,7 @@ echo "Start here" | grep '^Start'     # Match uniquement si la ligne commence pa
 echo "finish" | grep 'sh$'            # Match si la ligne se termine par 'sh'
 ```
 
-####     Command Traitement de flux avec `sed` ,`grep` ,`awk`
+####     Command Traitement de flux avec `sed` ,`grep` ,`cut` `awk`
 
 #####    grep
 
@@ -1496,8 +1529,8 @@ Consulter des lignes correspondant à une regex dans un flu.
 ```bash
 ######### syntaxe
 grep -option regex fichier
-######### option
--c # : afficher pluto le nombre de ligne correspondante
+######### option     1	_apt:x:104:65534::/nonexistent:/usr/sbin/nologin
+-c # : afficher plutot le nombre de ligne correspondante
 -i # : ignorer la case
 -E ou egrep # : utilisé la syntaxe etendu des regex 
 ```
@@ -1514,8 +1547,9 @@ sed -option "s/regex/remplaçant/flag" fichier_flux
 ########## options:
 -i # : save output directly in the file flux ou flux
 -n # : desactiver l'affichage automatique de la sortie
--e # : appliquer plusieur commande les une apres les autres
+-e # : appliquer plusieurs commandes les une après les autres
 -f # : la commande sed est lire depuis un fichier
+-E # : activer les expression reguliere etendue
 ######### flag
 g # : 'global' remplacer toutes les occurrence trouvé sur les lignes
 chiffre n # :  remplacer uniquement la nième occurrence sur les lignes
@@ -1528,16 +1562,94 @@ w # : indiquer un fichier de sortie qui va contenir l'output de la commande
 --------------------------------------------
 | Commandes | Usages | Exemples | Resultat |
 |-----------|--------|----------|-----------|
-| p, = | Printing de ligne du texte | sed '3p' fichier | Afficher la 3ème ligne|
+| p, = | Printing de ligne du texte | `sed -n '3p' fichier` | Afficher la 3ème ligne|
 | d | deleting line | sed '3d' fichir | Supprimer la 3ème ligne | 
 | i | Insert before current line | sed '3i\sentence_to_insert' fichier | inserer "sentence_to_inser' avant la 3eme line et decaler le reste : elle se trouve donc à la 3eme ligne|
 | a | Append after current line | sed '3a\text_to_append' fichier | ajouter "tesxt_to_append" apres la 3eme ligne : elle se trouve donc à la 4ème ligne|
 | c | Change current line | sed '3c\new_text' | changer la 3eme ligne par "new text" |
 
+#####     cut
 
+- Syntaxe de la command
+
+```bash
+########## syntaxe
+cut -options file 
+#
+cut -d delimitor -fi file
+#
+cut -d : -f1,f2 file
+########## options:
+-d  # : specify the delimitor .
+-fi # : print select the field i delimited by delimitor .
+```
+
+- Exemple d'utilisation
+
+```bash
+cut -f: -f1,2,3 path_to_file
+cut -f: -f1,4 /etc/passwd
+cut -f" " -f2 file
+```
+sudo:x:27:ubuntu,wkone
 #####     awk
 
+- Structure général du langage
 
+```bash
+######################################################################### Syntaxe
+# La plus général structure
+awk -options value 'BEGIN { beginAction } patern { action } END { endAction }' fichier
+# Example:
+awk -F" " 'BEGIN { print "Début" } $1==1 { print $2 } END { print "Fin" }' file 
+# La structure couramment utilisée
+awk -option value 'patern {action}'
+# Example:
+awk -F" " '$1==1 { print $2 }' file
+########################################################################## Role des blocs
+BEGIN { ... }      # Exécuté une seule fois avant de lire le fichier
+pattern { action } # Exécuté pour chaque ligne correspondant au pattern
+END { ... }        # Exécuté une fois après avoir tout lu
+########################################################################## Variable automatique
+$0	    # Ligne entière
+$1, $2	# Première, deuxième colonne, etc.
+NR	    # Numéro de la ligne en cours
+NF	    # Nombre de champs sur la ligne
+FS	    # Field Separator (séparateur de champ, défaut : espace)
+OFS	    # Output Field Separator (par défaut : espace)
+########################################################################## Patern possibles
+# operateur de comparaison : ==, !=, <, >, <=, >=
+$1 == "value"           # 
+$1 <= "value"           #
+$1 >  "value"           #
+$1 == intvalue          #
+$1 >= intValue          # 
+$1 >  intValue          # 
+# operateur de correspondane : !~ , ~
+$1 ~ "regex"            #  si $1 contient chaine "regex"
+$1 !~ "regex"           #  si $1 ne contient pas la chaine 
+# operateur de logique :  &&, ||, !
+patern1 && patern2      #
+patern1 || patern2      #
+$i != "value"           # 
+############################################################################ boucle et conditionnelle
+for(i=value, i<NF; i++) actions # la boucle for
+if(condition) actions  # conditionnelle
+```
+- Exemples d'utilisation
+
+```bash
+# afficher les lignes pour lesquel le champs 1 est superieur à 10
+awk '$1 > 10' fichier
+# afficher les ligne ayant pour "bonjour" sur la champs 2
+awk '$2 == "bonjour" { print $0 }' fichier
+# faire la somme des elements du champs 2 puis afficher
+awk '{ total += $2 } END { print "Total : ", total }' fichier
+# compter le nombre total du mot "test" : on compte sur chaque ligne
+awk '{ for(i=1;i<=NF;i++) if($i=="test") count++ } END { print count }' fichier
+# un exemple complet de la syntaxe plus general
+awk 'BEGIN { print "Début" } { print $1 } END { print "Fin" }' fichier
+```
 
 ####     Command de recherche `find` ,`locate`
 
@@ -1626,3 +1738,6 @@ locate bash
 find / -name "htop_*" # result : /home/ubuntu/tmp/htop_2.1.0-1_amd64.deb
 locate htop_          # result : /home/ubuntu/tmp/htop_2.1.0-1_amd64.deb
 ```
+
+
+
