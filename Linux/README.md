@@ -1132,6 +1132,7 @@ taba=(["key"]="valeur" ["key1"]="valeur1" ["key2"]="valeur2") # declaration et i
 taba[key]=value  # affectation d'un nouveau couple ou modification d'un ancien
 ${taba[key]} # --> valeur associée à `key` 
 ${taba[@]} # --> le tableau associatif complet
+${!taba[@]} # --> la liste des clés du tableau
 ${#taba[@]} # --> la taille du tableau
 ```
 

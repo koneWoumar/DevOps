@@ -2,98 +2,83 @@
 
 # Programmation Bash
 
+# -------------------Exercices d'applications--------------------#
 
-#echo "$(( "$1" + "$2" ))"
+### -----Programme de surcharge de fichier .env-----#
 
-
-# ptr1=252
-# ptr2=5
-# ptr=5
-
-# read -p "enter i : " data
-
-# let i=$data
-
-# while (( i < 1000 ))
-# do
-# echo "$i"
-# i=$(( $i + 5 ))
-# if test $i -eq 20 ; then
-#     exit 0 ;
-# fi
-# done
-
-
-# t=("je" "suis" "oumar" 25)
-# t[0]="25"
-# echo "${t[1]}"
-# echo "${t[@]}"
-
-# for i in {0..20}
-# do
-# t[$i]=$(( $i+5 ))
-# done
-# echo ${t[@]}
-
-
-# apparteance à un ensemble
-# if [[ " ${t[@]} " =~ " 25 " ]]; then
-#     echo "yes"
-# else
-#     echo "non"
-# fi
-# chaine="jje suis kone et je suis"
-# echo ${chaine// /}
-
-# str="fichier.tar.gz"
-# echo ${str#.*}    # → tar.gz (supprime le plus court préfixe avant le 1er .)
-# echo ${str##.*}   # → gz (supprime le plus long préfixe jusqu’au dernier .)
-
-# declare -a tab=(25 3 5 4)
-
-# echo ${tab[@]}
-
-# chaine='je suis'
-# if [ "je" == ${chaine} ] ; then
-#     echo "yes"
-# fi
-
-# let i=10
-# while (( 1 )) ; do
-#     if [ $i -gt 0 ] ; then
-#         echo "${i}ème terme"
-#         let i-=1
-#     fi
-#     break
-# done
-
-# for i in '1 2 3 4 5' ; do
-#   echo "i = $i"
-# done
-
-# liste="janvier février mars"
-# for mois in $liste; do
-#   echo "Mois : $mois"
-# done
-
-fonction(){
-    echo "num of arg :$#"
-    echo "tab of args : $@"
-    echo "concate of args : $*"
-    echo "PID of this process : $$"
-    echo "command started this process : $0"
-    echo "arg1 : $1"
-    if [ -z "$3" ] ; then
-        echo "the first arg existe"
-    fi
+#### Version avec sed
+surchageConfigWithSed(){
+    confile=$1
+    overfile=$2
+    # add an empty line if necessary
+    [ "$(tail -c1 "$confile")" != "" ] && echo "" >> "$confile"
+    # Read the overrider file line by line
+    while read -r line
+    do
+        let nline=$(echo $line | grep -Ec "^#.*")
+        if [ $nline -eq 0 ] ; then        
+        # the line is not a commentary
+            varname=$(echo $line | awk -F"=" '{print $1}')
+            let nline=$(grep -Ec "^${varname}=.*" $confile)
+            if [ $nline -gt 0 ] ; then
+                # the  variable existe so replace it
+                sed -i "s/^${varname}=.*/${line}/g" $confile
+            else
+                # the variable does not exist so add it
+                echo "${line}" >> $confile
+            fi
+        fi
+    done < "$overfile"
+    cat $confile
 }
+#### Version avec tableau associatif
+surchageConfigWithAssoTab(){
+    # Associatif table to be use
+    declare -A tab=()
+    # Function to put config from file to tab
+    fileTotab(){
+        sfile=$1
+        while read -r line ; do
+            if [ $(echo $line | grep -Ec "^#.*") -eq 0 ] ; then
+            # then the line is not a commentary
+                varname=$(echo $line | cut -d "=" -f1)
+                varvalue=$(echo $line | cut -d "=" -f2)
+                tab["$varname"]="$varvalue"
+            else
+            # The line is a commentary
+                continue
+            fi
+        done < $sfile
+    }
+    # Function that put the config from tab to a file
+    tabTofile(){
+        filedest=$1
+        echo "# Configuration for production" > $filedest
+        for key in "${!tab[@]}" ; do
+            echo "${key}=${tab[$key]}" >> $filedest
+        done
+    }
+    # 
+    fileTotab $1
+    fileTotab $2
+    tabTofile $1
+}
+### -----Programme de trie de table------#
 
-fonction $1 $2
+#### Programme de trie par selection
 
-# color 
-# coulor
-# culer
-# hahaha 
-# ha-ok-ha-yes-ha
-# ha ha ha
-# hacarhajesuishafor
+### -----Programme d'execution d'une suite de commande-----#
+
+#### Les commandes issue d'un tableau
+
+#### Les commandes issue d'un pile
+
+
+# -------------------Exercice de perfectionnement--------------------#
+
+#### voir exercice de confirmation bash sur internet/chat
+
+#### voir les exercices de confirmation awk, cut, sed
+
+# -------------------------------------------------------------------------------#
+surchageConfig .env .env.file
