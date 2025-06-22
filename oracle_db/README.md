@@ -31,6 +31,7 @@ Voici les composants clés de l’architecture Oracle :
 
 ## Mise en place d’une base de données Oracle (from scratch)
 
+
 ### 🧩 1. Première connexion au SGBD Oracle
 
 Après installation (par ex. via RPM sur Red Hat), l’utilisateur `oracle` est créé. Pour se connecter :
@@ -64,15 +65,23 @@ db_recovery_file_dest_size=2G
 control_files='/opt/oracle/oradata/gazelle/control01.ctl'
 ```
 
+2. #### Creation des fichiers physique et exportation d'ORACLE_SID
 
-2. #### Exporter la variable ORACLE_SID
 
 export ORACLE_SID=gazelle
 
 3. #### Démarrer l’instance en mode nomount
 
+```bash
+# Connection
 sqlplus / as sysdba
+
+# Demarrer en precisant le fichier d'initialisation
+STARTUP NOMOUNT PFILE='/opt/oracle/product/23ai/dbhomeFree/dbs/initGAZELLE.ora'
+
+# Demarrer en montant la base de donnée
 STARTUP NOMOUNT;
+```
 
 4. #### Création de la base
 
@@ -104,19 +113,7 @@ sqlplus / as sysdba
 STARTUP;
 ```
 
-#### 6- ⚙️ Opérations diverses
-
-##### 👤 Création d’un utilisateur
-```sql
-CREATE USER dev IDENTIFIED BY devpassword
-DEFAULT TABLESPACE users
-TEMPORARY TABLESPACE temp
-QUOTA UNLIMITED ON users;
-
-GRANT CONNECT, RESOURCE TO dev;
-```
-
-##### 📡 Configuration de Listener et TNS
+#### -6 📡 Configuration de Listener et TNS
 
 listener.ora :*
 
@@ -150,50 +147,275 @@ gazelle =
   )
 ```
 
-##### 🔐 Connexion avec un utilisateur
+## Mise d'un base de donnée via docker compose
 
+### Fichiers de doployments
+
+- Fichier docker compose :
+
+```yaml
+version: '3.1'
+services:
+  oracle-db:
+    image: container-registry.oracle.com/database/enterprise:latest
+    environment:
+      - ORACLE_SID=${ORACLE_SIDE}
+      - ORACLE_PDB=${DB_NAME}
+      - ORACLE_PWD=${DB_PWD}
+    ports:
+      - 1521:1521
+    volumes:
+      - oracle-data:/opt/oracle/oradata
+      - oracle-backup:/opt/oracle/backup
+    healthcheck:
+      test: ["CMD", "sqlplus", "-L", "sys/${DB_PWD}@//localhost:1521/ORCLCDB as sysdba", "@healthcheck.sql"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  oracle-data:
+  oracle-backup:
 ```
-sqlplus dev/devpassword@gazelle
+
+- Fichier .env
+```conf
+ORACLE_SIDE=GAZASIDE
+DB_NAME=gaza
+DB_PWD=gaza_123
+```
+### Prerequis
+-  Aller sur [oralce-officiel-container-registry](https://container-registry.oracle.com/ords/f?p=113:10:22727848753910:::::)
+-  Creer un compte gratuitement (you need just an email addr and phone number)
+-  Accepter les conditions d'utilisation des images dockers qu'on veut telecharger
+clik on Tabase , then accepte conditions for images you want to use, you can follow [this link for that](https://container-registry.oracle.com/ords/f?p=113:1:22727848753910:::1:P1_BUSINESS_AREA:3&cs=3Sk9CLuh-JLDCc_sI79MzN_AOMyeukYWU5Kur7Stfs_HiH7gzBLM8srJJY4i0ClUFaAHzjJNbKWLiinKCuN8Yvg)
+
+-  Faire un docker login sur son host qui va executer le docker compose
+```bash
+docker login 
+docker login container-registry.oracle.com
+Username: kone.wolouho@gmail.com
+Password: ***** --> my account passwd here
+Login Succeeded
 ```
 
-##### ✍️ CRUD – Opérations de base
+## Installation de l'instant client sur un machine cliente
 
-###### -- Création d'une table
+- Telechar les packages de l'instant client et sql-plus sur [https://www.oracle.com/database/technologies/instant-client/downloads.html](https://www.oracle.com/database/technologies/instant-client/downloads.html)
 
+- Decompresser dans un dossier de votre choix par exemple `/oracle/instant_client`
+- Configurer le client sur le profile de l'utilisateur en ajoutant dans `~/.bashrc`
+```conf
+export ORACLE_HOME=~/oracle/instantclient/instantclient_21_13
+export PATH=$ORACLE_HOME:$PATH
+export LD_LIBRARY_PATH=$ORACLE_HOME:$LD_LIBRARY_PATH
+```
+
+
+## 📘 Oracle Database – Commandes d'Administration de Base
+
+### 🔐 Connexions
+
+#### 1. Connexion via authentification OS (sans mot de passe)
+```bash
+sqlplus / as sysdba
+```
+
+#### 2. Connexion via TNS (service défini dans `tnsnames.ora`)
+```bash
+sqlplus user/password@TNS_ALIAS
+```
+
+#### 3. Connexion sans TNS (Easy Connect)
+```bash
+sqlplus user/password@//host:port/SERVICE_NAME
+```
+
+---
+
+### 🔍 Informations système
+
+#### 🔎 Afficher le nom de la base de données (CDB)
+```sql
+SELECT name FROM v$database;
+```
+
+#### 🔎 Afficher la liste des PDB (Pluggable Databases)
+```sql
+SELECT pdb_name, status FROM dba_pdbs;
+```
+
+#### 🔎 Afficher les utilisateurs (schemas)
+```sql
+SELECT username FROM dba_users;
+```
+
+---
+
+### 📂 Tables & Colonnes
+
+#### 🔎 Afficher les tables accessibles par l'utilisateur courant
+```sql
+SELECT table_name FROM user_tables;
+```
+
+#### 🔎 Afficher toutes les tables dans la base
+```sql
+SELECT owner, table_name FROM all_tables;
+```
+
+#### 🔎 Afficher les colonnes d’une table
+```sql
+DESC nom_table;
+-- ou
+SELECT column_name, data_type FROM user_tab_columns WHERE table_name = 'NOM_TABLE';
+```
+
+---
+
+### 🏗️ Manipulations de schéma
+
+#### ➕ Créer une table
 ```sql
 CREATE TABLE employes (
-  id NUMBER PRIMARY KEY,
-  nom VARCHAR2(100),
-  salaire NUMBER
+    id NUMBER PRIMARY KEY,
+    nom VARCHAR2(50),
+    poste VARCHAR2(50),
+    salaire NUMBER
 );
 ```
 
-###### -- Insertion
-
+#### ➕ Ajouter une colonne à une table existante
 ```sql
-INSERT INTO employes (id, nom, salaire) VALUES (1, 'Alice', 3000);
+ALTER TABLE employes ADD email VARCHAR2(100);
 ```
-###### -- Affichage
 
-```sql
-SELECT * FROM employes;
-```
-###### -- Modification
-```sql
-UPDATE employes SET salaire = 3200 WHERE id = 1;
-```
-###### -- Suppression
+---
 
+### 📝 Manipulation de données
+
+#### ➕ Insérer un enregistrement
+```sql
+INSERT INTO employes (id, nom, poste, salaire) 
+VALUES (1, 'Jean Dupont', 'Développeur', 40000);
+```
+
+#### 🛠️ Modifier un enregistrement
+```sql
+UPDATE employes 
+SET salaire = 45000 
+WHERE id = 1;
+```
+
+#### ❌ Supprimer un enregistrement
 ```sql
 DELETE FROM employes WHERE id = 1;
 ```
 
-#### 🧠 Remarques et subtilités
+#### 🔎 Afficher tous les enregistrements d’une table
+```sql
+SELECT * FROM employes;
+```
 
-Le nom du fichier init<SID>.ora doit correspondre au ORACLE_SID.
-STARTUP NOMOUNT permet d’exécuter des opérations d’administration comme la création d’une base.
-db_recovery_file_dest doit exister sur le système de fichiers.
-En cas d’erreur ORA-01034 ou ORA-01507, la base n’est souvent pas montée ou les fichiers de contrôle sont absents.
-L'ordre typique : STARTUP NOMOUNT → CREATE DATABASE → MOUNT → OPEN.
+---
 
-## Memo des commandes importants
+### 👮 Gestion des utilisateurs
+
+#### ➕ Créer un utilisateur
+```sql
+CREATE USER gazelle IDENTIFIED BY MonMotDePasse;
+```
+
+#### 🛡️ Donner des privilèges (rôles standards)
+```sql
+GRANT CONNECT, RESOURCE TO gazelle;
+```
+
+#### 🛡️ Donner l'accès à une base (dans une CDB)
+```sql
+ALTER SESSION SET CONTAINER = ORCLPDB1;
+CREATE USER gazelle IDENTIFIED BY MonMotDePasse;
+GRANT CONNECT, RESOURCE TO gazelle;
+```
+
+#### 🔒 Verrouiller / déverrouiller un utilisateur
+```sql
+ALTER USER gazelle ACCOUNT LOCK;
+ALTER USER gazelle ACCOUNT UNLOCK;
+```
+
+#### ❌ Supprimer un utilisateur
+```sql
+DROP USER gazelle CASCADE;
+```
+
+#### 🛡️ Attribuer un rôle personnalisé
+```sql
+GRANT dba TO gazelle;
+```
+
+---
+
+### 🚦 État de la base de données
+
+#### 🔎 Voir l’état de l’instance
+```sql
+SELECT status FROM v$instance;
+```
+
+#### 🔄 Démarrer une instance
+```sql
+STARTUP;
+-- ou avec fichier paramètre
+STARTUP PFILE='/chemin/init.ora';
+```
+
+#### ⛔ Arrêter l’instance
+```sql
+SHUTDOWN IMMEDIATE;
+```
+
+---
+
+### 🛠️ Autres opérations utiles
+
+#### 🔄 Changer le mot de passe d’un utilisateur
+```sql
+ALTER USER gazelle IDENTIFIED BY NouveauMotDePasse;
+```
+
+#### 🧽 Vider une table
+```sql
+TRUNCATE TABLE employes;
+```
+
+#### 📌 Voir les rôles d’un utilisateur
+```sql
+SELECT * FROM dba_role_privs WHERE grantee = 'GAZELLE';
+```
+
+---
+
+### 📦 Export/Import (via `expdp` / `impdp`)
+
+#### ➤ Exporter un schéma
+```bash
+expdp gazelle/MonMotDePasse schemas=gazelle directory=DATA_PUMP_DIR dumpfile=gazelle.dmp logfile=gazelle_exp.log
+```
+
+#### ➤ Importer un schéma
+```bash
+impdp gazelle/MonMotDePasse schemas=gazelle directory=DATA_PUMP_DIR dumpfile=gazelle.dmp logfile=gazelle_imp.log
+```
+
+---
+
+### 🧠 Astuces
+
+- Toutes les commandes SQL peuvent être exécutées depuis `sqlplus` ou un outil graphique comme SQL Developer.
+- Pour créer une table dans une **PDB**, n’oublie pas de vous connecter à la bonne PDB avec :
+```sql
+ALTER SESSION SET CONTAINER=ORCLPDB1;
+```
+
+---
